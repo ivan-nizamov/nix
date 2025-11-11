@@ -1,0 +1,10 @@
+{
+    "workbench.colorTheme": "Kanagawa Dragon",
+    "editor.smoothScrolling": true,
+    "workbench.list.smoothScrolling": true,
+    "terminal.integrated.smoothScrolling": true,
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.fontSize": 16,
+    "files.autoSave": "afterDelay"
+}

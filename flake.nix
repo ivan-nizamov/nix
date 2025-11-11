@@ -2,7 +2,7 @@
   description = "…";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
   outputs = { self, nixpkgs, ... }:
@@ -16,6 +16,18 @@
             ./hosts/laptop/configuration.nix
             ./hosts/laptop/hardware-configuration.nix
           ];
+        };
+      };
+
+      # Stow config for dotfiles
+      homeConfigurations = {
+        dotfiles = nixpkgs.lib.mkHomeConfiguration {
+          name = "dotfiles";
+          home.file = {
+            ".config/Code/User/settings.json" = {
+              source = ./dotfiles/vscode/.config/Code/User/settings.json;
+            };
+          };
         };
       };
     };

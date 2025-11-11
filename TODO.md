@@ -1,0 +1,1 @@
+[ ] Add cursor size 32 to dotfiles
