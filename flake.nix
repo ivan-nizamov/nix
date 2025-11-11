@@ -34,6 +34,9 @@
             ".config/Code/User/settings.json" = {
               source = ./dotfiles/vscode/.config/Code/User/settings.json;
             };
+            ".config/dconf/user.d/cursor-settings" = {
+              source = ./dotfiles/gnome/.config/dconf/user.d/cursor-settings;
+            };
           };
         };
       };
