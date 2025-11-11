@@ -111,13 +111,14 @@
       starship
       zoxide
       tree
+      bitwarden-desktop
       maple-mono.NF
+      dconf-editor
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
   programs.zsh.enable = true;
-
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
