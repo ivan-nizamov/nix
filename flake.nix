@@ -3,15 +3,22 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, ... }:
+  outputs = { self, nixpkgs, zen-browser, ... }:
     let
       system = "x86_64-linux";
     in {
       nixosConfigurations = {
         laptop = nixpkgs.lib.nixosSystem {
           inherit system;
+          specialArgs = {
+            inherit zen-browser;
+          };
           modules = [
             ./hosts/laptop/configuration.nix
             ./hosts/laptop/hardware-configuration.nix

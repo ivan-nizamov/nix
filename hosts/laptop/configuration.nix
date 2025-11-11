@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, zen-browser, ... }:
 
 {
   imports =
@@ -102,15 +102,18 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    git
-    stow
-    vscode
-    codex
-    starship
-    zoxide
-    tree
-  ];
+  environment.systemPackages =
+    (with pkgs; [
+      git
+      stow
+      vscode
+      codex
+      starship
+      zoxide
+      tree
+    ]) ++ [
+      zen-browser.packages.${pkgs.system}.default
+    ];
 
   programs.zsh.enable = true;
 
