@@ -105,6 +105,7 @@
   environment.systemPackages =
     (with pkgs; [
       git
+      gh
       stow
       vscode
       codex
@@ -114,6 +115,8 @@
       bitwarden-desktop
       maple-mono.NF
       dconf-editor
+      fastfetch
+      gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];

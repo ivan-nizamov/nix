@@ -8,5 +8,6 @@
     "editor.fontSize": 16,
     "files.autoSave": "afterDelay",
     "explorer.confirmDelete": false,
-    "terminal.integrated.defaultProfile.linux": "zsh"
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "files.autoSaveDelay": 300
 }
