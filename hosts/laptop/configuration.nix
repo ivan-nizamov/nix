@@ -80,6 +80,9 @@
     #media-session.enable = true;
   };
 
+  # Virtualization: libvirtd for KVM/QEMU
+  virtualisation.libvirtd.enable = true;
+
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -87,7 +90,12 @@
   users.users.iva = {
     isNormalUser = true;
     description = "IVA";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "libvirtd"
+      "qemu-libvirtd"
+    ];
     shell = pkgs.zsh;
     packages = with pkgs; [
     #  thunderbird
@@ -96,6 +104,8 @@
 
   # Install firefox.
   programs.firefox.enable = true;
+  # GUI for managing virtual machines
+  programs.virt-manager.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -119,6 +129,8 @@
       fastfetch
       obs-studio
       bat
+      easyeffects
+      ripgrep
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
