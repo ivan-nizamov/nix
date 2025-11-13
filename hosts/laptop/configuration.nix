@@ -107,6 +107,7 @@
       git
       gh
       stow
+      emacs
       vscode
       codex
       starship
@@ -116,6 +117,7 @@
       maple-mono.NF
       dconf-editor
       fastfetch
+      obs-studio
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default

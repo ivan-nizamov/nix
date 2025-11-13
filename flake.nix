@@ -25,20 +25,5 @@
           ];
         };
       };
-
-      # Stow config for dotfiles
-      homeConfigurations = {
-        dotfiles = nixpkgs.lib.mkHomeConfiguration {
-          name = "dotfiles";
-          home.file = {
-            ".config/Code/User/settings.json" = {
-              source = ./dotfiles/vscode/.config/Code/User/settings.json;
-            };
-            ".config/dconf/user.d/cursor-settings" = {
-              source = ./dotfiles/gnome/.config/dconf/user.d/cursor-settings;
-            };
-          };
-        };
-      };
     };
 }

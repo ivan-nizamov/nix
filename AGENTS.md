@@ -1,13 +1,13 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The root `flake.nix` defines all inputs and exports `nixosConfigurations` plus `homeConfigurations`. Host-specific logic lives under `hosts/<name>/`; `hosts/laptop/configuration.nix` imports its paired hardware profile and should remain the single entrypoint per device. Dotfiles intended for stow live in `dotfiles/<tool>/`, mirroring their final locations (for example `dotfiles/vscode/.config/Code/User/settings.json`). Keep host assets, secrets, and machine notes inside `hosts/<name>/` to avoid leaking them into other builds.
+The root `flake.nix` defines all inputs and exports `nixosConfigurations`. Host-specific logic lives under `hosts/<name>/`; `hosts/laptop/configuration.nix` imports its paired hardware profile and should remain the single entrypoint per device. Dotfiles intended for stow live in `dotfiles/<tool>/`, mirroring their final locations (for example `dotfiles/vscode/.config/Code/User/settings.json`). Keep host assets, secrets, and machine notes inside `hosts/<name>/` to avoid leaking them into other builds.
 
 ## Build, Test & Development Commands
 - `nix flake check` – lints the flake, evaluates each configuration, and prevents attribute regressions.
 - `nixos-rebuild --flake .#laptop test` – builds and activates the laptop system configuration without touching the bootloader.
 - `nixos-rebuild --flake .#laptop switch` – performs a full rebuild, activation, and bootloader update.
-- `nix run .#homeConfigurations.dotfiles.activate` – dry-runs the dotfiles home-manager activation for validation before deploying.
+- Use GNU Stow for dotfiles: clone your `dotfiles/` repo and run `stow <packages>` (e.g., `stow vscode gnome emacs`).
 
 ## Coding Style & Naming Conventions
 Use two-space indentation in all Nix files, mirroring the existing hosts configuration. Attribute sets should sort higher-level keys logically (boot, networking, services, users) and keep trailing semicolons on their own lines. Favor descriptive option names (`services.pipewire`, `environment.systemPackages`) and snake-case identifiers for new variables. Run `nix fmt` (Alejandra-compatible) before committing to normalize spacing and align braces.
