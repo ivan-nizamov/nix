@@ -12,18 +12,19 @@
   outputs = { self, nixpkgs, zen-browser, ... }:
     let
       system = "x86_64-linux";
-    in {
-      nixosConfigurations = {
-        laptop = nixpkgs.lib.nixosSystem {
+      hosts = {
+        laptop = ./hosts/laptop/configuration.nix;
+        desktop = ./hosts/desktop/configuration.nix;
+      };
+      mkHost = configPath:
+        nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {
             inherit zen-browser;
           };
-          modules = [
-            ./hosts/laptop/configuration.nix
-            ./hosts/laptop/hardware-configuration.nix
-          ];
+          modules = [ configPath ];
         };
-      };
+    in {
+      nixosConfigurations = nixpkgs.lib.mapAttrs (_: configPath: mkHost configPath) hosts;
     };
 }

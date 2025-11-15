@@ -98,6 +98,7 @@
     packages = with pkgs; [
     #  thunderbird
     ];
+    initialPassword = "changme";
   };
 
   # Allow unfree packages
