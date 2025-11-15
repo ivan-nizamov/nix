@@ -1,0 +1,5 @@
+font-size = 15
+font-family = Maple Mono NF
+theme = Gruvbox Dark Hard
+custom-shader = shaders/cursor_blaze.glsl
+cursor-style = "block"

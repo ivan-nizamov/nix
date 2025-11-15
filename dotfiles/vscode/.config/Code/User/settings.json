@@ -1,13 +1,21 @@
 {
-    "workbench.colorTheme": "Kanagawa Dragon",
+    "workbench.colorTheme": "Gruvbox Dark Hard",
     "editor.smoothScrolling": true,
     "workbench.list.smoothScrolling": true,
     "terminal.integrated.smoothScrolling": true,
     "editor.cursorBlinking": "smooth",
     "editor.cursorSmoothCaretAnimation": "on",
-    "editor.fontSize": 16,
+    "editor.fontSize": 24,
     "files.autoSave": "afterDelay",
     "explorer.confirmDelete": false,
     "terminal.integrated.defaultProfile.linux": "zsh",
-    "files.autoSaveDelay": 300
+    "files.autoSaveDelay": 300,
+    "terminal.explorerKind": "external",
+    "terminal.external.linuxExec": "ghostty",
+    "explorer.confirmDragAndDrop": false,
+
+    "editor.fontFamily": "'Maple Mono NF'",
+    "editor.fontLigatures": true,
+    "terminal.integrated.fontFamily": "'Maple Mono NF'",
+    "terminal.integrated.fontLigatures": true 
 }

@@ -131,12 +131,20 @@
       bat
       easyeffects
       ripgrep
+      fd
+      gparted
+      opentabletdriver
+      libsForQt5.xp-pen-deco-01-v2-driver
+      ghostty
+      wl-clipboard 
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-    ];
+      ];
 
   programs.zsh.enable = true;
+
+  programs.pay-respects.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
