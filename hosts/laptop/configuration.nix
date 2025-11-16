@@ -131,6 +131,7 @@
       libsForQt5.xp-pen-deco-01-v2-driver
       ghostty
       wl-clipboard 
+      nix-search-cli
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
