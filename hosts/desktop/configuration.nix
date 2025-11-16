@@ -95,9 +95,6 @@
       "wheel"
     ];
     shell = pkgs.zsh;
-    packages = with pkgs; [
-    #  thunderbird
-    ];
     initialPassword = "changme";
   };
 
@@ -132,17 +129,13 @@
       ghostty
       wl-clipboard 
       nix-search-cli
+      rnote
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];
 
   programs.zsh.enable = true;
-  programs.zsh.shellAliases = {
-    nrs = "sudo nixos-rebuild --flake .#$(hostname) switch";
-    nrt = "sudo nixos-rebuild --flake .#$(hostname) test";
-    nrb = "sudo nixos-rebuild --flake .#$(hostname) boot";
-  };
 
   programs.pay-respects.enable = true;
 
