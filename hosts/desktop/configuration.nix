@@ -138,6 +138,11 @@
       ];
 
   programs.zsh.enable = true;
+  programs.zsh.shellAliases = {
+    nrs = "sudo nixos-rebuild --flake .#$(hostname) switch";
+    nrt = "sudo nixos-rebuild --flake .#$(hostname) test";
+    nrb = "sudo nixos-rebuild --flake .#$(hostname) boot";
+  };
 
   programs.pay-respects.enable = true;
 
