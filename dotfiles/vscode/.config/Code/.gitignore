@@ -1,0 +1,6 @@
+# Keep only the user settings file under this tree
+*
+!.gitignore
+!User/
+User/*
+!User/settings.json
