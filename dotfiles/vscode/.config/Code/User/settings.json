@@ -16,6 +16,7 @@
   "editor.fontFamily": "'Maple Mono NF'",
   "editor.fontLigatures": true,
   "terminal.integrated.fontFamily": "'Maple Mono NF'",
-  "terminal.integrated.fontLigatures": true
+  "terminal.integrated.fontLigatures": true,
+  "git.confirmSync": false
 }
 
