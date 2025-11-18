@@ -130,6 +130,8 @@
       wl-clipboard 
       nix-search-cli
       rnote
+      apple-cursor
+      gnome-tweaks
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
