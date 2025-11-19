@@ -134,7 +134,10 @@
       wl-clipboard 
       nix-search-cli
       rnote
-      anki-bin
+      # anki-bin
+      # mpv
+      apple-cursor
+      gnome-tweaks
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
