@@ -18,9 +18,9 @@
   # Desktop specific GNOME settings
   dconf.settings = {
     "org/gnome/desktop/interface" = {
-      color-scheme = "default";
+      color-scheme = "prefer-dark";
       accent-color = "red";
-      cursor-size = 42;
+      cursor-size = 32;
       cursor-theme = "macOS";
       icon-theme = "Adwaita";
     };
@@ -34,7 +34,7 @@
     };
     "org/gnome/settings-daemon/plugins/color" = {
       night-light-enabled = true;
-      night-light-temperature = 4700;
+      night-light-temperature = pkgs.lib.gvariant.mkUint32 3500;
     };
     "org/gnome/settings-daemon/plugins/power" = {
       power-button-action = "interactive";

@@ -34,7 +34,7 @@
     };
     "org/gnome/settings-daemon/plugins/color" = {
       night-light-enabled = true;
-      night-light-temperature = 4700;
+      night-light-temperature = pkgs.lib.gvariant.mkUint32 4700;
     };
     "org/gnome/settings-daemon/plugins/power" = {
       power-button-action = "interactive";
