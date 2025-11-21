@@ -108,5 +108,17 @@
       sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) ];
       xkb-options = [];
     };
+    "org/gnome/shell/weather" = {
+      locations = [ (pkgs.lib.gvariant.mkTuple [
+        (pkgs.lib.gvariant.mkUint32 2)
+        (pkgs.lib.gvariant.mkVariant (pkgs.lib.gvariant.mkTuple [
+          "Timișoara"
+          "LRTR"
+          false
+          [ (pkgs.lib.gvariant.mkTuple [ 0.79877902681383561 0.37088246604879505 ]) ]
+          []
+        ]))
+      ]) ];
+    };
   };
 }
