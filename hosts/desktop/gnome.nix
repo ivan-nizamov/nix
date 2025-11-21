@@ -40,6 +40,14 @@
       power-button-action = "interactive";
       sleep-inactive-ac-type = "nothing";
     };
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      custom-keybindings = [ "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/" ];
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+      binding = "<Super>e";
+      command = "emacs";
+      name = "Emacs";
+    };
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
       picture-options = "zoom";
@@ -106,7 +114,7 @@
     };
     "org/gnome/desktop/input-sources" = {
       sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) ];
-      xkb-options = [];
+      xkb-options = pkgs.lib.gvariant.mkEmptyArray pkgs.lib.gvariant.type.string;
     };
     "org/gnome/shell/weather" = {
       locations = [ (pkgs.lib.gvariant.mkTuple [
@@ -116,7 +124,7 @@
           "LRTR"
           false
           [ (pkgs.lib.gvariant.mkTuple [ 0.79877902681383561 0.37088246604879505 ]) ]
-          []
+          (pkgs.lib.gvariant.mkEmptyArray (pkgs.lib.gvariant.type.dictionaryEntry pkgs.lib.gvariant.type.string pkgs.lib.gvariant.type.variant))
         ]))
       ]) ];
     };
