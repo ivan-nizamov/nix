@@ -105,7 +105,7 @@
       type-format = "category";
     };
     "org/gnome/desktop/input-sources" = {
-      sources = [("xkb", "us")];
+      sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) ];
       xkb-options = [];
     };
   };
