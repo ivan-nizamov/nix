@@ -59,7 +59,7 @@
       name = "Zen Browser";
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
-      binding = "<Super><Return>";
+      binding = "<Super>x";
       command = "ghostty";
       name = "Ghostty Terminal";
     };
