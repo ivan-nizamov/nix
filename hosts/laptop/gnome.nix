@@ -20,7 +20,7 @@
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
       accent-color = "red";
-      cursor-size = 32;
+      cursor-size = 35;
       cursor-theme = "macOS";
       icon-theme = "Adwaita";
     };
@@ -41,12 +41,26 @@
       sleep-inactive-ac-type = "nothing";
     };
     "org/gnome/settings-daemon/plugins/media-keys" = {
-      custom-keybindings = [ "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/" ];
+      custom-keybindings = [
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
+      ];
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
       binding = "<Super>e";
       command = "emacs";
       name = "Emacs";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+      binding = "<Super>z";
+      command = "zen";
+      name = "Zen Browser";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
+      binding = "<Super><Return>";
+      command = "ghostty";
+      name = "Ghostty Terminal";
     };
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
@@ -114,19 +128,7 @@
     };
     "org/gnome/desktop/input-sources" = {
       sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) ];
-      xkb-options = pkgs.lib.gvariant.mkEmptyArray pkgs.lib.gvariant.type.string;
-    };
-    "org/gnome/shell/weather" = {
-      locations = [ (pkgs.lib.gvariant.mkTuple [
-        (pkgs.lib.gvariant.mkUint32 2)
-        (pkgs.lib.gvariant.mkVariant (pkgs.lib.gvariant.mkTuple [
-          "Timișoara"
-          "LRTR"
-          false
-          [ (pkgs.lib.gvariant.mkTuple [ 0.79877902681383561 0.37088246604879505 ]) ]
-          (pkgs.lib.gvariant.mkEmptyArray (pkgs.lib.gvariant.type.dictionaryEntry pkgs.lib.gvariant.type.string pkgs.lib.gvariant.type.variant))
-        ]))
-      ]) ];
+      xkb-options = [];
     };
   };
 }
