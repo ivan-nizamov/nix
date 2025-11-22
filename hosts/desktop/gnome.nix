@@ -44,6 +44,8 @@
       custom-keybindings = [
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
       ];
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
@@ -55,6 +57,16 @@
       binding = "<Super>z";
       command = "zen";
       name = "Zen Browser";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
+      binding = "<Super><Return>";
+      command = "ghostty";
+      name = "Ghostty Terminal";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
+      binding = "<Shift><Control>Escape";
+      command = "gnome-system-monitor";
+      name = "System Monitor";
     };
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
