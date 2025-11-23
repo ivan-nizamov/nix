@@ -134,7 +134,7 @@
       wl-clipboard 
       nix-search-cli
       rnote
-      # anki-bin
+      anki-bin
       # mpv
       apple-cursor
       gnome-tweaks
