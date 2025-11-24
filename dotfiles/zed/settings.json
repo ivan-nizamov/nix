@@ -7,6 +7,21 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "debugger": {
+    "dock": "left"
+  },
+  "git_panel": {
+    "dock": "right"
+  },
+  "collaboration_panel": {
+    "dock": "right"
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "project_panel": {
+    "dock": "right"
+  },
   "soft_wrap": "editor_width",
   "tab_size": 3,
   "relative_line_numbers": true,
@@ -20,6 +35,7 @@
     "experimental.rodio_audio": true
   },
   "agent": {
+    "dock": "left",
     "default_profile": "write",
     "default_model": {
       "provider": "google",
@@ -29,6 +45,7 @@
     "model_parameters": []
   },
   "terminal": {
+    "dock": "left",
     "shell": {
       "program": "zsh"
     },
