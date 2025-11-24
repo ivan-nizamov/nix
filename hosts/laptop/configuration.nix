@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, zen-browser, ... }:
+{ pkgs, zen-browser, ... }:
 
 {
   imports =
@@ -134,6 +134,7 @@
       ghostty
       wl-clipboard 
       nix-search-cli
+      nixd
       rnote
       anki-bin
       # mpv

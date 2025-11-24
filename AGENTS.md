@@ -17,3 +17,6 @@ Every change must pass `nix flake check` locally; add targeted `nixosTests` bloc
 
 ## Commit & Pull Request Guidelines
 Follow the imperative, sentence-style messages already in history (e.g., “Implement correct zsh configuration”). Group related edits into a single commit and mention the affected host or module in the subject. Pull requests should include: summary of motivation, key commands executed (`nix flake check`, `nixos-rebuild test`), screenshots or logs for UI-facing changes, and references to tracked issues or TODO items. Call out any manual migration steps so other agents can reproduce the rollout safely.
+
+## Package Search
+- Use `nix-search <package_name>` for searching packages.
