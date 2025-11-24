@@ -20,10 +20,6 @@
           nixos = ./hosts/laptop/configuration.nix;
           home = ./hosts/laptop/gnome.nix;
         };
-        desktop = {
-          nixos = ./hosts/desktop/configuration.nix;
-          home = ./hosts/desktop/gnome.nix;
-        };
       };
 
       mkHost = hostName: config: # Takes hostName and the config object { nixos, home }

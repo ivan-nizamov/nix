@@ -7,7 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
+      ./hardware-configuration.nix
     ];
 
   # Bootloader.
@@ -114,6 +114,7 @@
       stow
       emacs
       vscode
+      zed-editor
       codex
       starship
       zoxide
@@ -146,6 +147,13 @@
   programs.zsh.enable = true;
 
   programs.pay-respects.enable = true;
+
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    openssl
+    zlib
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
