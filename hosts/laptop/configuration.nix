@@ -144,6 +144,8 @@
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];
 
+  fonts.fontDir.enable = true;
+
   programs.zsh.enable = true;
 
   programs.pay-respects.enable = true;
