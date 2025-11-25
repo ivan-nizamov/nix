@@ -140,11 +140,6 @@
       gnome-tweaks
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
       nodejs_22
-      (pkgs.writeShellScriptBin "gemini" ''
-          export PATH=${pkgs.nodejs_22}/bin:${pkgs.git}/bin:$PATH
-          # exec runs the process directly, replacing the shell (faster)
-          exec npx @google/gemini-cli@latest "$@"
-        '')
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];
