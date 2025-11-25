@@ -94,6 +94,8 @@
 
 (setq visible-bell t)
 
+(add-hook 'text-mode-hook #'visual-line-mode)
+
 ;; Set default directory for org files
 (setq org-directory "~/ORG/")
 ;; Using directory-files-recursively to find all org files in Roam folder

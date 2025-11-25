@@ -124,6 +124,11 @@
 (setq visible-bell t)
 #+end_src
 
+** Visual line mode
+#+begin_src emacs-lisp
+(add-hook 'text-mode-hook #'visual-line-mode)
+#+end_src
+
 * Org Mode
 ** System
 #+begin_src emacs-lisp
