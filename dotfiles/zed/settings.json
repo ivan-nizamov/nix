@@ -7,82 +7,95 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "debugger": {
-    "dock": "left"
-  },
-  "git_panel": {
-    "dock": "right"
-  },
-  "collaboration_panel": {
-    "dock": "right"
-  },
-  "outline_panel": {
-    "dock": "right"
-  },
-  "project_panel": {
-    "dock": "right"
-  },
-  "soft_wrap": "editor_width",
-  "tab_size": 3,
-  "relative_line_numbers": true,
-  "scroll_beyond_last_line": "vertical_scroll_margin",
-  "title_bar": {
-    "show_branch_icon": true
-  },
-  "autoscroll_on_clicks": true,
-  "audio": {
-    "experimental.auto_microphone_volume": true,
-    "experimental.rodio_audio": true
-  },
-  "agent": {
-    "dock": "left",
-    "default_profile": "write",
-    "default_model": {
-      "provider": "google",
-      "model": "gemini-2.5-pro"
-    },
-    "always_allow_tool_actions": true,
-    "model_parameters": []
-  },
-  "terminal": {
-    "dock": "left",
-    "shell": {
-      "program": "zsh"
-    },
-    "font_family": "Helvetica"
-  },
-  "base_keymap": "VSCode",
-  "cursor_blink": true,
-  "autosave": {
-    "after_delay": {
-      "milliseconds": 300
-    }
-  },
-  "buffer_font_family": "Helvetica",
-  "icon_theme": "Zed (Default)",
-  "ui_font_size": 20.0,
-  "buffer_font_size": 24.0,
-  "theme": {
-    "mode": "dark",
-    "light": "Gruvbox Light",
-    "dark": "Kanagawa Dragon"
-  },
-  "languages": {
-    "Nix": {
-      "language_servers": ["nixd"],
-      "formatter": {
-        "external": {
-          "command": "nixpkgs-fmt",
-          "arguments": ["--stdin"]
-        }
+   "context_servers": {
+      "mcp-server-context7": {
+         "source": "extension",
+         "enabled": true,
+         "settings": {
+            "context7_api_key": "https://context7.com/api/v2"
+         }
       }
-    }
-  },
-  "lsp": {
-    "nixd": {
-      "binary": {
-        "path_lookup": true
+   },
+   "debugger": {
+      "dock": "left"
+   },
+   "git_panel": {
+      "dock": "right"
+   },
+   "collaboration_panel": {
+      "dock": "right"
+   },
+   "outline_panel": {
+      "dock": "right"
+   },
+   "project_panel": {
+      "dock": "right"
+   },
+   "soft_wrap": "editor_width",
+   "tab_size": 3,
+   "relative_line_numbers": true,
+   "scroll_beyond_last_line": "vertical_scroll_margin",
+   "title_bar": {
+      "show_branch_icon": true
+   },
+   "autoscroll_on_clicks": true,
+   "audio": {
+      "experimental.auto_microphone_volume": true,
+      "experimental.rodio_audio": true
+   },
+   "agent": {
+      "inline_assistant_model": {
+         "provider": "openrouter",
+         "model": "x-ai/grok-code-fast-1"
+      },
+      "dock": "left",
+      "default_profile": "write",
+      "default_model": {
+         "provider": "openrouter",
+         "model": "x-ai/grok-code-fast-1"
+      },
+      "always_allow_tool_actions": true,
+      "model_parameters": []
+   },
+   "terminal": {
+      "dock": "bottom",
+      "shell": {
+         "program": "zsh"
+      },
+      "font_family": "Helvetica"
+   },
+   "base_keymap": "VSCode",
+   "cursor_blink": true,
+   "autosave": {
+      "after_delay": {
+         "milliseconds": 300
       }
-    }
-  }
+   },
+   "buffer_font_family": "Arial",
+   "icon_theme": "Zed (Default)",
+   "ui_font_size": 20.0,
+   "buffer_font_size": 24.0,
+   "theme": {
+      "mode": "dark",
+      "light": "Kanagawa Lotus",
+      "dark": "Kanagawa Lotus"
+   },
+   "languages": {
+      "Nix": {
+         "language_servers": ["nixd"],
+         "formatter": {
+            "external": {
+               "command": "nixpkgs-fmt",
+               "arguments": ["--stdin"]
+            }
+         }
+      }
+   },
+   "lsp": {
+      "nixd": {
+         "binary": {
+            "path_lookup": true
+         }
+      }
+   }
 }
