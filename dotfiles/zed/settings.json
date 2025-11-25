@@ -44,17 +44,7 @@
       "experimental.rodio_audio": true
    },
    "agent": {
-      "inline_assistant_model": {
-         "provider": "openrouter",
-         "model": "x-ai/grok-code-fast-1"
-      },
-      "dock": "left",
-      "default_profile": "write",
-      "default_model": {
-         "provider": "openrouter",
-         "model": "x-ai/grok-code-fast-1"
-      },
-      "always_allow_tool_actions": true,
+      "default_profile": "ask",
       "model_parameters": []
    },
    "terminal": {
@@ -78,7 +68,7 @@
    "theme": {
       "mode": "dark",
       "light": "Kanagawa Lotus",
-      "dark": "Kanagawa Lotus"
+      "dark": "Gruvbox Dark Hard"
    },
    "languages": {
       "Nix": {
@@ -93,9 +83,7 @@
    },
    "lsp": {
       "nixd": {
-         "binary": {
-            "path_lookup": true
-         }
+         "binary": {}
       }
    }
 }
