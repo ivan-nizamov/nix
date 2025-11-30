@@ -20,6 +20,10 @@
           nixos = ./hosts/laptop/configuration.nix;
           home = ./hosts/laptop/gnome.nix;
         };
+        legion = {
+          nixos = ./hosts/legion/configuration.nix;
+          home = ./hosts/legion/gnome.nix;
+        };
       };
 
       mkHost = hostName: config: # Takes hostName and the config object { nixos, home }

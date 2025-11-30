@@ -19,7 +19,7 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "laptop"; # Define your hostname.
+  networking.hostName = "legion"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -140,6 +140,7 @@
       gnome-tweaks
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
       nodejs_22
+      wl-clipboard
       blender # Added blender package
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
