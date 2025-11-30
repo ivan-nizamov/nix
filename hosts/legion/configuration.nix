@@ -140,6 +140,7 @@
       gnome-tweaks
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
       nodejs_22
+      blender # Added blender package
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];
