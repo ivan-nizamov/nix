@@ -93,6 +93,7 @@
       idle-delay = 0;
     };
     "org/gnome/desktop/wm/keybindings" = {
+      close = ["<Super>q"];
       move-to-workspace-1 = ["<Super><Shift>1"];
       move-to-workspace-10 = ["<Super><Shift>0"];
       move-to-workspace-2 = ["<Super><Shift>2"];
