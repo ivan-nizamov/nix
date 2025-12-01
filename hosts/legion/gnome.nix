@@ -32,6 +32,112 @@ let
       notify-send -u low "Battery" "Conservation ENABLED\nLimit 60%"
     fi
   '';
+
+  daTranscode = pkgs.writeScriptBin "da-transcode" ''
+    #!${pkgs.zsh}/bin/zsh
+
+    # =============================================================================
+    # Bulk Transcode for DaVinci Resolve (Linux Free Version)
+    # =============================================================================
+
+    set -e
+
+    # 0. Check Dependencies
+    if ! command -v ffmpeg &> /dev/null;
+        then
+        echo "Error: ffmpeg is not installed or not in PATH."
+        exit 1
+    fi
+
+    # 1. Check Input
+    if [[ -z "$1" ]]; then
+        echo "Usage: $(basename "$0") <media_directory>"
+        exit 1
+    fi
+
+    SOURCE_DIR="''${1%/}" # Remove trailing slash
+    TRANSCODED_DIR="$SOURCE_DIR/Transcoded"
+
+    if [[ ! -d "$SOURCE_DIR" ]]; then
+        echo "Error: Directory '$SOURCE_DIR' does not exist."
+        exit 1
+    fi
+
+    mkdir -p "$TRANSCODED_DIR"
+
+    # 2. Define Extensions
+    VIDEO_EXTS=("mp4" "mkv" "mov" "webm" "avi" "m4v" "mts" "flv")
+    AUDIO_EXTS=("mp3" "aac" "wav" "flac" "m4a" "ogg" "wma")
+    ALL_EXTS=($VIDEO_EXTS $AUDIO_EXTS)
+    EXT_GLOB="''${(j:|:)ALL_EXTS}"
+
+    # Enable extended globbing and null glob (prevents errors if no files match)
+    setopt extended_glob null_glob
+
+    echo "Scanning '$SOURCE_DIR'..."
+
+    # 3. Process Files
+    # Zsh glob qualifier (#i) makes the glob case-insensitive
+    for file in "$SOURCE_DIR"/*.(#i)(''${~EXT_GLOB}); do
+        
+        # Skip directories just in case
+        [[ -d "$file" ]] && continue
+
+        filename="''${file:t}"       # e.g., video.mp4
+        basename="''${filename:r}"   # e.g., video
+        ext_lower="''${filename:e:l}" # e.g., mp4 (lowercase)
+
+        # Determine type
+        is_video=0
+        if [[ ''${VIDEO_EXTS[(r)$ext_lower]} == "$ext_lower" ]]; then
+            is_video=1
+        fi
+
+        if (( is_video )); then
+            # DNxHR HQ .mov (Supports 4:2:2 8-bit/10-bit)
+            output_file="$TRANSCODED_DIR/''${basename}_davinci.mov"
+        else
+            # PCM WAV 16-bit
+            output_file="$TRANSCODED_DIR/''${basename}.wav"
+        fi
+
+        # Skip if exists
+        if [[ -f "$output_file" ]]; then
+            echo "[SKIP] $filename"
+            continue
+        fi
+
+        echo -n "[PROC] Transcoding $filename... "
+
+        if (( is_video )); then
+            # Video: DNxHR HQ, PCM Audio
+            if ffmpeg -v error -stats -i "$file" \
+                -c:v dnxhd -profile:v dnxhr_hq -pix_fmt yuv422p \
+                -c:a pcm_s16le \
+                "$output_file" < /dev/null; then
+                 echo "Done"
+            else
+                 echo "FAILED"
+                 # Clean up partial file
+                 rm -f "$output_file"
+            fi
+        else
+            # Audio: PCM WAV
+            if ffmpeg -v error -stats -i "$file" \
+                -vn \
+                -c:a pcm_s16le \
+                "$output_file" < /dev/null; then
+                 echo "Done"
+            else
+                 echo "FAILED"
+                 rm -f "$output_file"
+            fi
+        fi
+
+    done
+
+    echo "All operations complete."
+  '';
 in
 {
   home.username = "iva";
@@ -52,6 +158,8 @@ in
     libnotify
     toggleNightLight
     toggleConservation
+    daTranscode
+    ffmpeg-full
   ];
 
   programs.zed-editor.enable = true;
