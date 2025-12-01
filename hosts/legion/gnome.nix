@@ -239,15 +239,15 @@ in
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
       picture-options = "zoom";
-      picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/glass-chip-l.jxl";
-      picture-uri-dark = "file:///run/current-system/sw/share/backgrounds/gnome/glass-chip-d.jxl";
+      picture-uri = "file://${./backgrounds/wallpaper.jpg}";
+      picture-uri-dark = "file://${./backgrounds/wallpaper.jpg}";
       primary-color = "#26a269";
       secondary-color = "#000000";
     };
     "org/gnome/desktop/screensaver" = {
       color-shading-type = "solid";
       picture-options = "zoom";
-      picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/glass-chip-l.jxl";
+      picture-uri = "file://${./backgrounds/wallpaper.jpg}";
       primary-color = "#26a269";
       secondary-color = "#000000";
     };
