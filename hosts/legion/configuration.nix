@@ -214,6 +214,8 @@
 
   # List services that you want to enable:
 
+  services.n8n.enable = true;
+
   services.keyd = {
     enable = true;
     keyboards.default = {
