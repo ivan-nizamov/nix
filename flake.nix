@@ -9,9 +9,10 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = { self, nixpkgs, home-manager, zen-browser, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, zen-browser, nixos-hardware, ... }@inputs:
     let
       system = "x86_64-linux";
       # Renamed 'hosts' to 'hostConfigs' to avoid confusion with the mapping in nixosConfigurations
@@ -23,6 +24,7 @@
         legion = {
           nixos = ./hosts/legion/configuration.nix;
           home = ./hosts/legion/gnome.nix;
+          modules = [ nixos-hardware.nixosModules.lenovo-legion-15ach6h ];
         };
       };
 
@@ -38,7 +40,7 @@
               home-manager.useUserPackages = true;
               home-manager.users.iva = import config.home;
             }
-          ];
+          ] ++ (config.modules or []);
         };
     in {
       # Map over hostConfigs to create nixosConfigurations

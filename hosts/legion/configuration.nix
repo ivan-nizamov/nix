@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, zen-browser, ... }:
+{ config, pkgs, zen-browser, lib, ... }:
 
 {
   imports =
@@ -18,6 +18,19 @@
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  boot.kernelParams = [
+    "amd_pstate=guided"
+    # # Fixes intermittent keyboard failures on Lenovo Legions
+    # "i8042.reset"
+    # "i8042.nomux"
+    # "i8042.nopnp"
+    # "i8042.noloop"
+    # # Disables USB autosuspend globally
+    # "usbcore.autosuspend=-1"
+  ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
+  boot.kernelModules = [ "lenovo-legion-module" ];
 
   networking.hostName = "legion"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -81,6 +94,20 @@
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
+    wireplumber.extraConfig = {
+      "10-disable-camera" = {
+        "monitor.alsa.rules" = [
+          {
+            matches = [ { "node.name" = "~alsa_input.pci.*"; } ];
+            actions = {
+              update-props = {
+                "api.alsa.use-ucm" = false;
+              };
+            };
+          }
+        ];
+      };
+    };
   };
 
   # Virtualization: libvirtd for KVM/QEMU
@@ -142,6 +169,24 @@
       nodejs_22
       wl-clipboard
       blender # Added blender package
+      lenovo-legion
+      openrgb-with-all-plugins
+      davinci-resolve
+      ffmpeg_7-full
+      (pkgs.writeShellScriptBin "davinci-nvidia" ''
+        export __NV_PRIME_RENDER_OFFLOAD=1
+        export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+        export __GLX_VENDOR_LIBRARY_NAME=nvidia
+        export __VK_LAYER_NV_optimus=NVIDIA_only
+        exec ${pkgs.davinci-resolve}/bin/davinci-resolve "$@"
+      '')
+      (pkgs.writeShellScriptBin "lenovo-conservation" ''
+        if [ "$1" == "1" ]; then
+          echo 1 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode
+        else
+          echo 0 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode
+        fi
+      '')
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];
@@ -169,8 +214,39 @@
 
   # List services that you want to enable:
 
+  services.hardware.openrgb.enable = true;
+
+  # Disable the conflicting default power manager
+  services.power-profiles-daemon.enable = false;
+
+  services.tlp = {
+    enable = true;
+    settings = {
+      # Disable autosuspend for USB input devices (keyboards/mice)
+      USB_AUTOSUSPEND = 0;
+    };
+  };
+
+  systemd.tmpfiles.rules = [
+    # 1 enables conservation mode (60% limit), 0 disables it (100% charge)
+    "w /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode - - - - 1"
+  ];
+
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
+
+  # Allow 'iva' to run the conservation script without a password
+  security.sudo.extraRules = [
+    {
+      users = [ "iva" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/lenovo-conservation";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -179,7 +255,14 @@
   # networking.firewall.enable = false;
 
   # Graphics / Nvidia
-  hardware.graphics.enable = true;
+  hardware.graphics = {
+    enable = true;
+    # Required for DaVinci to see OpenCL/CUDA
+    extraPackages = with pkgs; [
+      rocmPackages.clr
+      rocmPackages.rocminfo
+    ];
+  };
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
@@ -191,8 +274,8 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     prime = {
       offload = {
-        enable = true;
-        enableOffloadCmd = true;
+        enable = lib.mkOverride 1010 true;
+        enableOffloadCmd = lib.mkForce config.hardware.nvidia.prime.offload.enable;
       };
       amdgpuBusId = "PCI:5:0:0";
       nvidiaBusId = "PCI:1:0:0";

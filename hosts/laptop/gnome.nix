@@ -1,5 +1,20 @@
 { config, pkgs, ... }:
 
+let
+  toggleNightLight = pkgs.writeShellScriptBin "toggle-night-light" ''
+    # Ensure night light is enabled
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+
+    CURRENT=$(gsettings get org.gnome.settings-daemon.plugins.color night-light-temperature)
+    if [[ "$CURRENT" == *"1000"* ]]; then
+      gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3500
+      notify-send -u low "Night Light" "Warm (3500K)"
+    else
+      gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 1000
+      notify-send -u low "Night Light" "Red (1000K)"
+    fi
+  '';
+in
 {
   home.username = "iva";
   home.homeDirectory = "/home/iva";
@@ -14,6 +29,11 @@
   home.stateVersion = "24.11"; # Aligned with nixos-unstable's expected upcoming release.
 
   programs.home-manager.enable = true;
+
+  home.packages = with pkgs; [
+    libnotify
+    toggleNightLight
+  ];
 
   programs.zed-editor.enable = true;
   xdg.configFile."zed/settings.json".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix/dotfiles/zed/settings.json";
@@ -40,7 +60,10 @@
     };
     "org/gnome/settings-daemon/plugins/color" = {
       night-light-enabled = true;
-      night-light-temperature = pkgs.lib.gvariant.mkUint32 3500;
+      night-light-temperature = pkgs.lib.gvariant.mkUint32 1000;
+      night-light-schedule-automatic = false;
+      night-light-schedule-from = 0.0;
+      night-light-schedule-to = 24.0;
     };
     "org/gnome/settings-daemon/plugins/power" = {
       power-button-action = "interactive";
@@ -52,6 +75,7 @@
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/"
       ];
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
@@ -73,6 +97,11 @@
       binding = "<Shift><Control>Escape";
       command = "gnome-system-monitor";
       name = "System Monitor";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4" = {
+      binding = "<Super>n";
+      command = "${toggleNightLight}/bin/toggle-night-light";
+      name = "Toggle Night Light";
     };
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
