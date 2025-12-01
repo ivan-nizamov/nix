@@ -214,6 +214,18 @@
 
   # List services that you want to enable:
 
+  services.keyd = {
+    enable = true;
+    keyboards.default = {
+      ids = [ "*" ];
+      settings = {
+        main = {
+          insert = "esc";
+        };
+      };
+    };
+  };
+
   services.hardware.openrgb.enable = true;
 
   # Disable the conflicting default power manager
