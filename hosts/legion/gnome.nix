@@ -176,6 +176,10 @@ in
       cursor-size = 35;
       cursor-theme = "macOS";
       icon-theme = "Adwaita";
+      show-battery-percentage = true;
+    };
+    "org/gnome/desktop/peripherals/keyboard" = {
+      numlock-state = false;
     };
     "org/gnome/desktop/peripherals/mouse" = {
       accel-profile = "flat";
@@ -205,6 +209,7 @@ in
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/"
       ];
+      home = ["<Super>f"];
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
       binding = "<Super>e";
@@ -259,6 +264,7 @@ in
       minimize = ["<Super>h"];
       maximize = ["<Super>Up"];
       unmaximize = ["<Super>Down" "<Alt>F5"];
+      toggle-fullscreen = ["F11"];
       move-to-monitor-down = ["<Super><Shift>Down"];
       move-to-monitor-left = ["<Super><Shift>Left"];
       move-to-monitor-right = ["<Super><Shift>Right"];
@@ -274,6 +280,8 @@ in
       move-to-workspace-8 = ["<Super><Shift>8"];
       move-to-workspace-9 = ["<Super><Shift>9"];
       switch-applications = ["<Super>Tab" "<Alt>Tab"];
+      switch-input-source = [];
+      switch-input-source-backward = [];
       switch-to-workspace-1 = ["<Super>1"];
       switch-to-workspace-2 = ["<Super>2"];
       switch-to-workspace-3 = ["<Super>3"];
@@ -290,14 +298,24 @@ in
     };
     "org/gnome/shell/extensions/space-bar/appearance" = {
       application-styles = ".space-bar {\\n  -natural-hpadding: 12px;\\n}\\n\\n.space-bar-workspace-label.active {\\n  margin: 0 4px;\\n  background-color: rgba(255,255,255,0.3);\\n  color: rgba(255,255,255,1);\\n  border-color: rgba(0,0,0,0);\\n  font-weight: 700;\\n  border-radius: 4px;\\n  border-width: 0px;\\n  padding: 3px 8px;\\n}\\n\\n.space-bar-workspace-label.inactive {\\n  margin: 0 4px;\\n  background-color: rgba(0,0,0,0);\\n  color: rgba(255,255,255,1);\\n  border-color: rgba(0,0,0,0);\\n  font-weight: 700;\\n  border-radius: 4px;\\n  border-width: 0px;\\n  padding: 3px 8px;\\n}\\n\\n.space-bar-workspace-label.inactive.empty {\\n  margin: 0 4px;\\n  background-color: rgba(0,0,0,0);\n  color: rgba(255,255,255,0.5);\n  border-color: rgba(0,0,0,0);\n  font-weight: 700;\n  border-radius: 4px;\n  border-width: 0px;\n  padding: 3px 8px;\n}";
+      active-workspace-font-weight = "700";
+      empty-workspace-font-weight = "700";
+      inactive-workspace-font-weight = "700";
     };
     "org/gnome/shell/extensions/space-bar/behavior" = {
       always-show-numbers = false;
       smart-workspace-names = true;
       toggle-overview = false;
+      indicator-style = "workspaces-bar";
+      position = "left";
+      scroll-wheel = "panel";
     };
     "org/gnome/shell/extensions/space-bar/shortcuts" = {
       enable-move-to-workspace-shortcuts = false;
+      enable-activate-workspace-shortcuts = true;
+      activate-empty-key = ["<Super>j"];
+      activate-previous-key = [];
+      back-and-forth = true;
     };
     "org/gnome/tweaks" = {
       show-extensions-notice = false;
