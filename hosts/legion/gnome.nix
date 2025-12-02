@@ -274,7 +274,15 @@ in
       move-to-workspace-8 = ["<Super><Shift>8"];
       move-to-workspace-9 = ["<Super><Shift>9"];
       switch-applications = ["<Super>Tab" "<Alt>Tab"];
-      switch-to-workspace-1 = ["<Super>Home"];
+      switch-to-workspace-1 = ["<Super>1"];
+      switch-to-workspace-2 = ["<Super>2"];
+      switch-to-workspace-3 = ["<Super>3"];
+      switch-to-workspace-4 = ["<Super>4"];
+      switch-to-workspace-5 = ["<Super>5"];
+      switch-to-workspace-6 = ["<Super>6"];
+      switch-to-workspace-7 = ["<Super>7"];
+      switch-to-workspace-8 = ["<Super>8"];
+      switch-to-workspace-9 = ["<Super>9"];
     };
     "org/gnome/shell" = {
       enabled-extensions = ["space-bar@luchrioh"];
@@ -289,7 +297,7 @@ in
       toggle-overview = false;
     };
     "org/gnome/shell/extensions/space-bar/shortcuts" = {
-      enable-move-to-workspace-shortcuts = true;
+      enable-move-to-workspace-shortcuts = false;
     };
     "org/gnome/tweaks" = {
       show-extensions-notice = false;
