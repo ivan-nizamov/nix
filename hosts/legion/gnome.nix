@@ -312,7 +312,7 @@ in
     };
     "org/gnome/shell/extensions/space-bar/shortcuts" = {
       enable-move-to-workspace-shortcuts = false;
-      enable-activate-workspace-shortcuts = true;
+      enable-activate-workspace-shortcuts = false;
       activate-empty-key = ["<Super>j"];
       activate-previous-key = [];
       back-and-forth = true;
