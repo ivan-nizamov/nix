@@ -280,8 +280,8 @@ in
       move-to-workspace-8 = ["<Super><Shift>8"];
       move-to-workspace-9 = ["<Super><Shift>9"];
       switch-applications = ["<Super>Tab" "<Alt>Tab"];
-      switch-input-source = [];
-      switch-input-source-backward = [];
+      switch-input-source = ["<Super>space"];
+      switch-input-source-backward = ["<Shift><Super>space"];
       switch-to-workspace-1 = ["<Super>1"];
       switch-to-workspace-2 = ["<Super>2"];
       switch-to-workspace-3 = ["<Super>3"];
@@ -333,7 +333,7 @@ in
       type-format = "category";
     };
     "org/gnome/desktop/input-sources" = {
-      sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) ];
+      sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ru" ]) ];
       xkb-options = [];
     };
   };
