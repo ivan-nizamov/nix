@@ -173,6 +173,7 @@
       openrgb-with-all-plugins
       davinci-resolve
       ffmpeg_7-full
+      audacity
       (pkgs.writeShellScriptBin "davinci-nvidia" ''
         export __NV_PRIME_RENDER_OFFLOAD=1
         export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
