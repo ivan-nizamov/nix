@@ -321,8 +321,8 @@ in
       scroll-wheel = "panel";
     };
     "org/gnome/shell/extensions/space-bar/shortcuts" = {
-      enable-move-to-workspace-shortcuts = false;
-      enable-activate-workspace-shortcuts = false;
+      enable-move-to-workspace-shortcuts = true;
+      enable-activate-workspace-shortcuts = true;
       activate-empty-key = ["<Super>j"];
       activate-previous-key = [];
       back-and-forth = true;
@@ -331,10 +331,7 @@ in
       show-extensions-notice = false;
     };
     "org/gnome/mutter" = {
-      dynamic-workspaces = false;
-    };
-    "org/gnome/desktop/wm/preferences" = {
-      num-workspaces = 9;
+      dynamic-workspaces = true;
     };
     "org/gtk/settings/file-chooser" = {
       date-format = "regular";

@@ -21,12 +21,12 @@
 
   boot.kernelParams = [
     "amd_pstate=guided"
-    # # Fixes intermittent keyboard failures on Lenovo Legions
-    # "i8042.reset"
-    # "i8042.nomux"
-    # "i8042.nopnp"
-    # "i8042.noloop"
-    # # Disables USB autosuspend globally
+    # Fixes intermittent keyboard failures on Lenovo Legions
+    "i8042.reset"
+    "i8042.nomux"
+    "i8042.nopnp"
+    "i8042.noloop"
+    # Disables USB autosuspend globally
     # "usbcore.autosuspend=-1"
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];

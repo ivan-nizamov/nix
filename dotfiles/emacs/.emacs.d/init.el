@@ -77,6 +77,17 @@
   :init
   (savehist-mode))
 
+;; Fuzzy finding with Orderless
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+;; Enable rich annotations in the minibuffer
+(use-package marginalia
+  :init
+  (marginalia-mode))
+
 ;; Emacs minibuffer configurations.
 (use-package emacs
   :custom
@@ -216,3 +227,17 @@
 
 ;; Bind to C-c c r
 (global-set-key (kbd "C-c c r") 'my/reload-config)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(dashboard gruvbox-theme ligature marginalia orderless org-modern
+	       org-roam-ui vertico-posframe)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
