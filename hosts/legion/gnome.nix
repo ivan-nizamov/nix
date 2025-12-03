@@ -305,7 +305,6 @@ in
     "org/gnome/shell/extensions/space-bar/behavior" = {
       always-show-numbers = false;
       smart-workspace-names = true;
-      toggle-overview = false;
       indicator-style = "workspaces-bar";
       position = "left";
       scroll-wheel = "panel";
@@ -319,6 +318,12 @@ in
     };
     "org/gnome/tweaks" = {
       show-extensions-notice = false;
+    };
+    "org/gnome/mutter" = {
+      dynamic-workspaces = false;
+    };
+    "org/gnome/desktop/wm/preferences" = {
+      num-workspaces = 9;
     };
     "org/gtk/settings/file-chooser" = {
       date-format = "regular";
