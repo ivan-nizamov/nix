@@ -3,6 +3,9 @@
 ## Project Structure & Module Organization
 The root `flake.nix` defines all inputs and exports `nixosConfigurations`. Host-specific logic lives under `hosts/<name>/`; `hosts/laptop/configuration.nix` imports its paired hardware profile and should remain the single entrypoint per device. Dotfiles intended for stow live in `dotfiles/<tool>/`, mirroring their final locations (for example `dotfiles/vscode/.config/Code/User/settings.json`). Keep host assets, secrets, and machine notes inside `hosts/<name>/` to avoid leaking them into other builds.
 
+**Emacs Configuration:**
+Always edit `dotfiles/emacs/.emacs.d/init.org`. Do **not** edit `init.el` directly, as it is generated from `init.org`.
+
 ## Build, Test & Development Commands
 - `nix flake check` – lints the flake, evaluates each configuration, and prevents attribute regressions.
 - `nixos-rebuild --flake .#laptop test` – builds and activates the laptop system configuration without touching the bootloader.
