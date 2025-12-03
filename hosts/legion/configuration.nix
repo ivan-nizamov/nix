@@ -282,19 +282,19 @@
 
   hardware.nvidia = {
     modesetting.enable = true;
-    powerManagement.enable = false;
+    powerManagement.enable = true;
     powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
-    prime = {
-      offload = {
-        enable = lib.mkOverride 1010 true;
-        enableOffloadCmd = lib.mkForce config.hardware.nvidia.prime.offload.enable;
-      };
-      amdgpuBusId = "PCI:5:0:0";
-      nvidiaBusId = "PCI:1:0:0";
-    };
+    # prime = {
+    #   offload = {
+    #     enable = lib.mkOverride 1010 true;
+    #     enableOffloadCmd = lib.mkForce config.hardware.nvidia.prime.offload.enable;
+    #   };
+    #   amdgpuBusId = "PCI:5:0:0";
+    #   nvidiaBusId = "PCI:1:0:0";
+    # };
   };
 
   # This value determines the NixOS release from which the default
