@@ -280,19 +280,3 @@ Press =C-c c r= (Config Reload) to save changes, regenerate init.el, and reload.
   ;; Bind to C-c c r
   (global-set-key (kbd "C-c c r") 'my/reload-config)
 #+end_src
-
-** Auto-tangle on Save (Optional)
-Uncomment the hook below if you want `init.el` to update automatically every time you save this file.
-
-#+begin_src emacs-lisp
-  (defun my/tangle-on-save ()
-    "Run org-babel-tangle if the current buffer is the config file."
-    ;; Ensure this path matches your actual config file location!
-    ;; You might need to change 'config.org' to whatever you named this file.
-    (when (string-suffix-p ".org" (buffer-file-name)) 
-      (let ((org-confirm-babel-evaluate nil))
-        (org-babel-tangle))))
-
-  ;; Uncomment to enable auto-tangle:
-  (add-hook 'after-save-hook #'my/tangle-on-save)
-#+end_src
