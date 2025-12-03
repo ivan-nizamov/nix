@@ -336,8 +336,5 @@ in
       sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ru" ]) ];
       xkb-options = [];
     };
-    "org/gnome/mutter" = {
-      experimental-features = [ "variable-refresh-rate" ];
-    };
   };
 }
