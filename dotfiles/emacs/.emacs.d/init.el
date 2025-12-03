@@ -77,6 +77,11 @@
   :init
   (savehist-mode))
 
+;; Enable rich annotations in the minibuffer
+(use-package marginalia
+  :init
+  (marginalia-mode))
+
 ;; Emacs minibuffer configurations.
 (use-package emacs
   :custom
@@ -85,6 +90,12 @@
   (read-extended-command-predicate #'command-completion-default-include-p)
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt)))
+
+;; Fuzzy finding with Orderless
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package vertico-posframe
   :config
