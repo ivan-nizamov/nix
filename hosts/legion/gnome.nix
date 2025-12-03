@@ -303,8 +303,8 @@ in
       inactive-workspace-font-weight = "700";
     };
     "org/gnome/shell/extensions/space-bar/behavior" = {
-      always-show-numbers = false;
-      smart-workspace-names = true;
+      always-show-numbers = true;
+      smart-workspace-names = false;
       indicator-style = "workspaces-bar";
       position = "left";
       scroll-wheel = "panel";
