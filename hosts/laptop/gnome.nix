@@ -7,8 +7,8 @@ let
 
     CURRENT=$(gsettings get org.gnome.settings-daemon.plugins.color night-light-temperature)
     if [[ "$CURRENT" == *"1000"* ]]; then
-      gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3500
-      notify-send -u low "Night Light" "Warm (3500K)"
+      gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3000
+      notify-send -u low "Night Light" "Warm (3000K)"
     else
       gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 1000
       notify-send -u low "Night Light" "Red (1000K)"
@@ -151,6 +151,9 @@ in
     };
     "org/gnome/shell/extensions/space-bar/shortcuts" = {
       enable-move-to-workspace-shortcuts = true;
+      enable-activate-workspace-shortcuts = true;
+      activate-empty-key = ["<Super>j"];
+      back-and-forth = false;
     };
     "org/gnome/tweaks" = {
       show-extensions-notice = false;

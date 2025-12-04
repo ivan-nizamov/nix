@@ -7,8 +7,8 @@ let
 
     CURRENT=$(gsettings get org.gnome.settings-daemon.plugins.color night-light-temperature)
     if [[ "$CURRENT" == *"1000"* ]]; then
-      gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3500
-      notify-send -u low "Night Light" "Warm (3500K)"
+      gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3000
+      notify-send -u low "Night Light" "Warm (3000K)"
     else
       gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 1000
       notify-send -u low "Night Light" "Red (1000K)"
@@ -18,10 +18,10 @@ let
   toggleConservation = pkgs.writeShellScriptBin "toggle-conservation" ''
     # Path to conservation mode file
     MODE_FILE="/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode"
-    
+
     # Check current status
     STATUS=$(cat $MODE_FILE)
-    
+
     if [ "$STATUS" = "1" ]; then
       # Currently enabled, so disable it (charge to 100%)
       sudo lenovo-conservation 0
@@ -33,7 +33,7 @@ let
     fi
   '';
 
-  daTranscode = pkgs.writeScriptBin "da-transcode" ''
+  daTranscode = pkgs.writeScriptBin "transcode" ''
     #!${pkgs.zsh}/bin/zsh
 
     # =============================================================================
@@ -79,7 +79,7 @@ let
     # 3. Process Files
     # Zsh glob qualifier (#i) makes the glob case-insensitive
     for file in "$SOURCE_DIR"/*.(#i)(''${~EXT_GLOB}); do
-        
+
         # Skip directories just in case
         [[ -d "$file" ]] && continue
 
@@ -222,7 +222,7 @@ in
       name = "Zen Browser";
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
-      binding = "<Super>x";
+      binding = "<Super>t";
       command = "ghostty";
       name = "Ghostty Terminal";
     };
@@ -232,7 +232,7 @@ in
       name = "System Monitor";
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4" = {
-      binding = "<Super>t";
+      binding = "<Super>n";
       command = "${toggleNightLight}/bin/toggle-night-light";
       name = "Toggle Night Light";
     };
@@ -319,13 +319,13 @@ in
       indicator-style = "workspaces-bar";
       position = "left";
       scroll-wheel = "panel";
+      toggle-overview = false;
     };
     "org/gnome/shell/extensions/space-bar/shortcuts" = {
       enable-move-to-workspace-shortcuts = true;
       enable-activate-workspace-shortcuts = true;
       activate-empty-key = ["<Super>j"];
-      activate-previous-key = [];
-      back-and-forth = true;
+      back-and-forth = false;
     };
     "org/gnome/tweaks" = {
       show-extensions-notice = false;
