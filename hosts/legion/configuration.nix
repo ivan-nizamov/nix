@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, zen-browser, lib, ... }:
+{ config, pkgs, zen-browser, lib, inputs, ... }:
 
 {
   imports =
@@ -73,7 +73,7 @@
 
   # Configure keymap in X11
   services.xserver.xkb = {
-    layout = "us,ru";
+    layout = "us,ru,ro";
     variant = "";
   };
 
@@ -116,6 +116,8 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  programs.ydotool.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.iva = {
     isNormalUser = true;
@@ -123,6 +125,8 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "ydotool"
+      "input"
     ];
     shell = pkgs.zsh;
     initialPassword = "changme";

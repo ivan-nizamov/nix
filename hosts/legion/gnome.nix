@@ -158,6 +158,7 @@ in
     toggleConservation
     daTranscode
     ffmpeg-full
+    # gnomeExtensions.shaderpaper-gnome
   ];
 
   programs.zed-editor.enable = true;
@@ -291,7 +292,7 @@ in
       switch-to-workspace-9 = ["<Super>9"];
     };
     "org/gnome/shell" = {
-      enabled-extensions = ["space-bar@luchrioh"];
+      enabled-extensions = ["space-bar@luchrioh" "shaderpaper@fogyverse.in"];
       disable-user-extensions = false; # ensure it's not disabled
     };
     "org/gnome/shell/keybindings" = {
@@ -344,7 +345,7 @@ in
       type-format = "category";
     };
     "org/gnome/desktop/input-sources" = {
-      sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ru" ]) ];
+      sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ru" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ro" ]) ];
       xkb-options = [];
     };
   };
