@@ -116,8 +116,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  programs.ydotool.enable = true;
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.iva = {
     isNormalUser = true;
@@ -125,7 +123,6 @@
     extraGroups = [
       "networkmanager"
       "wheel"
-      "ydotool"
       "input"
     ];
     shell = pkgs.zsh;
@@ -220,18 +217,6 @@
   # List services that you want to enable:
 
   services.n8n.enable = true;
-
-  services.keyd = {
-    enable = true;
-    keyboards.default = {
-      ids = [ "*" ];
-      settings = {
-        main = {
-          insert = "esc";
-        };
-      };
-    };
-  };
 
   services.hardware.openrgb.enable = true;
 
