@@ -159,7 +159,20 @@ in
     daTranscode
     ffmpeg-full
     # gnomeExtensions.shaderpaper-gnome
+    gnomeExtensions.hibernate-status-button
   ];
+
+  xdg.desktopEntries."davinci-resolve" = {
+    name = "DaVinci Resolve";
+    genericName = "Video Editor";
+    comment = "DaVinci Resolve with Nvidia Offload";
+    exec = "davinci-nvidia %u";
+    terminal = false;
+    type = "Application";
+    icon = "davinci-resolve";
+    categories = [ "AudioVideo" "Video" "Graphics" ];
+    mimeType = [ "application/x-resolveproj" ];
+  };
 
   programs.zed-editor.enable = true;
   xdg.configFile."zed/settings.json".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix/dotfiles/zed/settings.json";
@@ -196,7 +209,7 @@ in
       night-light-schedule-to = 24.0;
     };
     "org/gnome/settings-daemon/plugins/power" = {
-      power-button-action = "interactive";
+      power-button-action = "nothing";
       sleep-inactive-ac-type = "nothing";
     };
     "org/gnome/settings-daemon/plugins/media-keys" = {
@@ -292,7 +305,7 @@ in
       switch-to-workspace-9 = ["<Super>9"];
     };
     "org/gnome/shell" = {
-      enabled-extensions = ["space-bar@luchrioh" "shaderpaper@fogyverse.in"];
+      enabled-extensions = ["space-bar@luchrioh" "shaderpaper@fogyverse.in" "hibernate-status@dromi"];
       disable-user-extensions = false; # ensure it's not disabled
     };
     "org/gnome/shell/keybindings" = {

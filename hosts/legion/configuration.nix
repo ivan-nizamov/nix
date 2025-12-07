@@ -30,7 +30,10 @@
     # "usbcore.autosuspend=-1"
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
-  boot.kernelModules = [ "lenovo-legion-module" "kvm" "kvm-intel" "kvm-amd" ];
+  boot.kernelModules = [ "lenovo-legion-module" "kvm" "kvm-amd" ];
+  
+  # Enable hibernation
+  boot.resumeDevice = "/dev/disk/by-uuid/1c1432f4-2514-4bc3-9ee2-8933e45b8297";
 
   networking.hostName = "legion"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -224,11 +227,19 @@
 
   services.n8n.enable = true;
 
-  # Disable the conflicting default power manager
-  services.power-profiles-daemon.enable = false;
+  # Enable the default power manager (conflicts with tlp)
+  services.power-profiles-daemon.enable = true;
+
+  # Handle power button press with hybrid-sleep
+  services.logind.powerKey = "hybrid-sleep";
+  services.logind.settings = {
+    Login = {
+      PowerKeyIgnoreInhibited = "yes";
+    };
+  };
 
   services.tlp = {
-    enable = true;
+    enable = false;
     settings = {
       # Disable autosuspend for USB input devices (keyboards/mice)
       USB_AUTOSUSPEND = 0;
