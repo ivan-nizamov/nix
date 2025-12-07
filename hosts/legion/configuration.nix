@@ -169,9 +169,7 @@
       gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
       nodejs_22
       wl-clipboard
-      blender # Added blender package
-      lenovo-legion
-      openrgb-with-all-plugins
+      blender
       davinci-resolve
       ffmpeg_7-full
       audacity
@@ -218,8 +216,6 @@
   # List services that you want to enable:
 
   services.n8n.enable = true;
-
-  services.hardware.openrgb.enable = true;
 
   # Disable the conflicting default power manager
   services.power-profiles-daemon.enable = false;
