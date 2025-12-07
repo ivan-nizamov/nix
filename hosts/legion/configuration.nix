@@ -30,7 +30,7 @@
     # "usbcore.autosuspend=-1"
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
-  boot.kernelModules = [ "lenovo-legion-module" ];
+  boot.kernelModules = [ "lenovo-legion-module" "kvm" "kvm-intel" "kvm-amd" ];
 
   networking.hostName = "legion"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -124,6 +124,9 @@
       "networkmanager"
       "wheel"
       "input"
+      "kvm"
+      "libvirtd"
+      "docker"
     ];
     shell = pkgs.zsh;
     initialPassword = "changme";
@@ -174,6 +177,9 @@
       ffmpeg_7-full
       audacity
       orca-slicer
+      virt-manager
+      qemu
+      OVMF
       (pkgs.writeShellScriptBin "davinci-nvidia" ''
         export __NV_PRIME_RENDER_OFFLOAD=1
         export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
@@ -190,6 +196,7 @@
       '')
     ]) ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.ayugram-desktop.packages.${pkgs.system}.ayugram-desktop
       ];
 
   fonts.fontDir.enable = true;
@@ -250,10 +257,24 @@
   ];
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall = {
+    allowedUDPPortRanges = [
+      { from = 59000; to = 65000; } # Helps with P2P connections (Telegram)
+    ];
+  };
+
+  # Fix for Screen Sharing on Wayland
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+    ];
+  };
+
+  # Force Wayland for Qt apps (Telegram)
+  environment.sessionVariables = {
+    QT_QPA_PLATFORM = "wayland";
+  };
 
   # Graphics / Nvidia
   hardware.graphics = {
