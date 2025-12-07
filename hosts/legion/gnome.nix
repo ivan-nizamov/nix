@@ -159,6 +159,7 @@ in
     daTranscode
     ffmpeg-full
     # gnomeExtensions.shaderpaper-gnome
+    gnomeExtensions.hibernate-status-button
   ];
 
   xdg.desktopEntries."davinci-resolve" = {
@@ -219,7 +220,6 @@ in
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/"
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/"
       ];
       home = ["<Super>f"];
     };
@@ -252,11 +252,6 @@ in
       binding = "<Super>c";
       command = "${toggleConservation}/bin/toggle-conservation";
       name = "Toggle Battery Conservation";
-    };
-    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6" = {
-      binding = "XF86Tools";
-      command = "systemctl hybrid-sleep";
-      name = "Hybrid Sleep";
     };
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
@@ -310,7 +305,7 @@ in
       switch-to-workspace-9 = ["<Super>9"];
     };
     "org/gnome/shell" = {
-      enabled-extensions = ["space-bar@luchrioh" "shaderpaper@fogyverse.in"];
+      enabled-extensions = ["space-bar@luchrioh" "shaderpaper@fogyverse.in" "hibernate-status@dromi"];
       disable-user-extensions = false; # ensure it's not disabled
     };
     "org/gnome/shell/keybindings" = {
