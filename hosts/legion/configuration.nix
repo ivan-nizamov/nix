@@ -163,7 +163,6 @@
       fd
       gparted
       opentabletdriver
-      libsForQt5.xp-pen-deco-01-v2-driver
       ghostty
       nix-search-cli
       nixd
@@ -296,6 +295,9 @@
       rocmPackages.rocminfo
     ];
   };
+
+  hardware.opentabletdriver.enable = true;
+
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
