@@ -136,10 +136,16 @@ let
 
     echo "All operations complete."
   '';
+
+  xpPenLauncher = pkgs.writeShellScriptBin "xp-pen-launcher" ''
+    # Launcher for XP-Pen driver with Root privileges and X11/Wayland compatibility
+    pkexec env QT_QPA_PLATFORM=xcb DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xp-pen-deco-01-v2-driver
+  '';
 in
 {
   home.username = "iva";
   home.homeDirectory = "/home/iva";
+
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -157,6 +163,7 @@ in
     toggleNightLight
     toggleConservation
     daTranscode
+    xpPenLauncher
     ffmpeg-full
     # gnomeExtensions.shaderpaper-gnome
     gnomeExtensions.hibernate-status-button
@@ -178,7 +185,7 @@ in
     name = "XP-Pen Tablet Driver";
     genericName = "Tablet Driver";
     comment = "Proprietary driver for XP-Pen Deco 01 V2";
-    exec = "pkexec env QT_QPA_PLATFORM=xcb DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xp-pen-deco-01-v2-driver";
+    exec = "${xpPenLauncher}/bin/xp-pen-launcher";
     terminal = false;
     type = "Application";
     icon = "input-tablet";
