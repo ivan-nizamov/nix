@@ -174,6 +174,17 @@ in
     mimeType = [ "application/x-resolveproj" ];
   };
 
+  xdg.desktopEntries."xp-pen-driver" = {
+    name = "XP-Pen Tablet Driver";
+    genericName = "Tablet Driver";
+    comment = "Proprietary driver for XP-Pen Deco 01 V2";
+    exec = "pkexec env QT_QPA_PLATFORM=xcb DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xp-pen-deco-01-v2-driver";
+    terminal = false;
+    type = "Application";
+    icon = "input-tablet";
+    categories = [ "Settings" "HardwareSettings" ];
+  };
+
   programs.zed-editor.enable = true;
   xdg.configFile."zed/settings.json".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix/dotfiles/zed/settings.json";
   xdg.configFile."zed/settings.json".force = true;
