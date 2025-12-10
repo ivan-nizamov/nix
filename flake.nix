@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     zen-browser = {
@@ -22,7 +23,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, zen-browser, nixos-hardware, winapps, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, zen-browser, nixos-hardware, winapps, ... }@inputs:
     let
       system = "x86_64-linux";
       # Renamed 'hosts' to 'hostConfigs' to avoid confusion with the mapping in nixosConfigurations
@@ -41,7 +42,7 @@
       mkHost = hostName: config: # Takes hostName and the config object { nixos, home }
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit winapps; }; # Used `inputs` as suggested in prompt for flexibility
+          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit winapps; inherit nixpkgs-stable; }; # Used `inputs` as suggested in prompt for flexibility
           modules = [
             config.nixos
             home-manager.nixosModules.home-manager

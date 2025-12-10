@@ -28,12 +28,26 @@
     "i8042.noloop"
     # Disables USB autosuspend globally
     # "usbcore.autosuspend=-1"
+    "resume_offset=119848960"
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
   boot.kernelModules = [ "lenovo-legion-module" "kvm" "kvm-amd" ];
   
   # Enable hibernation
-  boot.resumeDevice = "/dev/disk/by-uuid/1c1432f4-2514-4bc3-9ee2-8933e45b8297";
+  boot.resumeDevice = "/dev/disk/by-uuid/88959556-19f5-4847-96d7-63e2da596458";
+
+  # Define a swap file for hibernation and general use
+  swapDevices = [ {
+    device = "/swapfile";
+    size = 16 * 1024; # 16GB (adjust based on RAM)
+  } ];
+  
+  # Prevent swapping unless absolutely necessary (keeps swap available for hybrid sleep)
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 1;
+  };
+
+
 
   networking.hostName = "legion"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -140,7 +154,8 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages =
+  environment.systemPackages = 
+    # --- UNSTABLE PACKAGES (Default) ---
     (with pkgs; [
       git
       gh
@@ -196,10 +211,18 @@
           echo 0 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode
         fi
       '')
-    ]) ++ [
+    ]) 
+    ++ 
+    # --- STABLE PACKAGES (NixOS 24.11) ---
+    # Use this for packages that fail to build on unstable (e.g. huge Qt apps)
+    (with inputs.nixpkgs-stable.legacyPackages.${pkgs.system}; [
+    ])
+    ++ 
+    # --- FLAKE INPUTS ---
+    [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.ayugram-desktop.packages.${pkgs.system}.ayugram-desktop
-      ];
+    ];
 
   fonts.fontDir.enable = true;
 
