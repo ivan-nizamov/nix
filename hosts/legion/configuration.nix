@@ -249,8 +249,8 @@
 
   services.n8n.enable = true;
 
-  # Enable the default power manager (conflicts with tlp)
-  services.power-profiles-daemon.enable = true;
+  # Disable the conflicting default power manager
+  services.power-profiles-daemon.enable = false;
 
   # Handle power button press with hybrid-sleep
   services.logind.powerKey = "hybrid-sleep";
@@ -261,7 +261,7 @@
   };
 
   services.tlp = {
-    enable = false;
+    enable = true;
     settings = {
       # Disable autosuspend for USB input devices (keyboards/mice)
       USB_AUTOSUSPEND = 0;
@@ -323,7 +323,7 @@
 
   hardware.nvidia = {
     modesetting.enable = true;
-    powerManagement.enable = false;
+    powerManagement.enable = true;
     powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;

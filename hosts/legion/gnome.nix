@@ -169,18 +169,6 @@ in
     gnomeExtensions.hibernate-status-button
   ];
 
-  xdg.desktopEntries."davinci-resolve" = {
-    name = "DaVinci Resolve";
-    genericName = "Video Editor";
-    comment = "DaVinci Resolve with Nvidia Offload";
-    exec = "davinci-nvidia %u";
-    terminal = false;
-    type = "Application";
-    icon = "davinci-resolve";
-    categories = [ "AudioVideo" "Video" "Graphics" ];
-    mimeType = [ "application/x-resolveproj" ];
-  };
-
   xdg.desktopEntries."xp-pen-driver" = {
     name = "XP-Pen Tablet Driver";
     genericName = "Tablet Driver";
