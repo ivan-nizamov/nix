@@ -51,7 +51,24 @@
               home-manager.useUserPackages = true;
               home-manager.users.iva = import config.home;
             }
-          ] ++ (config.modules or []) ++ [ # Add winapps module
+          ] ++ (config.modules or []) ++ [
+            ({ pkgs, inputs, ... }: {
+              nixpkgs.overlays = [
+                (final: prev: {
+                  n8n = (import inputs.nixpkgs-stable {
+                    system = prev.system;
+                    config.allowUnfree = true;
+                  }).n8n;
+                })
+              ];
+
+              environment.systemPackages = [
+                pkgs.code-cursor
+              ];
+
+              environment.sessionVariables.NIXOS_OZONE_WL = "1";
+            })
+            # Add winapps module
             ({ pkgs, system ? pkgs.system, ... }: {
               nix.settings = {
                 substituters = [ "https://winapps.cachix.org/" ];
