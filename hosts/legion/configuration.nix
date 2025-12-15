@@ -28,26 +28,15 @@
     "i8042.noloop"
     # Disables USB autosuspend globally
     # "usbcore.autosuspend=-1"
-    "resume_offset=119848960"
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
   boot.kernelModules = [ "lenovo-legion-module" "kvm" "kvm-amd" ];
-  
-  # Enable hibernation
-  boot.resumeDevice = "/dev/disk/by-uuid/88959556-19f5-4847-96d7-63e2da596458";
+  boot.kernel.sysctl = { "vm.swappiness" = 1; };
 
-  # Define a swap file for hibernation and general use
   swapDevices = [ {
     device = "/swapfile";
-    size = 16 * 1024; # 16GB (adjust based on RAM)
+    size = 16 * 1024;
   } ];
-  
-  # Prevent swapping unless absolutely necessary (keeps swap available for hybrid sleep)
-  boot.kernel.sysctl = {
-    "vm.swappiness" = 1;
-  };
-
-
 
   networking.hostName = "legion"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
