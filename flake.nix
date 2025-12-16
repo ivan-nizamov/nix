@@ -36,22 +36,23 @@
           nixos = ./hosts/legion/configuration.nix;
           home = ./hosts/legion/gnome.nix;
           modules = [ nixos-hardware.nixosModules.lenovo-legion-15ach6h ];
+          pkgsInput = nixpkgs-stable;
         };
       };
 
-      mkHost = hostName: config: # Takes hostName and the config object { nixos, home }
-        nixpkgs.lib.nixosSystem {
+      mkHost = hostName: { nixos, home, modules ? [], pkgsInput ? nixpkgs }:
+        pkgsInput.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit winapps; inherit nixpkgs-stable; }; # Used `inputs` as suggested in prompt for flexibility
+          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit winapps; inherit nixpkgs-stable; };
           modules = [
-            config.nixos
+            nixos
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.iva = import config.home;
+              home-manager.users.iva = import home;
             }
-          ] ++ (config.modules or []) ++ [
+          ] ++ modules ++ [
             ({ pkgs, inputs, ... }: {
               nixpkgs.overlays = [
                 (final: prev: {
