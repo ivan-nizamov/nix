@@ -162,7 +162,6 @@
       fastfetch
       obs-studio
       bat
-      easyeffects
       ripgrep
       fd
       gparted
@@ -206,6 +205,7 @@
     # --- STABLE PACKAGES (NixOS 24.11) ---
     # Use this for packages that fail to build on unstable (e.g. huge Qt apps)
     (with inputs.nixpkgs-stable.legacyPackages.${pkgs.system}; [
+      easyeffects
     ])
     ++ 
     # --- FLAKE INPUTS ---
