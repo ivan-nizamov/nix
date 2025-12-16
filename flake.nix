@@ -36,7 +36,6 @@
           nixos = ./hosts/legion/configuration.nix;
           home = ./hosts/legion/gnome.nix;
           modules = [ nixos-hardware.nixosModules.lenovo-legion-15ach6h ];
-          pkgsInput = nixpkgs-stable;
         };
       };
 
@@ -50,6 +49,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+              home-manager.extraSpecialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit winapps; inherit nixpkgs-stable; };
               home-manager.users.iva = import home;
             }
           ] ++ modules ++ [

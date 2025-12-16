@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, nixpkgs-stable, ... }:
 
 let
   toggleNightLight = pkgs.writeShellScriptBin "toggle-night-light" ''
@@ -325,6 +325,7 @@ in
     "org/gnome/shell" = {
       enabled-extensions = ["space-bar@luchrioh" "shaderpaper@fogyverse.in" "hibernate-status@dromi"];
       disable-user-extensions = false; # ensure it's not disabled
+      disable-extension-version-validation = true;
     };
     "org/gnome/shell/keybindings" = {
       switch-to-application-1 = [];

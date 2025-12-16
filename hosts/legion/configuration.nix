@@ -175,7 +175,6 @@
       # mpv
       apple-cursor
       gnome-tweaks
-      gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
       nodejs_22
       wl-clipboard
       blender
@@ -201,6 +200,7 @@
           echo 0 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode
         fi
       '')
+      gnomeExtensions.space-bar
     ]) 
     ++ 
     # --- STABLE PACKAGES (NixOS 24.11) ---
