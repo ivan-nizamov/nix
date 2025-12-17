@@ -132,7 +132,6 @@
       "input"
       "kvm"
       "libvirtd"
-      "docker"
     ];
     shell = pkgs.zsh;
     initialPassword = "changme";

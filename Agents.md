@@ -24,11 +24,11 @@ This is a NixOS flake-based configuration repository managing multiple hosts (la
 ### `flake.nix`
 
 The root flake file that:
-- Defines all flake inputs (nixpkgs, home-manager, zen-browser, nixos-hardware, winapps, ayugram-desktop)
+- Defines all flake inputs (nixpkgs, home-manager, zen-browser, nixos-hardware, ayugram-desktop)
 - Maps host configurations via `hostConfigs` attribute set
 - Uses `mkHost` function to build NixOS configurations for each host
 - Sets up Home Manager integration for user `iva`
-- Configures global overlays and system packages (e.g., code-cursor, winapps)
+- Configures global overlays and system packages (e.g., code-cursor)
 - Exports `nixosConfigurations` for each host
 
 **Key Structure:**
@@ -160,14 +160,12 @@ stow -t $HOME */              # Stow all packages
 - `home-manager`: User environment management
 - `zen-browser`: Zen Browser flake
 - `nixos-hardware`: Hardware-specific modules (Lenovo Legion)
-- `winapps`: Windows app integration
 - `ayugram-desktop`: Ayugram desktop client
 
 ### Global System Packages
 
 Configured in `flake.nix`:
 - `code-cursor`: Cursor editor
-- `winapps`: Windows app launcher
 
 ### Common Host Packages
 
@@ -188,7 +186,7 @@ Additional packages for the desktop:
 
 - **Username**: `iva`
 - **Shell**: zsh
-- **Groups**: networkmanager, wheel (both hosts); additional: input, kvm, libvirtd, docker (legion)
+- **Groups**: networkmanager, wheel (both hosts); additional: input, kvm, libvirtd (legion)
 - **Home Directory**: `/home/iva`
 
 ## Important Notes

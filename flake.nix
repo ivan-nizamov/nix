@@ -12,10 +12,6 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    winapps = {
-      url = "github:winapps-org/winapps";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     ayugram-desktop = {
       url = "github:ndfined-crp/ayugram-desktop";
@@ -23,7 +19,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, zen-browser, nixos-hardware, winapps, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, zen-browser, nixos-hardware, ... }@inputs:
     let
       system = "x86_64-linux";
       # Renamed 'hosts' to 'hostConfigs' to avoid confusion with the mapping in nixosConfigurations
@@ -42,14 +38,14 @@
       mkHost = hostName: { nixos, home, modules ? [], pkgsInput ? nixpkgs }:
         pkgsInput.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit winapps; inherit nixpkgs-stable; };
+          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit nixpkgs-stable; };
           modules = [
             nixos
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit winapps; inherit nixpkgs-stable; };
+              home-manager.extraSpecialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit nixpkgs-stable; };
               home-manager.users.iva = import home;
             }
           ] ++ modules ++ [
@@ -69,19 +65,7 @@
 
               environment.sessionVariables.NIXOS_OZONE_WL = "1";
             })
-            # Add winapps module
-            ({ pkgs, system ? pkgs.system, ... }: {
-              nix.settings = {
-                substituters = [ "https://winapps.cachix.org/" ];
-                trusted-public-keys =
-                  [ "winapps.cachix.org-1:HI82jWrXZsQRar/PChgIx1unmuEsiQMQq+zt05CD36g=" ];
-              };
 
-              environment.systemPackages = [
-                winapps.packages."${system}".winapps
-                winapps.packages."${system}".winapps-launcher # optional tray launcher
-              ];
-            })
           ];
         };
     in {
