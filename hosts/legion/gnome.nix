@@ -31,6 +31,37 @@ let
     fi
   '';
 
+  nerdDictationPkg = pkgs.stdenv.mkDerivation {
+    pname = "nerd-dictation";
+    version = "master";
+    src = pkgs.fetchFromGitHub {
+      owner = "ideasman42";
+      repo = "nerd-dictation";
+      rev = "master";
+      sha256 = "1sx3s3nzp085a9qx1fj0k5abcy000i758xbapp6wd4vgaap8fdn6";
+    };
+    buildInputs = [ pkgs.python3 pkgs.python3Packages.vosk ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    installPhase = ''
+      mkdir -p $out/bin
+      cp nerd-dictation $out/bin/nerd-dictation
+      chmod +x $out/bin/nerd-dictation
+      wrapProgram $out/bin/nerd-dictation \
+        --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.xdotool pkgs.pulseaudio ]} \
+        --prefix PYTHONPATH : "${pkgs.python3Packages.vosk}/${pkgs.python3.sitePackages}"
+    '';
+  };
+
+  toggleNerdDictation = pkgs.writeShellScriptBin "toggle-nerd-dictation" ''
+    if pgrep -f "nerd-dictation begin"; then
+      ${nerdDictationPkg}/bin/nerd-dictation end
+      notify-send "Nerd Dictation" "Stopped"
+    else
+      ${nerdDictationPkg}/bin/nerd-dictation begin &
+      notify-send "Nerd Dictation" "Started"
+    fi
+  '';
+
   daTranscode = pkgs.writeScriptBin "transcode" ''
     #!${pkgs.zsh}/bin/zsh
 
@@ -165,6 +196,8 @@ in
     daTranscode
     xpPenLauncher
     ffmpeg-full
+    nerdDictationPkg
+    toggleNerdDictation
     # gnomeExtensions.shaderpaper-gnome
     gnomeExtensions.hibernate-status-button
   ];
@@ -238,6 +271,7 @@ in
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/"
       ];
       home = ["<Super>f"];
     };
@@ -270,6 +304,11 @@ in
       binding = "<Super>c";
       command = "${toggleConservation}/bin/toggle-conservation";
       name = "Toggle Battery Conservation";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6" = {
+      binding = "<Super>space";
+      command = "${toggleNerdDictation}/bin/toggle-nerd-dictation";
+      name = "Toggle Nerd Dictation";
     };
     "org/gnome/desktop/background" = {
       color-shading-type = "solid";
@@ -310,7 +349,7 @@ in
       move-to-workspace-8 = ["<Super><Shift>8"];
       move-to-workspace-9 = ["<Super><Shift>9"];
       switch-applications = ["<Super>Tab" "<Alt>Tab"];
-      switch-input-source = ["<Super>space"];
+      switch-input-source = [];
       switch-input-source-backward = ["<Shift><Super>space"];
       switch-to-workspace-1 = ["<Super>1"];
       switch-to-workspace-2 = ["<Super>2"];
@@ -378,7 +417,7 @@ in
     };
     "org/gnome/desktop/input-sources" = {
       sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ru" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ro+std" ]) ];
-      xkb-options = [];
+      xkb-options = ["grp:alt_shift_toggle"];
     };
   };
 }
