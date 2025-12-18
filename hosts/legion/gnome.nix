@@ -78,8 +78,9 @@ let
       exit 1
     fi
 
-    if pgrep -f "nerd-dictation begin"; then
+    if pgrep -f "nerd-dictation.*begin"; then
       ${nerdDictationPkg}/bin/nerd-dictation end
+      pkill -f "nerd-dictation.*begin"
       gsettings set org.gnome.desktop.interface accent-color 'red'
       notify-send "Nerd Dictation" "Stopped"
     else
