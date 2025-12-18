@@ -31,6 +31,28 @@ let
     fi
   '';
 
+  vosk = pkgs.python3Packages.buildPythonPackage rec {
+    pname = "vosk";
+    version = "0.3.45";
+    pyproject = true;
+    src = pkgs.fetchFromGitHub {
+      owner = "alphacep";
+      repo = "vosk-api";
+      rev = "v${version}";
+      sha256 = "sha256-sa+rUJP0JvZo7YOFrWDEAuySlQJstOBnldz/LMiu/pk=";
+    };
+    sourceRoot = "source/python";
+    nativeBuildInputs = [ pkgs.python3Packages.setuptools ];
+    propagatedBuildInputs = with pkgs.python3Packages; [
+      requests
+      cffi
+      tqdm
+      websockets
+      srt
+    ];
+    doCheck = false;
+  };
+
   nerdDictationPkg = pkgs.stdenv.mkDerivation {
     pname = "nerd-dictation";
     version = "master";
@@ -40,7 +62,7 @@ let
       rev = "master";
       sha256 = "1sx3s3nzp085a9qx1fj0k5abcy000i758xbapp6wd4vgaap8fdn6";
     };
-    buildInputs = [ pkgs.python3 pkgs.python3Packages.vosk ];
+    buildInputs = [ pkgs.python3 vosk ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     installPhase = ''
       mkdir -p $out/bin
@@ -48,7 +70,7 @@ let
       chmod +x $out/bin/nerd-dictation
       wrapProgram $out/bin/nerd-dictation \
         --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.xdotool pkgs.pulseaudio ]} \
-        --prefix PYTHONPATH : "${pkgs.python3Packages.vosk}/${pkgs.python3.sitePackages}"
+        --prefix PYTHONPATH : "${pkgs.python3Packages.makePythonPath [ vosk ]}"
     '';
   };
 
@@ -61,9 +83,11 @@ let
 
     if pgrep -f "nerd-dictation begin"; then
       ${nerdDictationPkg}/bin/nerd-dictation end
+      gsettings set org.gnome.desktop.interface accent-color 'red'
       notify-send "Nerd Dictation" "Stopped"
     else
       ${nerdDictationPkg}/bin/nerd-dictation begin &
+      gsettings set org.gnome.desktop.interface accent-color 'green'
       notify-send "Nerd Dictation" "Started"
     fi
   '';
