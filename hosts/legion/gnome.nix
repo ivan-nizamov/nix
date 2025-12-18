@@ -34,15 +34,12 @@ let
   vosk = pkgs.python3Packages.buildPythonPackage rec {
     pname = "vosk";
     version = "0.3.45";
-    pyproject = true;
-    src = pkgs.fetchFromGitHub {
-      owner = "alphacep";
-      repo = "vosk-api";
-      rev = "v${version}";
-      sha256 = "sha256-sa+rUJP0JvZo7YOFrWDEAuySlQJstOBnldz/LMiu/pk=";
+    format = "wheel";
+    src = pkgs.fetchurl {
+      url = "https://files.pythonhosted.org/packages/fc/ca/83398cfcd557360a3d7b2d732aee1c5f6999f68618d1645f38d53e14c9ff/vosk-0.3.45-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl";
+      sha256 = "17v14rfy5qdcfcvc4j5zlk1hlin5iknnhdaliwkxg6a37h4jbq15";
     };
-    sourceRoot = "source/python";
-    nativeBuildInputs = [ pkgs.python3Packages.setuptools ];
+    nativeBuildInputs = [ pkgs.autoPatchelfHook ];
     propagatedBuildInputs = with pkgs.python3Packages; [
       requests
       cffi
