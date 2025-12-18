@@ -53,6 +53,12 @@ let
   };
 
   toggleNerdDictation = pkgs.writeShellScriptBin "toggle-nerd-dictation" ''
+    MODEL_DIR="$HOME/.config/nerd-dictation/model"
+    if [ ! -d "$MODEL_DIR" ]; then
+      notify-send -u critical "Nerd Dictation" "Model not found at $MODEL_DIR.\nPlease download a VOSK model."
+      exit 1
+    fi
+
     if pgrep -f "nerd-dictation begin"; then
       ${nerdDictationPkg}/bin/nerd-dictation end
       notify-send "Nerd Dictation" "Stopped"
@@ -417,7 +423,7 @@ in
     };
     "org/gnome/desktop/input-sources" = {
       sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ru" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ro+std" ]) ];
-      xkb-options = ["grp:alt_shift_toggle"];
+      xkb-options = ["grp:lalt_lshift_toggle"];
     };
   };
 }
