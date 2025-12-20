@@ -82,11 +82,9 @@ let
       ${nerdDictationPkg}/bin/nerd-dictation end
       pkill -f "nerd-dictation.*begin"
       gsettings set org.gnome.desktop.interface accent-color 'red'
-      notify-send "Nerd Dictation" "Stopped"
     else
       ${nerdDictationPkg}/bin/nerd-dictation begin &
       gsettings set org.gnome.desktop.interface accent-color 'green'
-      notify-send "Nerd Dictation" "Started"
     fi
   '';
 
@@ -377,7 +375,7 @@ in
       move-to-workspace-8 = ["<Super><Shift>8"];
       move-to-workspace-9 = ["<Super><Shift>9"];
       switch-applications = ["<Super>Tab" "<Alt>Tab"];
-      switch-input-source = ["<Alt>Shift_L" "<Shift>Alt_L"];
+      switch-input-source = ["<Super>slash"];
       switch-input-source-backward = ["<Shift><Super>space"];
       switch-to-workspace-1 = ["<Super>1"];
       switch-to-workspace-2 = ["<Super>2"];

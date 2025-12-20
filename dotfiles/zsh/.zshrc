@@ -10,6 +10,7 @@ eval "$(zoxide init zsh)"
 # convenient NixOS rebuild aliases (select by hostname, works anywhere)
 alias gad='git add .'
 alias gcm='git commit -m'
+alias glog='git log --all --decorate --oneline --graph'
 alias f='fuck'  # pay-respects
 alias nrs='sudo nixos-rebuild --flake .#$(hostname -s) switch'
 alias nrt='sudo nixos-rebuild --flake .#$(hostname -s) test'
