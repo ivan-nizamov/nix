@@ -200,6 +200,7 @@
         fi
       '')
       gnomeExtensions.space-bar
+      qbittorrent
     ]) 
     ++ 
     # --- STABLE PACKAGES (NixOS 24.11) ---
