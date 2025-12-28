@@ -311,28 +311,31 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
-    powerManagement.finegrained = false;
+    powerManagement.finegrained = true;
     open = false;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.production;
     prime = {
-      sync.enable = true;
-      offload.enable = false;
+      sync.enable = false;
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
       amdgpuBusId = "PCI:5:0:0";
       nvidiaBusId = "PCI:1:0:0";
     };
   };
 
   specialisation = {
-    efficiency.configuration = {
-      system.nixos.tags = [ "efficiency" ];
+    performance.configuration = {
+      system.nixos.tags = [ "performance" ];
       hardware.nvidia = {
-        powerManagement.finegrained = true;
+        powerManagement.finegrained = false;
         prime = {
-          sync.enable = false;
+          sync.enable = true;
           offload = {
-            enable = true;
-            enableOffloadCmd = true;
+            enable = false;
+            enableOffloadCmd = false;
           };
         };
       };
