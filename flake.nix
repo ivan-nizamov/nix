@@ -31,7 +31,7 @@
         legion = {
           nixos = ./hosts/legion/configuration.nix;
           home = ./hosts/legion/gnome.nix;
-          modules = [ nixos-hardware.nixosModules.lenovo-legion-15ach6h ];
+          modules = [ ];
         };
       };
 

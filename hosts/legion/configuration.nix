@@ -244,7 +244,7 @@
   services.power-profiles-daemon.enable = false;
 
   # Handle power button press with hybrid-sleep
-  services.logind.powerKey = "hybrid-sleep";
+  services.logind.settings.Login.HandlePowerKey = "hybrid-sleep";
 
   services.tlp = {
     enable = true;
