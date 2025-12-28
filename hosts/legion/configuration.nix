@@ -330,12 +330,12 @@
     performance.configuration = {
       system.nixos.tags = [ "performance" ];
       hardware.nvidia = {
-        powerManagement.finegrained = false;
+        powerManagement.finegrained = lib.mkForce false;
         prime = {
-          sync.enable = true;
+          sync.enable = lib.mkForce true;
           offload = {
-            enable = false;
-            enableOffloadCmd = false;
+            enable = lib.mkForce false;
+            enableOffloadCmd = lib.mkForce false;
           };
         };
       };
