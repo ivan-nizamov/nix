@@ -245,11 +245,6 @@
 
   # Handle power button press with hybrid-sleep
   services.logind.powerKey = "hybrid-sleep";
-  services.logind.settings = {
-    Login = {
-      PowerKeyIgnoreInhibited = "yes";
-    };
-  };
 
   services.tlp = {
     enable = true;
@@ -303,6 +298,7 @@
   # Graphics / Nvidia
   hardware.graphics = {
     enable = true;
+    enable32Bit = true;
     # Required for DaVinci to see OpenCL/CUDA
     extraPackages = with pkgs; [
       rocmPackages.clr
@@ -314,16 +310,14 @@
 
   hardware.nvidia = {
     modesetting.enable = true;
-    powerManagement.enable = false;
+    powerManagement.enable = true;
     powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.production;
     prime = {
-      offload = {
-        enable = lib.mkOverride 1010 true;
-        enableOffloadCmd = lib.mkForce config.hardware.nvidia.prime.offload.enable;
-      };
+      sync.enable = true;
+      offload.enable = false;
       amdgpuBusId = "PCI:5:0:0";
       nvidiaBusId = "PCI:1:0:0";
     };
