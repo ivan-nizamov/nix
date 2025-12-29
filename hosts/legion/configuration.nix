@@ -28,8 +28,14 @@
     "i8042.noloop"
     # Disables USB autosuspend globally
     # "usbcore.autosuspend=-1"
+    # Fix screen flickering/blackouts on AMD iGPUs (Scatter/Gather display issue)
+    "amdgpu.sg_display=0"
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
+  
+  # Enable firmware and microcode updates
+  hardware.enableRedistributableFirmware = true;
+
   boot.kernelModules = [ "lenovo-legion-module" "kvm" "kvm-amd" ];
   boot.kernel.sysctl = { "vm.swappiness" = 1; };
 
