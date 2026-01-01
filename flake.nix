@@ -17,9 +17,14 @@
       url = "github:ndfined-crp/ayugram-desktop";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    yandex-browser = {
+      url = "github:Teu5us/nix-yandex-browser";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, zen-browser, nixos-hardware, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, zen-browser, nixos-hardware, yandex-browser, ... }@inputs:
     let
       system = "x86_64-linux";
       # Renamed 'hosts' to 'hostConfigs' to avoid confusion with the mapping in nixosConfigurations
@@ -38,14 +43,14 @@
       mkHost = hostName: { nixos, home, modules ? [], pkgsInput ? nixpkgs }:
         pkgsInput.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit nixpkgs-stable; };
+          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit nixpkgs-stable; inherit yandex-browser; };
           modules = [
             nixos
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit nixpkgs-stable; };
+              home-manager.extraSpecialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit nixpkgs-stable; inherit yandex-browser; };
               home-manager.users.iva = import home;
             }
           ] ++ modules ++ [

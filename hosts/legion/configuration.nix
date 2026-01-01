@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, zen-browser, lib, inputs, ... }:
+{ config, pkgs, zen-browser, lib, inputs, yandex-browser, ... }:
 
 {
   imports =
@@ -214,6 +214,7 @@
     [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.ayugram-desktop.packages.${pkgs.system}.ayugram-desktop
+      yandex-browser.packages.${pkgs.system}.yandex-browser-stable
     ];
 
   fonts.fontDir.enable = true;
