@@ -84,7 +84,7 @@
   };
 
   # Virtualization: libvirtd for KVM/QEMU
-  virtualisation.libvirtd.enable = true;
+  # virtualisation.libvirtd.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;

@@ -179,14 +179,13 @@ Both hosts share many packages:
 
 Additional packages for the desktop:
 - Media: blender, davinci-resolve, ffmpeg, audacity, orca-slicer
-- Virtualization: virt-manager, qemu, OVMF
 - Messaging: ayugram-desktop
 
 ## User Account
 
 - **Username**: `iva`
 - **Shell**: zsh
-- **Groups**: networkmanager, wheel (both hosts); additional: input, kvm, libvirtd (legion)
+- **Groups**: networkmanager, wheel (both hosts); additional: input (legion)
 - **Home Directory**: `/home/iva`
 
 ## Important Notes

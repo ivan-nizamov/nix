@@ -123,7 +123,7 @@
   };
 
   # Virtualization: libvirtd for KVM/QEMU
-  virtualisation.libvirtd.enable = true;
+  # virtualisation.libvirtd.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -136,8 +136,6 @@
       "networkmanager"
       "wheel"
       "input"
-      "kvm"
-      "libvirtd"
     ];
     shell = pkgs.zsh;
     initialPassword = "changme";
@@ -186,9 +184,6 @@
       ffmpeg_7-full
       audacity
       orca-slicer
-      virt-manager
-      qemu
-      OVMF
       vcv-rack
       (pkgs.writeShellScriptBin "davinci-nvidia" ''
         export __NV_PRIME_RENDER_OFFLOAD=1
