@@ -7,6 +7,8 @@ let
 
     CURRENT=$(gsettings get org.gnome.settings-daemon.plugins.color night-light-temperature)
     if [[ "$CURRENT" == *"1000"* ]]; then
+      gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 2000
+    elif [[ "$CURRENT" == *"2000"* ]]; then
       gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3000
     else
       gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 1000
