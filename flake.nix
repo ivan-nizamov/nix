@@ -19,7 +19,8 @@
     };
 
     yandex-browser = {
-      url = "github:Teu5us/nix-yandex-browser";
+      url = "github:miuirussia/yandex-browser.nix";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
   };
 
