@@ -202,19 +202,21 @@
       '')
       gnomeExtensions.space-bar
       qbittorrent
+      clock-rs
     ]) 
     ++ 
     # --- STABLE PACKAGES (NixOS 24.11) ---
     # Use this for packages that fail to build on unstable (e.g. huge Qt apps)
-    (with inputs.nixpkgs-stable.legacyPackages.${pkgs.system}; [
+    (with inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}; [
       easyeffects
     ])
     ++ 
     # --- FLAKE INPUTS ---
     [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-      inputs.ayugram-desktop.packages.${pkgs.system}.ayugram-desktop
-      yandex-browser.packages.${pkgs.system}.yandex-browser-stable
+      inputs.ayugram-desktop.packages.${pkgs.stdenv.hostPlatform.system}.ayugram-desktop
+      yandex-browser.packages.${pkgs.stdenv.hostPlatform.system}.yandex-browser-stable
+      inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
   fonts.fontDir.enable = true;

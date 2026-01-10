@@ -22,9 +22,14 @@
       url = "github:miuirussia/yandex-browser.nix";
       inputs.nixpkgs.follows = "nixpkgs-stable";
     };
+
+    opencode = {
+      url = "github:anomalyco/opencode";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, zen-browser, nixos-hardware, yandex-browser, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, zen-browser, nixos-hardware, yandex-browser, opencode, ... }@inputs:
     let
       system = "x86_64-linux";
       # Renamed 'hosts' to 'hostConfigs' to avoid confusion with the mapping in nixosConfigurations
@@ -58,7 +63,7 @@
               nixpkgs.overlays = [
                 (final: prev: {
                   n8n = (import inputs.nixpkgs-stable {
-                    system = prev.system;
+                    system = prev.stdenv.hostPlatform.system;
                     config.allowUnfree = true;
                   }).n8n;
                 })

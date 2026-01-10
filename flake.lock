@@ -138,6 +138,26 @@
         "type": "github"
       }
     },
+    "opencode": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1767956836,
+        "narHash": "sha256-NXQFd6iOaiNSb1D3MKXl7Q3lTMV8reANi7MrQnq9xm0=",
+        "owner": "anomalyco",
+        "repo": "opencode",
+        "rev": "559013e1242fa3681f8362a2f0450c3095eb3513",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "repo": "opencode",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "ayugram-desktop": "ayugram-desktop",
@@ -145,6 +165,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
+        "opencode": "opencode",
         "yandex-browser": "yandex-browser",
         "zen-browser": "zen-browser"
       }
