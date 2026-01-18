@@ -1,6 +1,9 @@
-{ config, pkgs, nixpkgs-stable, ... }:
-
-let
+{
+  config,
+  pkgs,
+  nixpkgs-stable,
+  ...
+}: let
   toggleNightLight = pkgs.writeShellScriptBin "toggle-night-light" ''
     # Ensure night light is enabled
     gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
@@ -41,7 +44,7 @@ let
       url = "https://files.pythonhosted.org/packages/fc/ca/83398cfcd557360a3d7b2d732aee1c5f6999f68618d1645f38d53e14c9ff/vosk-0.3.45-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl";
       sha256 = "17v14rfy5qdcfcvc4j5zlk1hlin5iknnhdaliwkxg6a37h4jbq15";
     };
-    nativeBuildInputs = [ pkgs.autoPatchelfHook ];
+    nativeBuildInputs = [pkgs.autoPatchelfHook];
     propagatedBuildInputs = with pkgs.python3Packages; [
       requests
       cffi
@@ -58,18 +61,18 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "ideasman42";
       repo = "nerd-dictation";
-      rev = "master";
+      rev = "41f372789c640e01bb6650339a78312661530843";
       sha256 = "1sx3s3nzp085a9qx1fj0k5abcy000i758xbapp6wd4vgaap8fdn6";
     };
-    buildInputs = [ pkgs.python3 vosk ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
+    buildInputs = [pkgs.python3 vosk];
+    nativeBuildInputs = [pkgs.makeWrapper];
     installPhase = ''
       mkdir -p $out/bin
       cp nerd-dictation $out/bin/nerd-dictation
       chmod +x $out/bin/nerd-dictation
       wrapProgram $out/bin/nerd-dictation \
-        --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.xdotool pkgs.pulseaudio ]} \
-        --prefix PYTHONPATH : "${pkgs.python3Packages.makePythonPath [ vosk ]}"
+        --prefix PATH : ${pkgs.lib.makeBinPath [pkgs.xdotool pkgs.pulseaudio]} \
+        --prefix PYTHONPATH : "${pkgs.python3Packages.makePythonPath [vosk]}"
     '';
   };
 
@@ -200,11 +203,9 @@ let
     # Launcher for XP-Pen driver with Root privileges and X11/Wayland compatibility
     pkexec env QT_QPA_PLATFORM=xcb DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xp-pen-deco-01-v2-driver
   '';
-in
-{
+in {
   home.username = "iva";
   home.homeDirectory = "/home/iva";
-
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -238,8 +239,8 @@ in
     terminal = false;
     type = "Application";
     icon = "davinci-resolve";
-    categories = [ "AudioVideo" "Video" "Graphics" ];
-    mimeType = [ "application/x-resolveproj" ];
+    categories = ["AudioVideo" "Video" "Graphics"];
+    mimeType = ["application/x-resolveproj"];
   };
 
   xdg.desktopEntries."xp-pen-driver" = {
@@ -250,13 +251,13 @@ in
     terminal = false;
     type = "Application";
     icon = "input-tablet";
-    categories = [ "Settings" "HardwareSettings" ];
+    categories = ["Settings" "HardwareSettings"];
   };
 
   programs.zed-editor.enable = true;
-  xdg.configFile."zed/settings.json".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix/dotfiles/zed/settings.json";
+  xdg.configFile."zed/settings.json".source = ../../dotfiles/zed/settings.json;
   xdg.configFile."zed/settings.json".force = true;
-  xdg.configFile."zed/keymap.json".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix/dotfiles/zed/keymap.json";
+  xdg.configFile."zed/keymap.json".source = ../../dotfiles/zed/keymap.json;
   xdg.configFile."zed/keymap.json".force = true;
 
   # Desktop specific GNOME settings
@@ -279,6 +280,9 @@ in
     };
     "org/gnome/desktop/peripherals/touchpad" = {
       two-finger-scrolling-enabled = true; # Added as it was in dump, even if desktop
+    };
+    "org/gnome/desktop/peripherals/touchscreens/1a86:e2e3" = {
+      output = ["JRP" "JRP7813S" "0"];
     };
     "org/gnome/settings-daemon/plugins/color" = {
       night-light-enabled = true;
@@ -444,7 +448,7 @@ in
       type-format = "category";
     };
     "org/gnome/desktop/input-sources" = {
-      sources = [ (pkgs.lib.gvariant.mkTuple [ "xkb" "us" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ru" ]) (pkgs.lib.gvariant.mkTuple [ "xkb" "ro+std" ]) ];
+      sources = [(pkgs.lib.gvariant.mkTuple ["xkb" "us"]) (pkgs.lib.gvariant.mkTuple ["xkb" "ru"]) (pkgs.lib.gvariant.mkTuple ["xkb" "ro+std"])];
       xkb-options = [];
     };
   };
