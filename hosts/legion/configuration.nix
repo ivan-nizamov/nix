@@ -1,20 +1,25 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, zen-browser, lib, inputs, yandex-browser, ... }:
-
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  config,
+  pkgs,
+  zen-browser,
+  lib,
+  inputs,
+  yandex-browser,
+  ...
+}: {
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   #Experimental features
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -31,18 +36,21 @@
     # Fix screen flickering/blackouts on AMD iGPUs (Scatter/Gather display issue)
     "amdgpu.sg_display=0"
   ];
-  boot.extraModulePackages = [ config.boot.kernelPackages.lenovo-legion-module ];
-  
+
   # Enable firmware and microcode updates
+
   hardware.enableRedistributableFirmware = true;
 
-  boot.kernelModules = [ "lenovo-legion-module" "kvm" "kvm-amd" ];
-  boot.kernel.sysctl = { "vm.swappiness" = 1; };
+  boot.kernelModules = ["kvm" "kvm-amd"];
+  boot.kernel.sysctl = {"vm.swappiness" = 1;};
 
-  swapDevices = [ {
-    device = "/swapfile";
-    size = 16 * 1024;
-  } ];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16 * 1024;
+    }
+  ];
+
 
   networking.hostName = "legion"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -106,20 +114,6 @@
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
-    wireplumber.extraConfig = {
-      "10-disable-camera" = {
-        "monitor.alsa.rules" = [
-          {
-            matches = [ { "node.name" = "~alsa_input.pci.*"; } ];
-            actions = {
-              update-props = {
-                "api.alsa.use-ucm" = false;
-              };
-            };
-          }
-        ];
-      };
-    };
   };
 
   # Virtualization: libvirtd for KVM/QEMU
@@ -138,7 +132,6 @@
       "input"
     ];
     shell = pkgs.zsh;
-    initialPassword = "changme";
   };
 
   # Allow unfree packages
@@ -146,7 +139,7 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = 
+  environment.systemPackages =
     # --- UNSTABLE PACKAGES (Default) ---
     (with pkgs; [
       git
@@ -203,14 +196,15 @@
       gnomeExtensions.space-bar
       qbittorrent
       clock-rs
-    ]) 
-    ++ 
+      zoom-us
+    ])
+    ++
     # --- STABLE PACKAGES (NixOS 24.11) ---
     # Use this for packages that fail to build on unstable (e.g. huge Qt apps)
     (with inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}; [
       easyeffects
     ])
-    ++ 
+    ++
     # --- FLAKE INPUTS ---
     [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -222,8 +216,6 @@
   fonts.fontDir.enable = true;
 
   programs.zsh.enable = true;
-
-  programs.pay-respects.enable = true;
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -241,8 +233,6 @@
   # };
 
   # List services that you want to enable:
-
-  services.n8n.enable = true;
 
   # Disable the conflicting default power manager
   services.power-profiles-daemon.enable = false;
@@ -269,11 +259,11 @@
   # Allow 'iva' to run the conservation script without a password
   security.sudo.extraRules = [
     {
-      users = [ "iva" ];
+      users = ["iva"];
       commands = [
         {
           command = "/run/current-system/sw/bin/lenovo-conservation";
-          options = [ "NOPASSWD" ];
+          options = ["NOPASSWD"];
         }
       ];
     }
@@ -282,7 +272,10 @@
   # Open ports in the firewall.
   networking.firewall = {
     allowedUDPPortRanges = [
-      { from = 59000; to = 65000; } # Helps with P2P connections (Telegram)
+      {
+        from = 59000;
+        to = 65000;
+      } # Helps with P2P connections (Telegram)
     ];
   };
 
@@ -310,7 +303,7 @@
     ];
   };
 
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
     modesetting.enable = true;
@@ -332,7 +325,7 @@
 
   specialisation = {
     performance.configuration = {
-      system.nixos.tags = [ "performance" ];
+      system.nixos.tags = ["performance"];
       hardware.nvidia = {
         powerManagement.finegrained = lib.mkForce false;
         prime = {
@@ -353,5 +346,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.05"; # Did you read the comment?
-
 }
