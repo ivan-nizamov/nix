@@ -230,9 +230,11 @@
       # Launcher for XP-Pen driver with root privileges and Wayland/X11 support
 
       # Ensure the elevated process can find the user's runtime dir (for Wayland socket)
-      export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$UID}"
+      if [ -z "$XDG_RUNTIME_DIR" ]; then
+        export XDG_RUNTIME_DIR="/run/user/$UID"
+      fi
 
-      if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+      if [ -n "$WAYLAND_DISPLAY" ]; then
         platform="wayland"
       else
         platform="xcb"
@@ -240,8 +242,8 @@
 
       pkexec env \
         "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
-        "WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-}" \
-        "DISPLAY=${DISPLAY:-}" \
+        "WAYLAND_DISPLAY=$WAYLAND_DISPLAY" \
+        "DISPLAY=$DISPLAY" \
         "QT_QPA_PLATFORM=$platform" \
         xp-pen-deco-01-v2-driver
     '';

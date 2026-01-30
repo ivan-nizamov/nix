@@ -79,7 +79,6 @@ in {
       ffmpeg_7-full
       audacity
       orca-slicer
-      vcv-rack
       losslesscut-bin
 
       scripts.davinciNvidia

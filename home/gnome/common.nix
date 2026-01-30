@@ -4,11 +4,13 @@
   lib,
   ...
 }: let
-  scripts = import ../../modules/home/scripts.nix { inherit pkgs; };
+  scripts = import ../../modules/home/scripts.nix {inherit pkgs;};
   spaceBarStyles = ".space-bar {\\n  -natural-hpadding: 12px;\\n}\\n\\n.space-bar-workspace-label.active {\\n  margin: 0 4px;\\n  background-color: rgba(255,255,255,0.3);\\n  color: rgba(255,255,255,1);\\n  border-color: rgba(0,0,0,0);\\n  font-weight: 700;\\n  border-radius: 4px;\\n  border-width: 0px;\\n  padding: 3px 8px;\\n}\\n\\n.space-bar-workspace-label.inactive {\\n  margin: 0 4px;\\n  background-color: rgba(0,0,0,0);\\n  color: rgba(255,255,255,1);\\n  border-color: rgba(0,0,0,0);\\n  font-weight: 700;\\n  border-radius: 4px;\\n  border-width: 0px;\\n  padding: 3px 8px;\\n}\\n\\n.space-bar-workspace-label.inactive.empty {\\n  margin: 0 4px;\\n  background-color: rgba(0,0,0,0);\n  color: rgba(255,255,255,0.5);\n  border-color: rgba(0,0,0,0);\n  font-weight: 700;\n  border-radius: 4px;\n  border-width: 0px;\n  padding: 3px 8px;\n}";
 
   repoRoot =
-    if config._module.args ? repoRoot then config._module.args.repoRoot else null;
+    if config._module.args ? repoRoot
+    then config._module.args.repoRoot
+    else null;
   resolvedRepoRoot =
     if repoRoot != null
     then repoRoot
