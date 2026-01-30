@@ -6,14 +6,14 @@ plus quality-of-life and best-practice tweaks.
 
 ## Todo
 
-- [ ] Extract shared system config into `modules/system/common.nix`.
-- [ ] Split Home Manager into common GNOME + host overrides.
-- [ ] Centralize package lists.
-- [ ] Move custom scripts into a shared module.
-- [ ] Remove hard-coded repo paths in activation scripts.
-- [ ] Import `nixos-hardware` modules where applicable.
-- [ ] Add Nix maintenance defaults (`nix.gc`, `nix.optimise`).
-- [ ] Add `.gitignore` for `result` and `result-*`.
+- [x] Extract shared system config into `modules/system/common.nix`.
+- [x] Split Home Manager into common GNOME + host overrides.
+- [x] Centralize package lists.
+- [x] Move custom scripts into a shared module.
+- [x] Remove hard-coded repo paths in activation scripts.
+- [x] Import `nixos-hardware` modules where applicable.
+- [x] Add Nix maintenance defaults (`nix.gc`, `nix.optimise`).
+- [x] Add `.gitignore` for `result` and `result-*`.
 
 ## Structure / Modularity
 

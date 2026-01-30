@@ -27,27 +27,61 @@
     
   (require 'use-package)
   (setq use-package-always-ensure t)
+
+  ;; Ensure Org is loaded before tweaking faces/hooks that depend on it
+  (require 'org)
+  (require 'org-indent)
 #+end_src
 
 * UI
 ** Font
 *** Type and size
 #+begin_src emacs-lisp
-  ;; Set default font
+  ;; Set default monospace font for code
   (set-face-attribute 'default nil
     :family "Maple Mono NF"
     :height 180
     :weight 'regular)
+
+  ;; Use EB Garamond as proportional font for text/Org
+  (set-face-attribute 'variable-pitch nil
+    :family "EB Garamond"
+    :height 180
+    :weight 'regular)
+
+  ;; Ensure fixed-pitch face stays monospace
+  (set-face-attribute 'fixed-pitch nil
+    :family "Maple Mono NF"
+    :height 180
+    :weight 'regular)
+
+  ;; Prefer Maple Mono NF for symbols/emoji so Nerd glyphs render while text stays EB Garamond
+  (dolist (charset '(symbol emoji))
+    (set-fontset-font t charset (font-spec :family "Maple Mono NF") nil 'prepend))
+
+  ;; Enable variable-pitch in text and Org buffers
+  (add-hook 'text-mode-hook #'variable-pitch-mode)
+  (add-hook 'org-mode-hook #'variable-pitch-mode)
 #+end_src
+
 *** Ligatures </>
 #+begin_src emacs-lisp
   (use-package ligature
     :config
     ;; Enable ligatures in all modes
-    (ligature-set-ligatures t '(">>" ">>>" "<<" "<<" "{{" "}}" "{{--" "}}" "/*" "*/" "||" "|||" "&&" "&&&" "::" ":::" "??" "???" "++" "+++" "##" "###" "!!" "!!!" "//" "///" "==" "===" "!=" "!==" "<=" ">=" "=<<" "=>>" "->" "<-" "<->" "=>" "<=>" "<!--" "-->" "<#--" "<!---->" "~~" "~>" "<~" "<~>" "~~>" "<~~" "::=" "=:=" ":>" ":<" "<:" ">:" "<*" "<*>" "*>" "<|" "<|>" "|>" "<+" "<+>" "+>" "</" "</>" "/>" "###" "####" "...." "::" ":::" "++" "+++" "??" "???" "!!" "!!!" "||" "|||" "&&" "&&&" "--" "---" "==" "===" "!=" "!==" "<=" ">=" "=<<" "=>>" "->" "<-" "<->" "=>" "<=>" "<!--" "-->" "<#--" "<!---->" "~~" "~>" "<~" "<~>" "~~>" "<~~" "::=" "=:=" ":>" ":<" "<:" ">:" "<*" "<*>" "*>" "<|" "<|>" "|>" "<+" "<+>" "+>" "</" "</>" "/>"))
+    (ligature-set-ligatures t '(">>" ">>>" "<<" "<<" "{{" "}}" "{{--" "}}" "/*" "*/" "||" "|||" "&&" "&&&" "::" ":::" "??" "???" "++" "+++" "##" "###" "!!" "!!!" "//" "///" "==" "===" "!=" "!==" "<=" ">=" "=<<" "=>>" "->" "<-" "<->" "=>" "<=>" "<!--" "-->" "<#--" "<!---->" "~~" "~>" "<~" "<~>" "~~>" "<~~" "::=" "=:=" ":>" ":<" "<:" ">:" "<*" "<*>" "*>" "<|" "<|>" "|>" "<+" "<+>" "+>" "</" "</>" "/>"))
     (global-ligature-mode t))
 #+end_src
-** Stock UI deletion 
+
+*** Symbols and emoji
+#+begin_src emacs-lisp
+  ;; Prefer Nerd Font glyphs for symbols/emoji while keeping Garamond text
+  (dolist (charset '(symbol emoji))
+    (set-fontset-font t charset (font-spec :family "Maple Mono NF") nil 'prepend))
+#+end_src
+
+
+** Stock UI deletion
 #+begin_src emacs-lisp
   ;; Disable startup message
   (setq inhibit-startup-message t)
@@ -162,10 +196,18 @@
 ** Modern UI
 #+begin_src emacs-lisp
   (use-package org-modern)
-  (with-eval-after-load 'org (global-org-modern-mode))
+  (with-eval-after-load 'org
+    (require 'org-indent)
+    (global-org-modern-mode)
+    ;; Keep code, blocks and tables monospace even in variable-pitch Org buffers
+    (set-face-attribute 'org-code nil :inherit '(fixed-pitch))
+    (set-face-attribute 'org-block nil :inherit '(fixed-pitch))
+    (set-face-attribute 'org-table nil :inherit '(fixed-pitch)))
   (add-hook 'org-mode-hook #'org-indent-mode)
   (setq
    org-auto-align-tags nil
+
+
    org-tags-column 0
    org-catch-invisible-edits 'show-and-error
    org-special-ctrl-a/e t
@@ -189,8 +231,21 @@
   (set-face-attribute 'org-level-7 nil :height 0.8)
   (set-face-attribute 'org-level-8 nil :height 0.7)
 
-  (setq
-   org-startup-with-inline-images t
+  ;; Keep code, tables, and meta lines monospace inside Org
+  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-block nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-block-begin-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-block-end-line nil :inherit '(font-lock-comment-face fixed-pitch))
+
+   (with-eval-after-load 'org-indent
+     (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch)))
+ 
+   (setq
+    org-startup-with-inline-images t
+
    org-use-fast-todo-selection t
    org-todo-keywords
    '((sequence "TODO( t )" "CALL(l)" "MEETING(m)" "TEST(e)" "HOMEWORK(h)" "PROJECT(p)" "|" "DONE(d)" "CANCELLED(c)"))
@@ -203,7 +258,12 @@
      ("PROJECT" . (:background "#d79921" :foreground "#fbf1c7" :weight bold))
      ("DONE" . (:background "#98971a" :foreground "#282828" :weight bold))
      ("CANCELLED" . (:background "#3c3836" :foreground "#928374" :weight bold :strike-through t))))
+
+
+
 #+end_src
+
+
 
 ** Org Roam
 Here we configure Org Roam.

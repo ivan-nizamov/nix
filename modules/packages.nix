@@ -1,0 +1,35 @@
+{pkgs, ...}: {
+  environment.systemPackages = with pkgs; [
+    git
+    gh
+    stow
+    emacs
+    vscode
+    zed-editor
+    codex
+    starship
+    zoxide
+    tree
+    bitwarden-desktop
+    maple-mono.NF
+    eb-garamond
+    dconf-editor
+    fastfetch
+    obs-studio
+    bat
+    ripgrep
+    fd
+    gparted
+    libsForQt5.xp-pen-deco-01-v2-driver
+    ghostty
+    nix-search-cli
+    nixd
+    rnote
+    anki-bin
+    apple-cursor
+    gnome-tweaks
+    gnomeExtensions.space-bar
+    nodejs_22
+    zoom-us
+  ];
+}

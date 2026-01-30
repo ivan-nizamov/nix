@@ -1,23 +1,30 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ pkgs, zen-browser, ... }:
-
 {
+  inputs,
+  lib,
+  pkgs,
+  zen-browser,
+  ...
+}: {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../../modules/system/common.nix
+    ]
+    ++ lib.optionals (inputs.nixos-hardware.nixosModules ? common-cpu-intel) [
+      inputs.nixos-hardware.nixosModules.common-cpu-intel
     ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  #Experimental features
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  boot.kernelParams = [
+    # Required for hibernate/hybrid-sleep with swapfile (physical offset from filefrag)
+    "resume_offset=28744960"
+  ];
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Resume from the swapfile on boot (swapfile sits on the root partition).
+  boot.resumeDevice = "/dev/disk/by-uuid/02a37ded-6329-4e7b-a3d8-9abe009cc650";
 
   networking.hostName = "laptop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -26,61 +33,10 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
-
-  # Set your time zone.
-  time.timeZone = "Europe/Bucharest";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.supportedLocales = [
-    "en_US.UTF-8/UTF-8"
-    "ro_RO.UTF-8/UTF-8"
-  ];
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
-  };
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
-
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
     variant = "";
-  };
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
   };
 
   # Virtualization: libvirtd for KVM/QEMU
@@ -89,73 +45,23 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.iva = {
-    isNormalUser = true;
-    description = "IVA";
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
-    shell = pkgs.zsh;
-    initialPassword = "changme";
-  };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages =
     (with pkgs; [
-      git
-      gh
-      stow
-      emacs
-      vscode
-      zed-editor
-      codex
-      starship
-      zoxide
-      tree
-      bitwarden-desktop
-      maple-mono.NF
-      dconf-editor
-      fastfetch
-      obs-studio
-      bat
       easyeffects
-      ripgrep
-      fd
-      gparted
       opentabletdriver
-      libsForQt5.xp-pen-deco-01-v2-driver
-      ghostty
-      nix-search-cli
-      nixd
-      rnote
-      anki-bin
-      # mpv
-      apple-cursor
-      gnome-tweaks
-      gnomeExtensions.space-bar # This is the coolest thing ever, gnome is soooo  gooood!
-      nodejs_22
-    ]) ++ [
+    ])
+    ++ [
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-      ];
+    ];
 
-  fonts.fontDir.enable = true;
-
-  programs.zsh.enable = true;
-
-  programs.pay-respects.enable = true;
-
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    stdenv.cc.cc
-    openssl
-    zlib
-  ];
+  # Keep hibernation/hybrid-sleep enabled explicitly so GNOME can expose it.
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=yes
+    AllowHibernation=yes
+    AllowHybridSleep=yes
+  '';
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -167,8 +73,6 @@
 
   # List services that you want to enable:
 
-  services.n8n.enable = true;
-
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
 
@@ -178,12 +82,37 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  services.syncthing = {
+    enable = true;
+    user = "iva";
+    dataDir = "/home/iva";
+    configDir = "/home/iva/.config/syncthing";
+    openDefaultPorts = true;
+    overrideDevices = false; # allow GUI device management
+    overrideFolders = true; # keep folders declarative
+    settings = {
+      options = {
+        relaysEnabled = true;
+        globalAnnounceEnabled = true;
+      };
+      folders = {
+        "documents" = {
+          path = "/home/iva/Documents";
+          devices = [];
+          versioning = {
+            type = "simple";
+            params.keep = "10";
+          };
+        };
+      };
+    };
+  };
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.05"; # Did you read the comment?
-
+  system.stateVersion = "24.05"; # Did you read the comment?
 }

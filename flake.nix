@@ -12,7 +12,6 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-
     ayugram-desktop = {
       url = "github:ndfined-crp/ayugram-desktop";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -29,57 +28,72 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, zen-browser, nixos-hardware, yandex-browser, opencode, ... }@inputs:
-    let
-      system = "x86_64-linux";
-      # Renamed 'hosts' to 'hostConfigs' to avoid confusion with the mapping in nixosConfigurations
-      hostConfigs = {
-        laptop = {
-          nixos = ./hosts/laptop/configuration.nix;
-          home = ./hosts/laptop/gnome.nix;
-        };
-        legion = {
-          nixos = ./hosts/legion/configuration.nix;
-          home = ./hosts/legion/gnome.nix;
-          modules = [ ];
-        };
+  outputs = {
+    self,
+    nixpkgs,
+    nixpkgs-stable,
+    home-manager,
+    zen-browser,
+    nixos-hardware,
+    yandex-browser,
+    opencode,
+    ...
+  } @ inputs: let
+    system = "x86_64-linux";
+    # Renamed 'hosts' to 'hostConfigs' to avoid confusion with the mapping in nixosConfigurations
+    hostConfigs = {
+      laptop = {
+        nixos = ./hosts/laptop/configuration.nix;
+        home = ./hosts/laptop/gnome.nix;
       };
+      mainframe = {
+        nixos = ./hosts/mainframe/configuration.nix;
+        home = ./hosts/mainframe/gnome.nix;
+        modules = [];
+      };
+    };
 
-      mkHost = hostName: { nixos, home, modules ? [], pkgsInput ? nixpkgs }:
-        pkgsInput.lib.nixosSystem {
+    mkHost = hostName: {
+      nixos,
+      home,
+      modules ? [],
+      pkgsInput ? nixpkgs,
+    }:
+      pkgsInput.lib.nixosSystem {
+        inherit system;
+        specialArgs = {
+          inherit inputs;
+          inherit zen-browser;
           inherit system;
-          specialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit nixpkgs-stable; inherit yandex-browser; };
-          modules = [
+          inherit nixpkgs-stable;
+          inherit yandex-browser;
+        };
+        modules =
+          [
             nixos
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit inputs; inherit zen-browser; inherit system; inherit nixpkgs-stable; inherit yandex-browser; };
+              home-manager.extraSpecialArgs = {
+                inherit inputs;
+                inherit zen-browser;
+                inherit system;
+                inherit nixpkgs-stable;
+                inherit yandex-browser;
+              };
               home-manager.users.iva = import home;
             }
-          ] ++ modules ++ [
-            ({ pkgs, inputs, ... }: {
-              nixpkgs.overlays = [
-                (final: prev: {
-                  n8n = (import inputs.nixpkgs-stable {
-                    system = prev.stdenv.hostPlatform.system;
-                    config.allowUnfree = true;
-                  }).n8n;
-                })
-              ];
+          ]
+          ++ modules;
+      };
+  in {
+    # Map over hostConfigs to create nixosConfigurations
+    nixosConfigurations = nixpkgs.lib.mapAttrs mkHost hostConfigs;
 
-              environment.systemPackages = [
-                pkgs.code-cursor
-              ];
-
-              environment.sessionVariables.NIXOS_OZONE_WL = "1";
-            })
-
-          ];
-        };
-    in {
-      # Map over hostConfigs to create nixosConfigurations
-      nixosConfigurations = nixpkgs.lib.mapAttrs mkHost hostConfigs;
-    };
+    formatter.${system} = nixpkgs.legacyPackages.${system}.writeShellScriptBin "fmt" ''
+      set -euo pipefail
+      exec ${nixpkgs.legacyPackages.${system}.alejandra}/bin/alejandra .
+    '';
+  };
 }

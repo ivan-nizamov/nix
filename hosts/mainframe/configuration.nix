@@ -9,20 +9,21 @@
   inputs,
   yandex-browser,
   ...
-}: {
-  imports = [
-    # Include the results of the hardware scan.
-    ./hardware-configuration.nix
-  ];
-
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  #Experimental features
-  nix.settings.experimental-features = ["nix-command" "flakes"];
-
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+}: let
+  scripts = import ../../modules/home/scripts.nix {inherit pkgs;};
+in {
+  imports =
+    [
+      # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+      ../../modules/system/common.nix
+    ]
+    ++ lib.optionals (inputs.nixos-hardware.nixosModules ? common-cpu-amd) [
+      inputs.nixos-hardware.nixosModules.common-cpu-amd
+    ]
+    ++ lib.optionals (inputs.nixos-hardware.nixosModules ? common-gpu-nvidia) [
+      inputs.nixos-hardware.nixosModules.common-gpu-nvidia
+    ];
 
   boot.kernelParams = [
     "amd_pstate=guided"
@@ -44,14 +45,6 @@
   boot.kernelModules = ["kvm" "kvm-amd"];
   boot.kernel.sysctl = {"vm.swappiness" = 1;};
 
-  swapDevices = [
-    {
-      device = "/swapfile";
-      size = 16 * 1024;
-    }
-  ];
-
-
   networking.hostName = "mainframe"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -59,123 +52,27 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
-
-  # Set your time zone.
-  time.timeZone = "Europe/Bucharest";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.supportedLocales = [
-    "en_US.UTF-8/UTF-8"
-    "ro_RO.UTF-8/UTF-8"
-  ];
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
-  };
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
-
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us,ru,ro";
     variant = ",,std";
   };
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
-  };
-
   # Virtualization: libvirtd for KVM/QEMU
   # virtualisation.libvirtd.enable = true;
-
-
 
   # Enable touchpad support (enabled default in most desktopManager).
 
   # services.xserver.libinput.enable = true;
 
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.iva = {
-    isNormalUser = true;
-    description = "IVA";
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-      "input"
-    ];
-    shell = pkgs.zsh;
-  };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  users.users.iva.extraGroups = ["input"];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages =
     # --- UNSTABLE PACKAGES (Default) ---
     (with pkgs; [
-      git
-      gh
-      stow
-      emacs
-      vscode
-      zed-editor
-      codex
-      starship
-      zoxide
-      tree
-      bitwarden-desktop
-       maple-mono.NF
-       eb-garamond
-      dconf-editor
-      fastfetch
-      obs-studio
-      bat
-      ripgrep
-      fd
-      gparted
-      libsForQt5.xp-pen-deco-01-v2-driver
-      ghostty
-      nix-search-cli
-      nixd
-      rnote
-      anki-bin
-      # mpv
-      apple-cursor
-      gnome-tweaks
-      nodejs_22
+      libreoffice
       wl-clipboard
       blender
       davinci-resolve
@@ -183,25 +80,12 @@
       audacity
       orca-slicer
       vcv-rack
-      (pkgs.writeShellScriptBin "davinci-nvidia" ''
-        export __NV_PRIME_RENDER_OFFLOAD=1
-        export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
-        export __GLX_VENDOR_LIBRARY_NAME=nvidia
-        export __VK_LAYER_NV_optimus=NVIDIA_only
-        export QT_QPA_PLATFORM=xcb
-        exec ${pkgs.davinci-resolve}/bin/davinci-resolve "$@"
-      '')
-      (pkgs.writeShellScriptBin "lenovo-conservation" ''
-        if [ "$1" == "1" ]; then
-          echo 1 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode
-        else
-          echo 0 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode
-        fi
-      '')
-      gnomeExtensions.space-bar
+      losslesscut-bin
+
+      scripts.davinciNvidia
+      scripts.lenovoConservation
       qbittorrent
       clock-rs
-      zoom-us
     ])
     ++
     # --- STABLE PACKAGES (NixOS 24.11) ---
@@ -217,23 +101,6 @@
       yandex-browser.packages.${pkgs.stdenv.hostPlatform.system}.yandex-browser-stable
       inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
-
-  fonts.fontDir.enable = true;
-  fonts.packages = with pkgs; [
-    eb-garamond
-    maple-mono.NF
-  ];
-
-
-   programs.zsh.enable = true;
-
-
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    stdenv.cc.cc
-    openssl
-    zlib
-  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -279,6 +146,16 @@
       ];
     }
   ];
+
+  services.syncthing = {
+    enable = true;
+    user = "iva";
+    dataDir = "/home/iva/.local/share/syncthing";
+    configDir = "/home/iva/.config/syncthing";
+    overrideDevices = false;
+    overrideFolders = false;
+    openDefaultPorts = true;
+  };
 
   # Open ports in the firewall.
   networking.firewall = {

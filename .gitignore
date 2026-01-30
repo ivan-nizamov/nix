@@ -1,5 +1,5 @@
 # Ignore Emacs temp and cache files, but keep configs
 dotfiles/emacs/.emacs.d/*
 !dotfiles/emacs/.emacs.d/init.org
-!dotfiles/emacs/.emacs.d/init.el
 result
+result-*

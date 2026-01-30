@@ -8,12 +8,12 @@ eval "$(zoxide init zsh)"
 
 
 # convenient NixOS rebuild aliases (select by hostname, works anywhere)
+alias nrs='sudo nixos-rebuild --flake .#$(hostname -s) switch'
+alias nrt='sudo nixos-rebuild --flake .#$(hostname -s) test'
+alias nrb='sudo nixos-rebuild --flake .#$(hostname -s) boot'
 alias gad='git add .'
 alias gcm='git commit -m'
 alias glog='git log --all --decorate --oneline --graph'
 alias f='fuck'  # pay-respects
-alias nrs='sudo nixos-rebuild --flake .#$(hostname -s) switch'
-alias nrt='gsettings set org.gnome.desktop.peripherals.touchscreen:/org/gnome/desktop/peripherals/touchscreens/1a86:e2e3/ output "['"'"'JRP'"'"','"'"'JRP7813S'"'"','"'"'0'"'"']"'
-alias nrb='sudo nixos-rebuild --flake .#$(hostname -s) boot'
-alias gem='nix-shell -p nodejs_22 git --run "npx @google/gemini-cli@latest"'
-alias claude='nix-shell -p nodejs_22 git --run "npx @anthropic-ai/claude-code@latest"'
+alias oc='openclaw'
+export PATH="$HOME/.npm-global/bin:$PATH"
