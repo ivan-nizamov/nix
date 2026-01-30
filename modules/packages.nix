@@ -4,7 +4,6 @@
     gh
     stow
     emacs
-    vscode
     zed-editor
     codex
     starship
