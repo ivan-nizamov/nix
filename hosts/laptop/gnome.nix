@@ -1,7 +1,24 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  scripts = import ../../modules/home/scripts.nix {inherit pkgs;};
+in {
   imports = [
     ../../home/gnome/common.nix
   ];
+
+  home.packages = [
+    scripts.xpPenLauncher
+  ];
+
+  xdg.desktopEntries."xp-pen-driver" = {
+    name = "XP-Pen Tablet Driver";
+    genericName = "Tablet Driver";
+    comment = "Proprietary driver for XP-Pen Deco 01 V2";
+    exec = "${scripts.xpPenLauncher}/bin/xp-pen-launcher";
+    terminal = false;
+    type = "Application";
+    icon = "input-tablet";
+    categories = ["Settings" "HardwareSettings"];
+  };
 
   # Desktop specific GNOME settings
   dconf.settings = {
