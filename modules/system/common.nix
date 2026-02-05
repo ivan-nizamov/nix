@@ -1,6 +1,10 @@
-{pkgs, ...}: {
+{pkgs, inputs, ...}: {
   imports = [
     ../packages.nix
+  ];
+
+  nixpkgs.overlays = [
+    inputs.nix-openclaw.overlays.default
   ];
 
   # Bootloader.
@@ -9,6 +13,14 @@
 
   # Experimental features
   nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.substituters = [
+    "https://cache.nixos.org"
+    "https://cache.garnix.io"
+  ];
+  nix.settings.trusted-public-keys = [
+    "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+  ];
   nix.gc.automatic = true;
   nix.optimise.automatic = true;
 
@@ -87,6 +99,7 @@
   fonts.fontDir.enable = true;
   fonts.packages = with pkgs; [
     eb-garamond
+    corefonts
     maple-mono.NF
   ];
 
