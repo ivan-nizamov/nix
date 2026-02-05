@@ -86,7 +86,7 @@ in {
         port = 18789;
         mode = "local";
         bind = "loopback";
-        auth.mode = "password";
+        auth.mode = "token";
         tailscale = {
           mode = "off";
           resetOnExit = false;
