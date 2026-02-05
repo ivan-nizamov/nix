@@ -131,6 +131,8 @@ in {
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
 
+  home-manager.backupFileExtension = "hm-bak";
+
   # Allow 'iva' to run the conservation script without a password
   security.sudo.extraRules = [
     {
