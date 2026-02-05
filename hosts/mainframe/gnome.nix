@@ -151,6 +151,9 @@ in {
     "${config.home.homeDirectory}/.secrets/openclaw.env"
   ];
 
+  home.file.".openclaw/openclaw.json".force = true;
+  xdg.configFile."systemd/user/openclaw-gateway.service".force = true;
+
   xdg.desktopEntries."xp-pen-driver" = {
     name = "XP-Pen Tablet Driver";
     genericName = "Tablet Driver";
