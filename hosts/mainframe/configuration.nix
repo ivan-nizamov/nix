@@ -75,13 +75,11 @@ in {
       libreoffice
       wl-clipboard
       blender
-      davinci-resolve
       ffmpeg_7-full
       audacity
       orca-slicer
       losslesscut-bin
 
-      scripts.davinciNvidia
       scripts.lenovoConservation
       qbittorrent
       clock-rs
@@ -142,6 +140,10 @@ in {
           command = "/run/current-system/sw/bin/lenovo-conservation";
           options = ["NOPASSWD"];
         }
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild";
+          options = ["NOPASSWD"];
+        }
       ];
     }
   ];
@@ -183,7 +185,7 @@ in {
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-    # Required for DaVinci to see OpenCL/CUDA
+    # OpenCL/CUDA tooling for GPU apps
     extraPackages = with pkgs; [
       rocmPackages.clr
       rocmPackages.rocminfo
