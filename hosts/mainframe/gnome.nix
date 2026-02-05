@@ -9,7 +9,6 @@ in {
   home.packages = with pkgs; [
     scripts.toggleConservation
     scripts.xpPenLauncher
-    ffmpeg-full
     scripts.nerdDictationPkg
     scripts.toggleNerdDictation
     # gnomeExtensions.shaderpaper-gnome
