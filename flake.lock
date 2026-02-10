@@ -1,26 +1,5 @@
 {
   "nodes": {
-    "ayugram-desktop": {
-      "inputs": {
-        "flake-parts": "flake-parts",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1770117011,
-        "narHash": "sha256-00gk12MXtP1BRkSRWHO4EPwxMhkD7CodACAPZCttEg0=",
-        "owner": "ndfined-crp",
-        "repo": "ayugram-desktop",
-        "rev": "aad47fd377899a76bf5022c4ebc53571277a375f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ndfined-crp",
-        "repo": "ayugram-desktop",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -34,24 +13,6 @@
       "original": {
         "owner": "edolstra",
         "repo": "flake-compat",
-        "type": "github"
-      }
-    },
-    "flake-parts": {
-      "inputs": {
-        "nixpkgs-lib": "nixpkgs-lib"
-      },
-      "locked": {
-        "lastModified": 1768135262,
-        "narHash": "sha256-PVvu7OqHBGWN16zSi6tEmPwwHQ4rLPU9Plvs8/1TUBY=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "80daad04eddbbf5a4d883996a73f3f542fa437ac",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
         "type": "github"
       }
     },
@@ -80,11 +41,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1769978395,
-        "narHash": "sha256-gj1yP3spUb1vGtaF5qPhshd2j0cg4xf51pklDsIm19Q=",
+        "lastModified": 1770318660,
+        "narHash": "sha256-yFVde8QZK7Dc0Xa8eQDsmxLX4NJNfL1NKfctSyiQgMY=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "984708c34d3495a518e6ab6b8633469bbca2f77a",
+        "rev": "471e6a065f9efed51488d7c51a9abbd387df91b8",
         "type": "github"
       },
       "original": {
@@ -124,11 +85,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770260049,
-        "narHash": "sha256-vg3+ccYGhkHdWI0otkDD+FE5Q53R3/WZhvKKny5dbDM=",
+        "lastModified": 1770460990,
+        "narHash": "sha256-Guh/hCZEoLR0WN/QNKZxfo0tL4efbKey/d6ODj8noWI=",
         "owner": "openclaw",
         "repo": "nix-openclaw",
-        "rev": "e0f3ef2c43a34bf9273cafe181954229a128415d",
+        "rev": "75ed3827688bba173ec935d4a1a44c04e07e67a9",
         "type": "github"
       },
       "original": {
@@ -187,21 +148,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-lib": {
-      "locked": {
-        "lastModified": 1765674936,
-        "narHash": "sha256-k00uTP4JNfmejrCLJOwdObYC9jHRrr/5M/a/8L2EIdo=",
-        "owner": "nix-community",
-        "repo": "nixpkgs.lib",
-        "rev": "2075416fcb47225d9b68ac469a5c4801a9c4dd85",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "nixpkgs.lib",
-        "type": "github"
-      }
-    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1751274312,
@@ -220,11 +166,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1770073757,
-        "narHash": "sha256-Vy+G+F+3E/Tl+GMNgiHl9Pah2DgShmIUBJXmbiQPHbI=",
+        "lastModified": 1770537093,
+        "narHash": "sha256-pF1quXG5wsgtyuPOHcLfYg/ft/QMr8NnX0i6tW2187s=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "47472570b1e607482890801aeaf29bfb749884f6",
+        "rev": "fef9403a3e4d31b0a23f0bacebbec52c248fbb51",
         "type": "github"
       },
       "original": {
@@ -241,11 +187,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770123814,
-        "narHash": "sha256-lSA6kQY1ZHgEVBhk1iPoovvofrkSTg17mAfkIJ/o3iM=",
+        "lastModified": 1770462200,
+        "narHash": "sha256-64SI47w4kK39pxHPczVQIkgqVbELzdcvENMpLn1Jav0=",
         "owner": "anomalyco",
         "repo": "opencode",
-        "rev": "7508839b708844df3b6fc5afec641e3f2beb4f9d",
+        "rev": "fedf9feba8c82c874e250d2fcc108b008fcf5212",
         "type": "github"
       },
       "original": {
@@ -256,7 +202,6 @@
     },
     "root": {
       "inputs": {
-        "ayugram-desktop": "ayugram-desktop",
         "home-manager": "home-manager",
         "nix-openclaw": "nix-openclaw",
         "nixos-hardware": "nixos-hardware",
@@ -310,11 +255,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1769747637,
-        "narHash": "sha256-fRdj480sqW/a+APO6CmelZsa07BRAdEQLUjBQJuyQbU=",
+        "lastModified": 1770438797,
+        "narHash": "sha256-pwnQTmZswF6bu2/Ie7ajOo8w6rXQwVI954S9WX1UG3w=",
         "owner": "youwen5",
         "repo": "zen-browser-flake",
-        "rev": "09e429679b7cc175e71e2d25800bab66493c1c80",
+        "rev": "d396599774bdbafeb86c122dc2c422c7084ea390",
         "type": "github"
       },
       "original": {

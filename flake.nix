@@ -19,11 +19,6 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    ayugram-desktop = {
-      url = "github:ndfined-crp/ayugram-desktop";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     yandex-browser = {
       url = "github:miuirussia/yandex-browser.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -33,7 +28,6 @@
       url = "github:anomalyco/opencode";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     nix-openclaw = {
       url = "github:openclaw/nix-openclaw";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -48,7 +42,7 @@
     zen-browser,
     nixos-hardware,
     yandex-browser,
-    opencode,
+    nix-openclaw,
     ...
   } @ inputs: let
     system = "x86_64-linux";
