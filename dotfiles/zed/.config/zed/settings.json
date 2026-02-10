@@ -70,7 +70,7 @@
    "ui_font_size": 20.0,
    "buffer_font_size": 24.0,
    "theme": {
-      "mode": "dark",
+      "mode": "light",
       "light": "Kanagawa Lotus",
       "dark": "Kanagawa Dragon"
    },

@@ -74,7 +74,6 @@ Laptop-specific configuration:
 - **gnome.nix**: Home Manager config with:
   - GNOME dconf settings (theme, keybindings, night light, etc.)
   - Custom keybindings (Super+e for Emacs, Super+z for Zen Browser, etc.)
-  - Zed editor configuration symlinks
   - Custom scripts (toggle-night-light)
 
 ### `hosts/legion/`
@@ -111,8 +110,9 @@ dotfiles/
 ├── gnome/                # GNOME-specific dotfiles (if any)
 ├── vscode/               # VS Code settings
 ├── zed/                  # Zed editor configuration
-│   ├── keymap.json
-│   └── settings.json
+│   └── .config/zed/
+│       ├── keymap.json
+│       └── settings.json
 └── zsh/                  # Zsh configuration files
 ```
 
@@ -125,7 +125,7 @@ dotfiles/
 ### Special Cases
 
 - **Emacs**: Always edit `dotfiles/emacs/.emacs.d/init.org`, not `init.el` (which is generated)
-- **Zed**: Configuration is symlinked from Home Manager (`hosts/*/gnome.nix`) rather than stowed
+- **Zed**: Configuration is managed via Stow (`dotfiles/zed/.config/zed/*` -> `~/.config/zed/*`)
 
 ## Configuration Flow
 
@@ -244,4 +244,3 @@ dotfiles/ (managed separately via Stow)
 1. Add/edit files in `dotfiles/<tool>/` following target filesystem structure
 2. Run `stow -t $HOME <tool>` from `dotfiles/` directory
 3. Commit changes to version control
-

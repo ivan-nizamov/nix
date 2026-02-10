@@ -17,3 +17,9 @@ alias glog='git log --all --decorate --oneline --graph'
 alias f='fuck'  # pay-respects
 alias oc='openclaw'
 export PATH="$HOME/.npm-global/bin:$PATH"
+
+# OpenClaw Completion
+source "/home/iva/.openclaw/completions/openclaw.zsh"
+
+# Google Tasks CLI alias
+alias gtasks='source ~/.gtasks-env/bin/activate && python3 /home/iva/.openclaw/workspace/tools/gtasks.py'

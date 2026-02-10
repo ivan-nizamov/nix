@@ -70,12 +70,6 @@ in {
 
   home.activation.emacsTangleInit = lib.hm.dag.entryAfter ["writeBoundary"] emacsTangle;
 
-  programs.zed-editor.enable = true;
-  xdg.configFile."zed/settings.json".source = ../../dotfiles/zed/settings.json;
-  xdg.configFile."zed/settings.json".force = true;
-  xdg.configFile."zed/keymap.json".source = ../../dotfiles/zed/keymap.json;
-  xdg.configFile."zed/keymap.json".force = true;
-
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
