@@ -1,10 +1,13 @@
-{pkgs, inputs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ../packages.nix
-  ];
-
-  nixpkgs.overlays = [
-    inputs.nix-openclaw.overlays.default
+    ./xdg-portals.nix
+    ./keyring.nix
+    ./openclaw-gateway.nix
   ];
 
   # Bootloader.
@@ -26,6 +29,12 @@
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # Avoid file watcher exhaustion on large repos/editors.
+  boot.kernel.sysctl = {
+    "fs.inotify.max_user_watches" = 524288;
+    "fs.inotify.max_user_instances" = 1024;
+  };
 
   # Provide swap space for hibernate/hybrid-sleep.
   swapDevices = [
