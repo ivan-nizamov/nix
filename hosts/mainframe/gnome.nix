@@ -1,9 +1,13 @@
-{config, pkgs, inputs, ...}: let
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}: let
   scripts = import ../../modules/home/scripts.nix {inherit pkgs;};
 in {
   imports = [
     ../../home/gnome/common.nix
-    inputs.nix-openclaw.homeManagerModules.openclaw
   ];
 
   home.packages = with pkgs; [
@@ -14,156 +18,6 @@ in {
     # gnomeExtensions.shaderpaper-gnome
     gnomeExtensions.hibernate-status-button
   ];
-
-  programs.openclaw = {
-    enable = true;
-
-    bundledPlugins.gogcli = {
-      enable = true;
-      config.env.GOG_ACCOUNT = "ivan.nizamov@gmail.com";
-    };
-
-    config = {
-      agents.defaults = {
-        model.primary = "openai-codex/gpt-5.2-codex";
-        models = {
-          "openai-codex/gpt-5.2-codex" = {};
-          "openai-codex/gpt-5.2" = {};
-        };
-        workspace = "/home/iva/.openclaw/workspace";
-        memorySearch = {
-          provider = "local";
-          fallback = "none";
-          local.modelPath = "hf:ggml-org/embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf";
-          chunking = {
-            tokens = 64;
-            overlap = 16;
-          };
-        };
-        compaction.mode = "safeguard";
-        thinkingDefault = "high";
-        maxConcurrent = 4;
-        subagents.maxConcurrent = 8;
-      };
-
-      auth.profiles."openai-codex:default" = {
-        provider = "openai-codex";
-        mode = "oauth";
-      };
-
-      channels = {
-        whatsapp = {
-          dmPolicy = "allowlist";
-          selfChatMode = true;
-          allowFrom = [
-            "+40738030141"
-          ];
-          groupPolicy = "allowlist";
-          mediaMaxMb = 50;
-          debounceMs = 0;
-        };
-
-        telegram = {
-          enabled = true;
-          dmPolicy = "pairing";
-          tokenFile = "/home/iva/.secrets/telegram_bot_token";
-          groupPolicy = "allowlist";
-          streamMode = "partial";
-        };
-      };
-
-      commands = {
-        native = "auto";
-        nativeSkills = "auto";
-        restart = true;
-      };
-
-      env.vars = {
-        GGML_VULKAN_DEVICE = "1";
-      };
-
-      gateway = {
-        port = 18789;
-        mode = "local";
-        bind = "loopback";
-        auth.mode = "token";
-        tailscale = {
-          mode = "off";
-          resetOnExit = false;
-        };
-      };
-
-      messages.ackReactionScope = "group-mentions";
-
-      plugins.entries = {
-        telegram.enabled = true;
-        whatsapp.enabled = true;
-      };
-
-      skills.install.nodeManager = "bun";
-
-      tools = {
-        web.search.provider = "brave";
-
-        media.audio = {
-          enabled = true;
-          scope = {
-            default = "deny";
-            rules = [
-              {
-                action = "allow";
-                match = {
-                  channel = "telegram";
-                  chatType = "direct";
-                };
-              }
-              {
-                action = "allow";
-                match = {
-                  channel = "whatsapp";
-                  chatType = "direct";
-                };
-              }
-            ];
-          };
-          timeoutSeconds = 120;
-          models = [
-            {
-              type = "cli";
-              command = "/run/current-system/sw/bin/bash";
-              args = [
-                "-lc"
-                ''/run/current-system/sw/bin/ffmpeg -y -i "{{MediaPath}}" -ar 16000 -ac 1 "{{OutputBase}}.wav" && /home/iva/.nix-profile/bin/whisper-cli -m /home/iva/.openclaw/models/whisper/ggml-large-v3.bin -otxt -of "{{OutputBase}}" -np -nt -l auto -t 8 "{{OutputBase}}.wav"''
-              ];
-            }
-          ];
-        };
-
-        exec.pathPrepend = [
-          "/etc/profiles/per-user/iva/bin"
-          "/run/current-system/sw/bin"
-        ];
-      };
-    };
-  };
-
-  systemd.user.services.openclaw-gateway.Service.EnvironmentFile = [
-    "${config.home.homeDirectory}/.secrets/openclaw.env"
-  ];
-
-  home.file.".openclaw/openclaw.json".force = true;
-  xdg.configFile."systemd/user/openclaw-gateway.service".force = true;
-
-  xdg.desktopEntries."xp-pen-driver" = {
-    name = "XP-Pen Tablet Driver";
-    genericName = "Tablet Driver";
-    comment = "Proprietary driver for XP-Pen Deco 01 V2";
-    exec = "${scripts.xpPenLauncher}/bin/xp-pen-launcher";
-    terminal = false;
-    type = "Application";
-    icon = "input-tablet";
-    categories = ["Settings" "HardwareSettings"];
-  };
 
   # Desktop specific GNOME settings
   dconf.settings = {

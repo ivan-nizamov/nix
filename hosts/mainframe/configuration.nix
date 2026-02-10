@@ -61,9 +61,54 @@ in {
   # Virtualization: libvirtd for KVM/QEMU
   # virtualisation.libvirtd.enable = true;
 
-  # Enable touchpad support (enabled default in most desktopManager).
+  # services.openclaw = {
+  #   enable = true;
+  #
+  #   agent = {
+  #     enable = true;
+  #     user = "iva";
+  #     allowedCommands = [
+  #       "systemctl --user *" "git *" "nix *" "nix-shell *"
+  #       "cd *" "python*" "pip*" "curl *" "wget *"
+  #       "mkdir *" "cp *" "mv *" "rm *" "chmod *" "chown *"
+  #       "find *" "cat *" "less *" "head *" "tail *"
+  #       "ps *" "top *" "htop *" "nvidia-smi"
+  #       "df *" "du *" "ls *"
+  #     ];
+  #     dangerousCommands = [
+  #       "rm -rf /" "rm -rf /*" "mkfs.*" "dd *"
+  #       "systemctl reboot" "systemctl poweroff" "nixos-rebuild *"
+  #     ];
+  #     allowedPaths = [ "/home/iva" "/tmp" "/var/tmp" ];
+  #   };
+  #
+  #   audio = {
+  #     enable = true;
+  #     transcription = {
+  #       url = "http://127.0.0.1:54321/transcribe";
+  #       timeout = 60;
+  #     };
+  #   };
+  # };
 
-  # services.xserver.libinput.enable = true;
+  services.openclaw-gateway = {
+    enable = true;
+    user = "iva";
+    group = "users";
+    openFirewall = true;
+    settings = {
+      gateway = {
+        port = 18789;
+        mode = "local";
+        bind = "loopback";
+        auth.mode = "token";
+        tailscale = {
+          mode = "off";
+          resetOnExit = false;
+        };
+      };
+    };
+  };
 
   users.users.iva.extraGroups = ["input"];
 
@@ -93,8 +138,8 @@ in {
     ++
     # --- FLAKE INPUTS ---
     [
+      inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.default
       zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-      inputs.ayugram-desktop.packages.${pkgs.stdenv.hostPlatform.system}.ayugram-desktop
       yandex-browser.packages.${pkgs.stdenv.hostPlatform.system}.yandex-browser-stable
       inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
@@ -133,7 +178,7 @@ in {
 
   home-manager.backupFileExtension = "hm-bak";
 
-  # Allow 'iva' to run the conservation script without a password
+  # Allow 'iva' to run specific commands without a password
   security.sudo.extraRules = [
     {
       users = ["iva"];
@@ -143,7 +188,27 @@ in {
           options = ["NOPASSWD"];
         }
         {
-          command = "/run/current-system/sw/bin/nixos-rebuild";
+          command = "/run/current-system/sw/bin/nixos-rebuild switch";
+          options = ["NOPASSWD"];
+        }
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild build";
+          options = ["NOPASSWD"];
+        }
+        {
+          command = "/run/current-system/sw/bin/systemctl restart openclaw-gateway";
+          options = ["NOPASSWD"];
+        }
+        {
+          command = "/run/current-system/sw/bin/systemctl status *";
+          options = ["NOPASSWD"];
+        }
+        {
+          command = "/run/current-system/sw/bin/nix *";
+          options = ["NOPASSWD"];
+        }
+        {
+          command = "/run/current-system/sw/bin/nix-shell *";
           options = ["NOPASSWD"];
         }
       ];
@@ -167,14 +232,6 @@ in {
         from = 59000;
         to = 65000;
       } # Helps with P2P connections (Telegram)
-    ];
-  };
-
-  # Fix for Screen Sharing on Wayland
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
     ];
   };
 
