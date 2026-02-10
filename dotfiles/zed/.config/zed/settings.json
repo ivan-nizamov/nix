@@ -7,9 +7,13 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+   "agent_servers": {
+      "kimi": {
+         "type": "registry"
+      }
+   },
    "context_servers": {
       "mcp-server-context7": {
-         "source": "extension",
          "enabled": true,
          "settings": {
             "context7_api_key": "https://context7.com/api/v2"
@@ -33,7 +37,7 @@
    },
    "soft_wrap": "editor_width",
    "tab_size": 3,
-   "relative_line_numbers": true,
+   "relative_line_numbers": "enabled",
    "scroll_beyond_last_line": "vertical_scroll_margin",
    "title_bar": {
       "show_branch_icon": true
