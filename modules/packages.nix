@@ -37,8 +37,11 @@ in {
     gogcli
     nix-search-cli
     nixd
+    nixpkgs-fmt
+    vscode-langservers-extracted
     rnote
     anki-bin
+    mpv
     apple-cursor
     gnome-tweaks
     gnomeExtensions.space-bar
