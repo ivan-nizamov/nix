@@ -1,0 +1,48 @@
+diff --git a/src/output/paste.rs b/src/output/paste.rs
+--- a/src/output/paste.rs
++++ b/src/output/paste.rs
+@@ -116,6 +116,15 @@ fn key_name_to_evdev(name: &str) -> Result<u16, String> {
+     }
+ }
+ 
++fn wl_paste_read_args(mime_type: &str) -> Vec<String> {
++    vec![
++        "--no-newline".to_string(),
++        "--type".to_string(),
++        mime_type.to_string(),
++    ]
++}
++
+ /// Clipboard content with MIME type for restoration
+ struct ClipboardContent {
+     data: Vec<u8>,
+@@ -320,8 +329,10 @@ impl PasteOutput {
+ 
+         // Read the actual content
+         let content_output = Command::new("wl-paste")
+-            .arg("--type")
+-            .arg(&mime_type)
++            // wl-paste appends a trailing newline to text output unless disabled,
++            // which would otherwise accumulate on every save/restore cycle.
++            .args(wl_paste_read_args(&mime_type))
+             .stdout(Stdio::piped())
+             .stderr(Stdio::piped())
+             .output()
+@@ -861,4 +873,14 @@ mod tests {
+         assert!(debug_str.contains("[5 bytes]"));
+         assert!(debug_str.contains("text/plain"));
+         assert!(!debug_str.contains("[1, 2, 3"));
++    }
++
++    #[test]
++    fn test_wl_paste_read_args_disables_added_newline() {
++        assert_eq!(
++            wl_paste_read_args("text/plain"),
++            vec![
++                "--no-newline".to_string(),
++                "--type".to_string(),
++                "text/plain".to_string()
++            ]
++        );
+     }
+ }
