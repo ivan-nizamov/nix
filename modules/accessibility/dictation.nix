@@ -36,9 +36,10 @@ in
     key = "Insert"
 
     [output]
-    mode = "type"
-    driver_order = ["eitype", "dotool", "ydotool", "clipboard"]
-    pre_type_delay_ms = 120
+    mode = "paste"
+    paste_keys = "ctrl+v"
+    restore_clipboard = true
+    restore_clipboard_delay_ms = 250
 
     [output.notification]
     on_recording_start = true

@@ -7,6 +7,7 @@
     ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
+    ../../modules/hardware/hybrid-graphics.nix
     ../../modules/input/wayland-text-injection.nix
     ../../modules/security/passwordless-rebuilds.nix
     ../../modules/services/audio-pipewire.nix
