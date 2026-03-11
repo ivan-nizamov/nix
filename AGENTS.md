@@ -35,4 +35,7 @@ Required order:
 ## Operational Notes
 
 - Prefer showing the exact commands run in the final handoff.
+- Prefer packages and inputs that are substitutable from the configured binary caches before accepting a local source build.
+- If a ready-made binary package or upstream prebuilt release is available and appropriate, use that instead of a source-building package.
+- Only choose a source build when no suitable cached or prebuilt option exists, or when the task explicitly requires building from source.
 - If a task is documentation-only or otherwise cannot affect the built system, say that explicitly before skipping rebuild and switch steps.

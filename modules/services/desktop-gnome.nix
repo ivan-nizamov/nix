@@ -38,6 +38,7 @@ let
       padding: 3px 8px;
     }
   '';
+  telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   zenBrowser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
 in
@@ -46,7 +47,7 @@ in
 
   environment.systemPackages = [
     pkgs.gnomeExtensions.space-bar
-    pkgs.telegram-desktop
+    telegramDesktop
     zedEditor
     zenBrowser
   ];
