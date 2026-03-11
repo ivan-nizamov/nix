@@ -4,7 +4,6 @@
   nix.daemonIOSchedClass = "idle";
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.max-jobs = 1;
-  nix.settings.cores = 6;
   nix.settings.trusted-users = [ "root" "iva" ];
   nix.settings.extra-substituters = [
     "https://cache.garnix.io"
