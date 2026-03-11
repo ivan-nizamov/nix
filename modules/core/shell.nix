@@ -1,5 +1,9 @@
-{ ... }:
+{ pkgs, ... }:
 {
+  environment.systemPackages = [
+    pkgs.git
+  ];
+
   programs.zsh = {
     enable = true;
     shellAliases = {

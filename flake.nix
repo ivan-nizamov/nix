@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     llm-agents.url = "github:numtide/llm-agents.nix";
     voxtype.url = "github:peteonrails/voxtype?ref=v0.6.3";
     zen-browser = {
