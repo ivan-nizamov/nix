@@ -37,14 +37,14 @@ in
 
     [output]
     mode = "paste"
-    paste_keys = "ctrl+v"
+    paste_keys = "ctrl+shift+v"
     restore_clipboard = true
     restore_clipboard_delay_ms = 250
 
     [output.notification]
-    on_recording_start = true
-    on_recording_stop = true
-    on_transcription = true
+    on_recording_start = false
+    on_recording_stop = false
+    on_transcription = false
 
     [whisper]
     language = ["en", "ru", "fr", "ro"]
