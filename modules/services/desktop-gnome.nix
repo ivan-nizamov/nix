@@ -46,6 +46,7 @@ in
 
   environment.systemPackages = [
     pkgs.gnomeExtensions.space-bar
+    pkgs.telegram-desktop
     zedEditor
     zenBrowser
   ];
