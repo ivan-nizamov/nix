@@ -45,6 +45,7 @@ in
   programs.dconf.enable = true;
 
   environment.systemPackages = [
+    pkgs.gnomeExtensions.space-bar
     zedEditor
     zenBrowser
   ];
@@ -79,10 +80,6 @@ in
         };
       };
     }
-  ];
-
-  services.desktopManager.gnome.sessionPath = [
-    pkgs.gnomeExtensions.space-bar
   ];
 
   services.xserver.enable = true;
