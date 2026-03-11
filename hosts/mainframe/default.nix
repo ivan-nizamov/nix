@@ -2,10 +2,12 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/accessibility/dictation.nix
     ../../modules/core/locale.nix
     ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
+    ../../modules/input/wayland-text-injection.nix
     ../../modules/security/passwordless-rebuilds.nix
     ../../modules/services/audio-pipewire.nix
     ../../modules/services/desktop-gnome.nix
