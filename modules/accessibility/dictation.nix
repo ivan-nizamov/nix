@@ -27,7 +27,7 @@ in
     engine = "whisper"
 
     [audio]
-    device = "sysdefault:CARD=Generic"
+    device = "default"
     max_duration_secs = 60
     sample_rate = 16000
 
@@ -36,13 +36,14 @@ in
     key = "Insert"
 
     [output]
-    mode = "paste"
-    paste_keys = "ctrl+shift+v"
+    mode = "type"
+    driver_order = ["eitype", "dotool", "ydotool", "clipboard"]
+    pre_type_delay_ms = 120
 
     [output.notification]
-    on_recording_start = false
-    on_recording_stop = false
-    on_transcription = false
+    on_recording_start = true
+    on_recording_stop = true
+    on_transcription = true
 
     [whisper]
     language = ["en", "ru", "fr", "ro"]
