@@ -70,10 +70,11 @@ in
     IdleAction = "ignore";
   };
 
-  environment.systemPackages = [
+  environment.systemPackages = with pkgs; [
     lidInhibitExtension
-    pkgs.gnomeExtensions.space-bar
+    gnomeExtensions.space-bar
     telegramDesktop
+    vial
     zedEditor
     zenBrowser
   ];
