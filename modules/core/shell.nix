@@ -2,14 +2,28 @@
 {
   environment.systemPackages = [
     pkgs.git
+    pkgs.pay-respects
   ];
+
+  programs.zoxide = {
+    enable = true;
+    flags = [ "--cmd" "z" ];
+  };
 
   programs.zsh = {
     enable = true;
     shellAliases = {
       c = "codex --dangerously-bypass-approvals-and-sandbox";
+      g = "gemini --yolo";
+      k = "kilocode";
+      oc = "openclaw";
+      oco = "opencode";
     };
     interactiveShellInit = ''
+      mkdir -p "$HOME/.gemini"
+
+      eval "$(${pkgs.pay-respects}/bin/pay-respects zsh --alias f)"
+
       _nixos_rebuild_cores() {
         local cpu_count target
         cpu_count=$(nproc --all)
