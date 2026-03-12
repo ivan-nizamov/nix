@@ -8,18 +8,18 @@ let
   nightLightControl = pkgs.writeShellApplication {
     name = "night-light-control";
     runtimeInputs = [
-      pkgs.glib
+      pkgs.dconf
       pkgs.libnotify
     ];
     text = ''
       set -eu
 
-      schema="org.gnome.settings-daemon.plugins.color"
+      basePath="/org/gnome/settings-daemon/plugins/color"
       step=${toString nightLightTemperatureStep}
       min=${toString nightLightTemperatureMin}
       max=${toString nightLightTemperatureMax}
 
-      current=$(gsettings get "$schema" night-light-temperature | awk '{ print $2 }')
+      current=$(dconf read "$basePath/night-light-temperature" | awk '{ print $2 }')
 
       case "''${1-}" in
         warmer)
@@ -44,11 +44,11 @@ let
         next=$max
       fi
 
-      gsettings set "$schema" night-light-enabled true
-      gsettings set "$schema" night-light-schedule-automatic false
-      gsettings set "$schema" night-light-schedule-from 0.0
-      gsettings set "$schema" night-light-schedule-to 24.0
-      gsettings set "$schema" night-light-temperature "$next"
+      dconf write "$basePath/night-light-enabled" true
+      dconf write "$basePath/night-light-schedule-automatic" false
+      dconf write "$basePath/night-light-schedule-from" 0.0
+      dconf write "$basePath/night-light-schedule-to" 24.0
+      dconf write "$basePath/night-light-temperature" "uint32 ''${next}"
 
       notify-send \
         -a "Night Light" \
@@ -57,8 +57,8 @@ let
         "''${next}K" || true
     '';
   };
-  nightLightCoolerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler/";
-  nightLightWarmerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer/";
+  nightLightActkbd = direction:
+    "${pkgs.util-linux}/bin/runuser -u iva -- env DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus XDG_RUNTIME_DIR=/run/user/1000 ${nightLightControl}/bin/night-light-control ${direction}";
   spaceBarStyles = ''
     .space-bar {
       -natural-hpadding: 12px;
@@ -128,6 +128,20 @@ in
     IdleAction = "ignore";
   };
 
+  services.actkbd = {
+    enable = true;
+    bindings = [
+      {
+        keys = [ 189 ];
+        command = nightLightActkbd "cooler";
+      }
+      {
+        keys = [ 190 ];
+        command = nightLightActkbd "warmer";
+      }
+    ];
+  };
+
   environment.systemPackages = with pkgs; [
     lidInhibitExtension
     gnomeExtensions.space-bar
@@ -163,22 +177,6 @@ in
           night-light-schedule-from = 0.0;
           night-light-schedule-to = 24.0;
           night-light-temperature = gv.mkUint32 nightLightTemperatureDefault;
-        };
-        "org/gnome/settings-daemon/plugins/media-keys" = {
-          custom-keybindings = [
-            nightLightCoolerBindingPath
-            nightLightWarmerBindingPath
-          ];
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler" = {
-          binding = "F13";
-          command = "${nightLightControl}/bin/night-light-control cooler";
-          name = "Night Light Cooler";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer" = {
-          binding = "F14";
-          command = "${nightLightControl}/bin/night-light-control warmer";
-          name = "Night Light Warmer";
         };
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "nothing";
