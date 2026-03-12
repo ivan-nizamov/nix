@@ -3,6 +3,7 @@
   environment.systemPackages = [
     pkgs.git
     pkgs.pay-respects
+    pkgs.ripgrep
   ];
 
   programs.zoxide = {
