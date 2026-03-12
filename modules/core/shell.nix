@@ -6,6 +6,8 @@
     pkgs.ripgrep
   ];
 
+  programs.starship.enable = true;
+
   programs.zoxide = {
     enable = true;
     flags = [ "--cmd" "z" ];
@@ -13,17 +15,30 @@
 
   programs.zsh = {
     enable = true;
+    enableBashCompletion = true;
     shellAliases = {
       c = "codex --dangerously-bypass-approvals-and-sandbox";
+      gad = "git add .";
       g = "gemini --yolo";
+      gcm = "git commit -m";
+      glog = "git log --all --decorate --oneline --graph";
       k = "kilocode";
       oc = "openclaw";
       oco = "opencode";
     };
     interactiveShellInit = ''
+      export PATH="$HOME/.npm-global/bin:$PATH"
+
       mkdir -p "$HOME/.gemini"
 
       eval "$(${pkgs.pay-respects}/bin/pay-respects zsh --alias f)"
+
+      zstyle ':completion:*' menu select
+      zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=* r:|=*'
+      zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
+      zstyle ':completion:*' group-name ""
+      zstyle ':completion:*:descriptions' format '[%d]'
+      zstyle ':completion:*:warnings' format '[no matches found]'
 
       _nixos_rebuild_cores() {
         local cpu_count target
