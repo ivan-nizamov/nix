@@ -132,11 +132,11 @@ in
     enable = true;
     bindings = [
       {
-        keys = [ 189 ];
+        keys = [ 183 ];
         command = nightLightActkbd "cooler";
       }
       {
-        keys = [ 190 ];
+        keys = [ 184 ];
         command = nightLightActkbd "warmer";
       }
     ];
