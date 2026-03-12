@@ -1,6 +1,64 @@
 { inputs, lib, pkgs, ... }:
 let
   gv = lib.gvariant;
+  nightLightTemperatureStep = 100;
+  nightLightTemperatureDefault = 5000;
+  nightLightTemperatureMin = 2500;
+  nightLightTemperatureMax = 6500;
+  nightLightControl = pkgs.writeShellApplication {
+    name = "night-light-control";
+    runtimeInputs = [
+      pkgs.glib
+      pkgs.libnotify
+    ];
+    text = ''
+      set -eu
+
+      schema="org.gnome.settings-daemon.plugins.color"
+      step=${toString nightLightTemperatureStep}
+      min=${toString nightLightTemperatureMin}
+      max=${toString nightLightTemperatureMax}
+
+      current=$(gsettings get "$schema" night-light-temperature | tr -dc '0-9')
+
+      case "''${1-}" in
+        warmer)
+          next=$((current - step))
+          summary="Night Light warmer"
+          ;;
+        cooler)
+          next=$((current + step))
+          summary="Night Light cooler"
+          ;;
+        *)
+          echo "usage: night-light-control {warmer|cooler}" >&2
+          exit 1
+          ;;
+      esac
+
+      if [ "$next" -lt "$min" ]; then
+        next=$min
+      fi
+
+      if [ "$next" -gt "$max" ]; then
+        next=$max
+      fi
+
+      gsettings set "$schema" night-light-enabled true
+      gsettings set "$schema" night-light-schedule-automatic false
+      gsettings set "$schema" night-light-schedule-from 0.0
+      gsettings set "$schema" night-light-schedule-to 24.0
+      gsettings set "$schema" night-light-temperature "$next"
+
+      notify-send \
+        -a "Night Light" \
+        -h string:x-canonical-private-synchronous:night-light \
+        "$summary" \
+        "''${next}K"
+    '';
+  };
+  nightLightCoolerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler/";
+  nightLightWarmerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer/";
   spaceBarStyles = ''
     .space-bar {
       -natural-hpadding: 12px;
@@ -73,6 +131,7 @@ in
   environment.systemPackages = with pkgs; [
     lidInhibitExtension
     gnomeExtensions.space-bar
+    nightLightControl
     telegramDesktop
     vial
     zedEditor
@@ -97,6 +156,29 @@ in
         };
         "org/gnome/desktop/peripherals/touchpad" = {
           two-finger-scrolling-enabled = true;
+        };
+        "org/gnome/settings-daemon/plugins/color" = {
+          night-light-enabled = true;
+          night-light-schedule-automatic = false;
+          night-light-schedule-from = 0.0;
+          night-light-schedule-to = 24.0;
+          night-light-temperature = gv.mkUint32 nightLightTemperatureDefault;
+        };
+        "org/gnome/settings-daemon/plugins/media-keys" = {
+          custom-keybindings = [
+            nightLightCoolerBindingPath
+            nightLightWarmerBindingPath
+          ];
+        };
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler" = {
+          binding = "F13";
+          command = "${nightLightControl}/bin/night-light-control cooler";
+          name = "Night Light Cooler";
+        };
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer" = {
+          binding = "F14";
+          command = "${nightLightControl}/bin/night-light-control warmer";
+          name = "Night Light Warmer";
         };
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "nothing";
