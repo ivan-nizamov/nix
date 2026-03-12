@@ -58,6 +58,17 @@ in
 {
   programs.dconf.enable = true;
 
+  # Keep the machine reachable with the lid closed; the GNOME extension is only
+  # a session-level toggle, while logind decides whether the host suspends.
+  services.logind.settings.Login = {
+    HandlePowerKey = "suspend";
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchDocked = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HoldoffTimeoutSec = 2;
+    IdleAction = "ignore";
+  };
+
   environment.systemPackages = [
     lidInhibitExtension
     pkgs.gnomeExtensions.space-bar
@@ -84,6 +95,13 @@ in
         };
         "org/gnome/desktop/peripherals/touchpad" = {
           two-finger-scrolling-enabled = true;
+        };
+        "org/gnome/settings-daemon/plugins/power" = {
+          power-button-action = "nothing";
+          sleep-inactive-ac-timeout = 0;
+          sleep-inactive-ac-type = "nothing";
+          sleep-inactive-battery-timeout = 0;
+          sleep-inactive-battery-type = "nothing";
         };
         "org/gnome/shell/extensions/space-bar/appearance" = {
           application-styles = spaceBarStyles;
