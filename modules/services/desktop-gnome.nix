@@ -41,11 +41,25 @@ let
   telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   zenBrowser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
+  lidInhibitExtension = pkgs.stdenvNoCC.mkDerivation {
+    pname = "gnome-shell-extension-lid-inhibit";
+    version = "1";
+    src = ./desktop-gnome/lid-inhibit;
+
+    installPhase = ''
+      runHook preInstall
+      target="$out/share/gnome-shell/extensions/lid-inhibit@localhost"
+      mkdir -p "$target"
+      cp -r "$src"/. "$target"/
+      runHook postInstall
+    '';
+  };
 in
 {
   programs.dconf.enable = true;
 
   environment.systemPackages = [
+    lidInhibitExtension
     pkgs.gnomeExtensions.space-bar
     telegramDesktop
     zedEditor
@@ -56,7 +70,10 @@ in
     {
       settings = {
         "org/gnome/shell" = {
-          enabled-extensions = [ "space-bar@luchrioh" ];
+          enabled-extensions = [
+            "space-bar@luchrioh"
+            "lid-inhibit@localhost"
+          ];
           disable-user-extensions = false;
           disable-extension-version-validation = true;
         };
@@ -91,6 +108,20 @@ in
       };
     }
   ];
+
+  systemd.user.services.lid-inhibit = {
+    description = "Ignore lid close (systemd inhibitor)";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "default.target" "graphical-session.target" ];
+
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.systemd}/bin/systemd-inhibit --what=handle-lid-switch --mode=block --who=LidIgnore --why='Ignore lid close' ${pkgs.coreutils}/bin/sleep infinity";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+  };
 
   services.xserver.enable = true;
   services.displayManager.gdm.enable = true;

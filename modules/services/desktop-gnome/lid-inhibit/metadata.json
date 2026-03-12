@@ -1,0 +1,7 @@
+{
+  "uuid": "lid-inhibit@localhost",
+  "name": "Lid Inhibit",
+  "description": "Toggle lid-close ignore and show status in the top bar.",
+  "version": 1,
+  "shell-version": ["45", "46", "47", "48", "49"]
+}
