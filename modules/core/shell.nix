@@ -3,7 +3,7 @@
   environment.systemPackages = [
     pkgs.git
     pkgs.micro
-    pkgs.nix-search
+    pkgs."nix-search-cli"
     pkgs.pay-respects
     pkgs.ripgrep
   ];
