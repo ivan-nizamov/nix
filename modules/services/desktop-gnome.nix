@@ -19,7 +19,7 @@ let
       min=${toString nightLightTemperatureMin}
       max=${toString nightLightTemperatureMax}
 
-      current=$(gsettings get "$schema" night-light-temperature | tr -dc '0-9')
+      current=$(gsettings get "$schema" night-light-temperature | awk '{ print $2 }')
 
       case "''${1-}" in
         warmer)
@@ -54,7 +54,7 @@ let
         -a "Night Light" \
         -h string:x-canonical-private-synchronous:night-light \
         "$summary" \
-        "''${next}K"
+        "''${next}K" || true
     '';
   };
   nightLightCoolerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler/";
