@@ -2,6 +2,7 @@
 {
   environment.systemPackages = [
     pkgs.git
+    pkgs.micro
     pkgs.pay-respects
     pkgs.ripgrep
   ];
