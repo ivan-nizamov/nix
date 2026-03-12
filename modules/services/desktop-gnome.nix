@@ -60,6 +60,14 @@ in
           disable-user-extensions = false;
           disable-extension-version-validation = true;
         };
+        "org/gnome/desktop/peripherals/mouse" = {
+          accel-profile = "flat";
+          natural-scroll = true;
+          speed = -0.176;
+        };
+        "org/gnome/desktop/peripherals/touchpad" = {
+          two-finger-scrolling-enabled = true;
+        };
         "org/gnome/shell/extensions/space-bar/appearance" = {
           application-styles = spaceBarStyles;
           active-workspace-font-weight = "700";
