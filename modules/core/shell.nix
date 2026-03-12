@@ -27,8 +27,6 @@
       oco = "opencode";
     };
     interactiveShellInit = ''
-      export PATH="$HOME/.npm-global/bin:$PATH"
-
       mkdir -p "$HOME/.gemini"
 
       eval "$(${pkgs.pay-respects}/bin/pay-respects zsh --alias f)"
