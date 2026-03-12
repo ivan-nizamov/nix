@@ -1,5 +1,6 @@
-{ inputs, pkgs, ... }:
+{ inputs, lib, pkgs, ... }:
 let
+  gv = lib.gvariant;
   spaceBarStyles = ''
     .space-bar {
       -natural-hpadding: 12px;
@@ -98,9 +99,9 @@ in
         };
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "nothing";
-          sleep-inactive-ac-timeout = 0;
+          sleep-inactive-ac-timeout = gv.mkUint32 0;
           sleep-inactive-ac-type = "nothing";
-          sleep-inactive-battery-timeout = 0;
+          sleep-inactive-battery-timeout = gv.mkUint32 0;
           sleep-inactive-battery-type = "nothing";
         };
         "org/gnome/shell/extensions/space-bar/appearance" = {
