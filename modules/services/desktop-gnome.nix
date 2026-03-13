@@ -3,8 +3,8 @@ let
   gv = lib.gvariant;
   nightLightTemperatureStep = 1000;
   nightLightTemperatureDefault = 5000;
-  nightLightTemperatureMin = 2500;
-  nightLightTemperatureMax = 6500;
+  nightLightTemperatureMin = 1000;
+  nightLightTemperatureMax = 10000;
   nightLightControl = pkgs.writeShellApplication {
     name = "night-light-control";
     runtimeInputs = [
