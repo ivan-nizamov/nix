@@ -21,7 +21,7 @@
     shellAliases = {
       c = "codex --dangerously-bypass-approvals-and-sandbox";
       gad = "git add .";
-      g = "gemini --yolo";
+      g = "gemini";
       gcm = "git commit -m";
       glog = "git log --all --decorate --oneline --graph";
       k = "kilocode";
