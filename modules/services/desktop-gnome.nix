@@ -1,7 +1,7 @@
 { inputs, lib, pkgs, ... }:
 let
   gv = lib.gvariant;
-  nightLightTemperatureStep = 500;
+  nightLightTemperatureStep = 1000;
   nightLightTemperatureDefault = 5000;
   nightLightTemperatureMin = 2500;
   nightLightTemperatureMax = 6500;
