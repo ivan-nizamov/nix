@@ -57,8 +57,8 @@ let
         "''${next}K" || true
     '';
   };
-  nightLightActkbd = direction:
-    "${pkgs.util-linux}/bin/runuser -u iva -- env DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus XDG_RUNTIME_DIR=/run/user/1000 ${nightLightControl}/bin/night-light-control ${direction}";
+  nightLightCoolerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler/";
+  nightLightWarmerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer/";
   spaceBarStyles = ''
     .space-bar {
       -natural-hpadding: 12px;
@@ -128,20 +128,6 @@ in
     IdleAction = "ignore";
   };
 
-  services.actkbd = {
-    enable = true;
-    bindings = [
-      {
-        keys = [ 125 26 ];
-        command = nightLightActkbd "cooler";
-      }
-      {
-        keys = [ 125 27 ];
-        command = nightLightActkbd "warmer";
-      }
-    ];
-  };
-
   environment.systemPackages = with pkgs; [
     lidInhibitExtension
     gnomeExtensions.space-bar
@@ -177,6 +163,22 @@ in
           night-light-schedule-from = 0.0;
           night-light-schedule-to = 24.0;
           night-light-temperature = gv.mkUint32 nightLightTemperatureDefault;
+        };
+        "org/gnome/settings-daemon/plugins/media-keys" = {
+          custom-keybindings = [
+            nightLightCoolerBindingPath
+            nightLightWarmerBindingPath
+          ];
+        };
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler" = {
+          binding = "<Super>bracketleft";
+          command = "${nightLightControl}/bin/night-light-control cooler";
+          name = "Night Light Cooler";
+        };
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer" = {
+          binding = "<Super>bracketright";
+          command = "${nightLightControl}/bin/night-light-control warmer";
+          name = "Night Light Warmer";
         };
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "nothing";
