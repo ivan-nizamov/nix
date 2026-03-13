@@ -1,7 +1,7 @@
 { inputs, lib, pkgs, ... }:
 let
   gv = lib.gvariant;
-  nightLightTemperatureStep = 100;
+  nightLightTemperatureStep = 500;
   nightLightTemperatureDefault = 5000;
   nightLightTemperatureMin = 2500;
   nightLightTemperatureMax = 6500;
@@ -172,12 +172,12 @@ in
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler" = {
           binding = "<Super>bracketleft";
-          command = "${nightLightControl}/bin/night-light-control cooler";
+          command = "${nightLightControl}/bin/night-light-control warmer";
           name = "Night Light Cooler";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer" = {
           binding = "<Super>bracketright";
-          command = "${nightLightControl}/bin/night-light-control warmer";
+          command = "${nightLightControl}/bin/night-light-control cooler";
           name = "Night Light Warmer";
         };
         "org/gnome/settings-daemon/plugins/power" = {
