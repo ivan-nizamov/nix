@@ -136,13 +136,13 @@ in
 {
   programs.dconf.enable = true;
 
-  # Keep the machine reachable with the lid closed; the GNOME extension is only
-  # a session-level toggle, while logind decides whether the host suspends.
+  # Suspend by default on lid close. The GNOME extension opts into staying
+  # awake by starting a user-scoped inhibitor only when you explicitly enable it.
   services.logind.settings.Login = {
     HandlePowerKey = "suspend";
-    HandleLidSwitch = "ignore";
-    HandleLidSwitchDocked = "ignore";
-    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchDocked = "suspend";
+    HandleLidSwitchExternalPower = "suspend";
     HoldoffTimeoutSec = 2;
     IdleAction = "ignore";
   };
@@ -234,7 +234,6 @@ in
     description = "Ignore lid close (systemd inhibitor)";
     after = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
-    wantedBy = [ "default.target" "graphical-session.target" ];
 
     serviceConfig = {
       Type = "simple";
