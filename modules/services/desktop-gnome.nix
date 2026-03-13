@@ -199,6 +199,9 @@ in
           command = "${nightLightControl}/bin/night-light-control warmer";
           name = "Night Light Warmer";
         };
+        "org/gnome/desktop/wm/keybindings" = {
+          close = [ "<Super>q" ];
+        };
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "nothing";
           sleep-inactive-ac-timeout = gv.mkUint32 0;
