@@ -23,11 +23,9 @@ let
       case "''${1-}" in
         warmer)
           next=$((current - step))
-          summary="Night Light warmer"
           ;;
         cooler)
           next=$((current + step))
-          summary="Night Light cooler"
           ;;
         *)
           echo "usage: night-light-control {warmer|cooler}" >&2
