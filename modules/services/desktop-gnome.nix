@@ -19,6 +19,11 @@ let
       max=${toString nightLightTemperatureMax}
 
       current=$(dconf read "$basePath/night-light-temperature" | awk '{ print $2 }')
+      enabled=$(dconf read "$basePath/night-light-enabled")
+      automatic=$(dconf read "$basePath/night-light-schedule-automatic")
+      scheduleFrom=$(dconf read "$basePath/night-light-schedule-from")
+      scheduleTo=$(dconf read "$basePath/night-light-schedule-to")
+      changed=0
 
       case "''${1-}" in
         warmer)
@@ -41,11 +46,34 @@ let
         next=$max
       fi
 
-      dconf write "$basePath/night-light-enabled" true
-      dconf write "$basePath/night-light-schedule-automatic" false
-      dconf write "$basePath/night-light-schedule-from" 0.0
-      dconf write "$basePath/night-light-schedule-to" 24.0
-      dconf write "$basePath/night-light-temperature" "uint32 ''${next}"
+      if [ "$enabled" != "true" ]; then
+        dconf write "$basePath/night-light-enabled" true
+        changed=1
+      fi
+
+      if [ "$automatic" != "false" ]; then
+        dconf write "$basePath/night-light-schedule-automatic" false
+        changed=1
+      fi
+
+      if [ "$scheduleFrom" != "0.0" ]; then
+        dconf write "$basePath/night-light-schedule-from" 0.0
+        changed=1
+      fi
+
+      if [ "$scheduleTo" != "24.0" ]; then
+        dconf write "$basePath/night-light-schedule-to" 24.0
+        changed=1
+      fi
+
+      if [ "$next" != "$current" ]; then
+        dconf write "$basePath/night-light-temperature" "uint32 ''${next}"
+        changed=1
+      fi
+
+      if [ "$changed" -eq 0 ]; then
+        exit 0
+      fi
     '';
   };
   nightLightCoolerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler/";
