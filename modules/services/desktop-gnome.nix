@@ -9,7 +9,6 @@ let
     name = "night-light-control";
     runtimeInputs = [
       pkgs.dconf
-      pkgs.libnotify
     ];
     text = ''
       set -eu
@@ -49,12 +48,6 @@ let
       dconf write "$basePath/night-light-schedule-from" 0.0
       dconf write "$basePath/night-light-schedule-to" 24.0
       dconf write "$basePath/night-light-temperature" "uint32 ''${next}"
-
-      notify-send \
-        -a "Night Light" \
-        -h string:x-canonical-private-synchronous:night-light \
-        "$summary" \
-        "''${next}K" || true
     '';
   };
   nightLightCoolerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler/";
@@ -172,12 +165,12 @@ in
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler" = {
           binding = "<Super>bracketleft";
-          command = "${nightLightControl}/bin/night-light-control warmer";
+          command = "${nightLightControl}/bin/night-light-control cooler";
           name = "Night Light Cooler";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer" = {
           binding = "<Super>bracketright";
-          command = "${nightLightControl}/bin/night-light-control cooler";
+          command = "${nightLightControl}/bin/night-light-control warmer";
           name = "Night Light Warmer";
         };
         "org/gnome/settings-daemon/plugins/power" = {
