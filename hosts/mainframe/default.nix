@@ -15,6 +15,7 @@
     ../../modules/services/audio-pipewire.nix
     ../../modules/services/desktop-gnome.nix
     ../../modules/services/failure-reporting.nix
+    ../../modules/services/openclaw-embeddings.nix
     ../../modules/services/openclaw-gateway.nix
     ../../modules/users/iva.nix
   ];
