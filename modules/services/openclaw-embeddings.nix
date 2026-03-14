@@ -96,7 +96,6 @@ in
         stateRoot
         cacheRoot
       ];
-      ConditionPathExists = launcher;
     };
   };
 }
