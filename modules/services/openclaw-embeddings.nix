@@ -8,7 +8,7 @@ let
   servedModelName = "${modelId}@${modelRevision}";
   stateRoot = "/var/lib/openclaw-embeddings/text-memory";
   cacheRoot = "/var/cache/openclaw-embeddings/text-memory";
-  launcher = "/home/iva/.openclaw/embeddings/openclaw-infinity-emb/bin/openclaw-infinity-emb";
+  launcher = "/nix/store/1d1qx2fr8ni1zkljrhlgfnkx14n6kgjv-openclaw-infinity-emb/bin/openclaw-infinity-emb";
 
   configFile = pkgs.writeText "openclaw-embeddings-text-memory.json" (
     builtins.toJSON {
