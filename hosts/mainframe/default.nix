@@ -26,5 +26,13 @@
 
   hardware.keyboard.qmk.enable = true;
 
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 100;
+  };
+
+  boot.kernel.sysctl."vm.swappiness" = 180;
+
   system.stateVersion = "25.11";
 }
