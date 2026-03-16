@@ -3,6 +3,13 @@
 # tap caps lock for escape
 # hold caps lock to access the mouse layer
 
+# limit capture to the real keyboards on this machine
+devices:
+- "AT Translated Set 2 keyboard"
+- "ITE Tech. Inc. ITE Device(8910) Keyboard"
+- "Thomas Haukland Cheapino2"
+- "Thomas Haukland Cheapino2 Keyboard"
+
 baseMouseSpeed: 900.0
 baseScrollSpeed: 20.0
 
