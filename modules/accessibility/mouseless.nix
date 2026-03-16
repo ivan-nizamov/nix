@@ -1,0 +1,33 @@
+{ config, lib, pkgs, ... }:
+let
+  userName = "iva";
+  userHome = config.users.users.${userName}.home;
+  configPath = "/etc/mouseless/config.yaml";
+in
+{
+  boot.kernelModules = [ "uinput" ];
+
+  environment.systemPackages = [
+    pkgs.mouseless
+  ];
+
+  environment.etc."mouseless/config.yaml".source = ./mouseless-config.yaml;
+
+  systemd.tmpfiles.rules = [
+    "d ${userHome}/.config/mouseless 0755 ${userName} users - -"
+    "L+ ${userHome}/.config/mouseless/config.yaml - - - - ${configPath}"
+  ];
+
+  systemd.user.services.mouseless = {
+    description = "Keyboard-driven mouse control";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${lib.getExe pkgs.mouseless} --config ${configPath}";
+      Restart = "on-failure";
+      RestartSec = "2s";
+    };
+  };
+}
