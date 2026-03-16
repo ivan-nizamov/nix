@@ -126,6 +126,12 @@ let
       };
       tools = {
         profile = "coding";
+        sessions = {
+          visibility = "all";
+        };
+        agentToAgent = {
+          enabled = true;
+        };
         web = {
           search = {
             enabled = true;
