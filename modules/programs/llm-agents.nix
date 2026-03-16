@@ -5,6 +5,7 @@ in
 {
   environment.systemPackages = [
     llmAgentsPkgs.codex
+    llmAgentsPkgs.codex-acp
     llmAgentsPkgs.gemini-cli
     llmAgentsPkgs.kilocode-cli
     llmAgentsPkgs.openclaw

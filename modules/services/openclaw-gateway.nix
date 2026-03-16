@@ -3,8 +3,70 @@ let
   user = "iva";
   userHome = "/home/iva";
   stateDir = "${userHome}/.openclaw";
-  openclaw = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.openclaw;
+  llmAgentsPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+  openclaw = llmAgentsPkgs.openclaw;
   openclawBin = lib.getExe openclaw;
+  codexAcpBin = lib.getExe llmAgentsPkgs.codex-acp;
+  acpxWrapper = pkgs.writeShellScriptBin "openclaw-acpx" ''
+    set -euo pipefail
+
+    openclaw_root="${openclaw}/lib/openclaw"
+    acpx_cli=""
+    for candidate in "$openclaw_root"/node_modules/.pnpm/acpx@*/node_modules/acpx/dist/cli.js; do
+      if [ -f "$candidate" ]; then
+        acpx_cli="$candidate"
+        break
+      fi
+    done
+
+    if [ -z "$acpx_cli" ]; then
+      echo "openclaw-acpx: could not locate bundled acpx cli.js under $openclaw_root" >&2
+      exit 127
+    fi
+
+    argv=("$@")
+    has_agent_override=0
+    expect_value=0
+    positional_index=-1
+    index=0
+
+    for arg in "''${argv[@]}"; do
+      if [ "$expect_value" -eq 1 ]; then
+        expect_value=0
+      elif [ "$arg" = "--agent" ] || [ "$arg" = "--cwd" ] || [ "$arg" = "--auth-policy" ] || [ "$arg" = "--approve-all" ] || [ "$arg" = "--approve-reads" ] || [ "$arg" = "--deny-all" ] || [ "$arg" = "--non-interactive-permissions" ] || [ "$arg" = "--format" ] || [ "$arg" = "--model" ] || [ "$arg" = "--allowed-tools" ] || [ "$arg" = "--max-turns" ] || [ "$arg" = "--timeout" ] || [ "$arg" = "--ttl" ] || [ "$arg" = "-c" ] || [ "$arg" = "--config" ]; then
+        if [ "$arg" = "--agent" ]; then
+          has_agent_override=1
+        fi
+        case "$arg" in
+          --approve-all|--approve-reads|--deny-all|--json-strict|--verbose)
+            ;;
+          *)
+            expect_value=1
+            ;;
+        esac
+      elif [ ''${arg#-} != "$arg" ]; then
+        :
+      else
+        positional_index=$index
+        break
+      fi
+      index=$((index + 1))
+    done
+
+    if [ "$has_agent_override" -eq 0 ] && [ "$positional_index" -ge 0 ] && [ "''${argv[$positional_index]}" = "codex" ]; then
+      rewritten=()
+      index=0
+      for arg in "''${argv[@]}"; do
+        if [ "$index" -ne "$positional_index" ]; then
+          rewritten+=("$arg")
+        fi
+        index=$((index + 1))
+      done
+      exec ${pkgs.nodejs}/bin/node "$acpx_cli" --agent ${codexAcpBin} "''${rewritten[@]}"
+    fi
+
+    exec ${pkgs.nodejs}/bin/node "$acpx_cli" "''${argv[@]}"
+  '';
   openclawPath = lib.concatStringsSep ":" [
     (lib.makeBinPath [ pkgs.nodejs ])
     "/run/current-system/sw/bin"
@@ -136,6 +198,7 @@ let
           acpx = {
             enabled = true;
             config = {
+              command = lib.getExe acpxWrapper;
               expectedVersion = "any";
               permissionMode = "approve-all";
               nonInteractivePermissions = "fail";
