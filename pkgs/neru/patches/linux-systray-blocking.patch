@@ -1,0 +1,85 @@
+diff --git a/internal/core/infra/systray/systray_linux.go b/internal/core/infra/systray/systray_linux.go
+index 6af2ff9..ca9bc10 100644
+--- a/internal/core/infra/systray/systray_linux.go
++++ b/internal/core/infra/systray/systray_linux.go
+@@ -7,11 +7,18 @@
+ )
+ 
+ var (
+-	menuItems     = make(map[int]*MenuItem)
+-	menuItemsLock sync.RWMutex
+-	nextID        = 1
++	menuItems      = make(map[int]*MenuItem)
++	menuItemsLock  sync.RWMutex
++	nextID         = 1
++	runLoopLock    sync.Mutex
++	activeRunLoop *runLoopState
+ )
+ 
++type runLoopState struct {
++	quit chan struct{}
++	once sync.Once
++}
++
+ // MenuItem represents a menu item in the system tray (Linux stub).
+ type MenuItem struct {
+ 	ClickedCh chan struct{}
+@@ -126,13 +133,55 @@
+ func (m *MenuItem) AddSeparator() {}
+ 
+ // Run starts the system tray loop (Linux stub).
+-func Run(onReadyFunc, onExitFunc func()) {}
++func Run(onReadyFunc, onExitFunc func()) {
++	runLoop(onReadyFunc, onExitFunc)
++}
+ 
+ // RunHeadless starts the system tray loop without a status icon (Linux stub).
+-func RunHeadless(onReadyFunc, onExitFunc func()) {}
++func RunHeadless(onReadyFunc, onExitFunc func()) {
++	runLoop(onReadyFunc, onExitFunc)
++}
+ 
+ // Quit quits the application (Linux stub).
+-func Quit() {}
++func Quit() {
++	runLoopLock.Lock()
++	state := activeRunLoop
++	runLoopLock.Unlock()
++
++	if state == nil {
++		return
++	}
++
++	state.once.Do(func() {
++		close(state.quit)
++	})
++}
++
++func runLoop(onReadyFunc, onExitFunc func()) {
++	state := &runLoopState{
++		quit: make(chan struct{}),
++	}
++
++	runLoopLock.Lock()
++	activeRunLoop = state
++	runLoopLock.Unlock()
++
++	if onReadyFunc != nil {
++		onReadyFunc()
++	}
++
++	<-state.quit
++
++	if onExitFunc != nil {
++		onExitFunc()
++	}
++
++	runLoopLock.Lock()
++	if activeRunLoop == state {
++		activeRunLoop = nil
++	}
++	runLoopLock.Unlock()
++}
+ 
+ // SetTitle sets the title of the system tray icon (Linux stub).
+ func SetTitle(title string) {}
