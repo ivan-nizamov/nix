@@ -136,6 +136,7 @@ let
           acpx = {
             enabled = true;
             config = {
+              expectedVersion = "any";
               permissionMode = "approve-all";
               nonInteractivePermissions = "fail";
             };
