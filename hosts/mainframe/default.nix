@@ -1,7 +1,6 @@
 { ... }:
 {
   imports = [
-    ../../modules/accessibility/mouseless.nix
     ./hardware-configuration.nix
     ../../modules/accessibility/dictation.nix
     ../../modules/core/locale.nix
