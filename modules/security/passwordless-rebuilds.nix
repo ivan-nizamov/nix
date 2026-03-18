@@ -30,11 +30,20 @@ let
 
     notify_openclaw=0
     notify_note=""
+    notify_session_id=""
     while [ "$#" -gt 0 ]; do
       case "$1" in
         --notify-openclaw)
           notify_openclaw=1
           shift
+          ;;
+        --notify-session-id)
+          if [ "$#" -lt 2 ]; then
+            echo "mainframe-rebuild: --notify-session-id requires a value" >&2
+            exit 64
+          fi
+          notify_session_id=$2
+          shift 2
           ;;
         --notify-note)
           if [ "$#" -lt 2 ]; then
@@ -62,7 +71,7 @@ let
         shift
         ;;
       *)
-        echo "usage: mainframe-rebuild [--notify-openclaw] [--notify-note TEXT] [build|test|switch] [nixos-rebuild args...]" >&2
+        echo "usage: mainframe-rebuild [--notify-openclaw] [--notify-session-id ID] [--notify-note TEXT] [build|test|switch] [nixos-rebuild args...]" >&2
         exit 64
         ;;
     esac
@@ -76,6 +85,9 @@ let
         relay_args=()
         if [ "$notify_openclaw" -eq 1 ]; then
           relay_args+=(--notify-openclaw)
+        fi
+        if [ -n "$notify_session_id" ]; then
+          relay_args+=(--notify-session-id "$notify_session_id")
         fi
         if [ -n "$notify_note" ]; then
           relay_args+=(--notify-note "$notify_note")
@@ -98,6 +110,7 @@ let
       if [ "$notify_openclaw" -eq 1 ]; then
         {
           printf 'NOTIFY_OPENCLAW=1\n'
+          printf 'NOTIFY_SESSION_ID=%s\n' "$(shell_escape "$notify_session_id")"
           printf 'NOTIFY_NOTE=%s\n' "$(shell_escape "$notify_note")"
         } > "$notify_file"
       else
@@ -162,17 +175,26 @@ $state_text
 Current diff stat for /home/iva/nix:
 $diff_stat
 
-Reply to the last active user-facing chat with a concise summary of what changed and whether the rebuild succeeded.
+Reply in the originating OpenClaw session with a concise summary of what changed and whether the rebuild succeeded.
 If the rebuild failed, say that clearly and mention the current repo status instead of guessing.
 EOF
       )
 
-      "$openclaw_bin" agent \
-        --agent main \
-        --channel last \
-        --deliver \
-        --message "$prompt" \
-        --timeout 120 >/dev/null 2>&1 || true
+      if [ -n "''${NOTIFY_SESSION_ID:-}" ]; then
+        "$openclaw_bin" agent \
+          --agent main \
+          --session-id "$NOTIFY_SESSION_ID" \
+          --deliver \
+          --message "$prompt" \
+          --timeout 120 >/dev/null 2>&1 || true
+      else
+        "$openclaw_bin" agent \
+          --agent main \
+          --channel last \
+          --deliver \
+          --message "$prompt" \
+          --timeout 120 >/dev/null 2>&1 || true
+      fi
     }
 
     cleanup() {
