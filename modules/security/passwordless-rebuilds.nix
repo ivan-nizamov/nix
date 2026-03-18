@@ -133,10 +133,16 @@ let
       fi
     fi
 
+    gateway_ready() {
+      exec 3<>/dev/tcp/127.0.0.1/18789
+      exec 3>&-
+      exec 3<&-
+    }
+
     wait_for_gateway() {
       local attempt=0
       while [ "$attempt" -lt 30 ]; do
-        if "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" gateway probe >/dev/null 2>&1; then
+        if gateway_ready >/dev/null 2>&1; then
           return 0
         fi
         attempt=$((attempt + 1))
