@@ -3,13 +3,22 @@ let
   safeRebuild = pkgs.writeShellScriptBin "mainframe-rebuild" ''
     set -euo pipefail
 
-    systemd_run=${lib.getExe' pkgs.systemd "systemd-run"}
     systemctl=${lib.getExe' pkgs.systemd "systemctl"}
     sudo_bin=/run/wrappers/bin/sudo
     nixos_rebuild=/run/current-system/sw/bin/nixos-rebuild
     self=/run/current-system/sw/bin/mainframe-rebuild
     flake=path:/home/iva/nix#mainframe
     gateway_unit=openclaw-gateway.service
+
+    default_cores() {
+      local cpu_count target
+      cpu_count=$(${lib.getExe' pkgs.coreutils "nproc"} --all)
+      target=$(( cpu_count * 2 / 3 ))
+      if [ "$target" -lt 1 ]; then
+        target=1
+      fi
+      printf '%s\n' "$target"
+    }
 
     detached=0
     if [ "''${1:-}" = "--run-detached" ]; then
@@ -37,16 +46,12 @@ let
         exec "$sudo_bin" "$self" "$mode" "$@"
       fi
 
-      unit="mainframe-rebuild-$mode-$(date +%Y%m%d%H%M%S)"
-      exec "$systemd_run" \
-        --collect \
-        --pipe \
-        --quiet \
-        --same-dir \
-        --service-type=exec \
-        --unit "$unit" \
-        --wait \
-        "$self" --run-detached "$mode" "$@"
+      if [ "$#" -ne 0 ]; then
+        echo "mainframe-rebuild: switch/test use the declarative service defaults and do not accept extra args" >&2
+        exit 64
+      fi
+
+      exec "$systemctl" start "mainframe-rebuild-$mode.service"
     fi
 
     cleanup() {
@@ -60,11 +65,35 @@ let
 
     trap cleanup EXIT
 
+    if [ "$#" -eq 0 ]; then
+      set -- --max-jobs 1 --cores "$(default_cores)"
+    fi
+
     "$nixos_rebuild" "$mode" --flake "$flake" "$@"
   '';
 in
 {
   environment.systemPackages = [ safeRebuild ];
+
+  systemd.services.mainframe-rebuild-switch = {
+    description = "Safe NixOS switch for mainframe";
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root";
+      WorkingDirectory = "/home/iva/nix";
+      ExecStart = "${lib.getExe safeRebuild} --run-detached switch";
+    };
+  };
+
+  systemd.services.mainframe-rebuild-test = {
+    description = "Safe NixOS test activation for mainframe";
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root";
+      WorkingDirectory = "/home/iva/nix";
+      ExecStart = "${lib.getExe safeRebuild} --run-detached test";
+    };
+  };
 
   security.sudo.extraRules = [
     {

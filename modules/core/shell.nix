@@ -59,15 +59,11 @@
       }
 
       nrt() {
-        local cores
-        cores=$(_nixos_rebuild_cores)
-        command mainframe-rebuild test --max-jobs 1 --cores "$cores" "$@"
+        command mainframe-rebuild test
       }
 
       nrs() {
-        local cores
-        cores=$(_nixos_rebuild_cores)
-        command mainframe-rebuild switch --max-jobs 1 --cores "$cores" "$@"
+        command mainframe-rebuild switch
       }
     '';
   };
