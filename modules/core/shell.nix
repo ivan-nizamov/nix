@@ -61,13 +61,13 @@
       nrt() {
         local cores
         cores=$(_nixos_rebuild_cores)
-        sudo nixos-rebuild test --flake /home/iva/nix#mainframe --max-jobs 1 --cores "$cores" "$@"
+        command mainframe-rebuild test --max-jobs 1 --cores "$cores" "$@"
       }
 
       nrs() {
         local cores
         cores=$(_nixos_rebuild_cores)
-        sudo nixos-rebuild switch --flake /home/iva/nix#mainframe --max-jobs 1 --cores "$cores" "$@"
+        command mainframe-rebuild switch --max-jobs 1 --cores "$cores" "$@"
       }
     '';
   };
