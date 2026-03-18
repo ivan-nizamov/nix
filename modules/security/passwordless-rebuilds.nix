@@ -8,7 +8,7 @@ let
     sudo_bin=/run/wrappers/bin/sudo
     nixos_rebuild=/run/current-system/sw/bin/nixos-rebuild
     self=/run/current-system/sw/bin/mainframe-rebuild
-    flake=/home/iva/nix#mainframe
+    flake=path:/home/iva/nix#mainframe
     gateway_unit=openclaw-gateway.service
 
     detached=0
