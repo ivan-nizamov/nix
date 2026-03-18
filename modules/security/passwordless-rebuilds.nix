@@ -221,6 +221,8 @@ in
 
   systemd.services.mainframe-rebuild-switch = {
     description = "Safe NixOS switch for mainframe";
+    restartIfChanged = false;
+    stopIfChanged = false;
     serviceConfig = {
       Type = "oneshot";
       User = "root";
@@ -232,6 +234,8 @@ in
 
   systemd.services.mainframe-rebuild-test = {
     description = "Safe NixOS test activation for mainframe";
+    restartIfChanged = false;
+    stopIfChanged = false;
     serviceConfig = {
       Type = "oneshot";
       User = "root";
