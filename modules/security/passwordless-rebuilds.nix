@@ -190,6 +190,7 @@ let
       local status=$1
       local delivery_context
       local delivery_channel=""
+      local effective_reply_channel=""
       local delivery_to=""
       local delivery_account=""
       local state_text
@@ -254,7 +255,11 @@ EOF
           notify_args+=(--channel "$delivery_channel")
         fi
         if [ -n "$delivery_to" ]; then
-          notify_args+=(--deliver --reply-channel "${delivery_channel:-last}" --reply-to "$delivery_to")
+          effective_reply_channel=$delivery_channel
+          if [ -z "$effective_reply_channel" ]; then
+            effective_reply_channel=last
+          fi
+          notify_args+=(--deliver --reply-channel "$effective_reply_channel" --reply-to "$delivery_to")
           if [ -n "$delivery_account" ]; then
             notify_args+=(--reply-account "$delivery_account")
           fi
