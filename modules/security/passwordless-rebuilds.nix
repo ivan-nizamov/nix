@@ -62,7 +62,7 @@ let
         shift
         ;;
       *)
-        echo "usage: mainframe-rebuild [build|test|switch] [nixos-rebuild args...]" >&2
+        echo "usage: mainframe-rebuild [--notify-openclaw] [--notify-note TEXT] [build|test|switch] [nixos-rebuild args...]" >&2
         exit 64
         ;;
     esac
@@ -73,7 +73,19 @@ let
 
     if [ "$detached" -eq 0 ]; then
       if [ "$(id -u)" -ne 0 ]; then
-        exec "$sudo_bin" "$self" "$mode" "$@"
+        relay_args=()
+        if [ "$notify_openclaw" -eq 1 ]; then
+          relay_args+=(--notify-openclaw)
+        fi
+        if [ -n "$notify_note" ]; then
+          relay_args+=(--notify-note "$notify_note")
+        fi
+        relay_args+=("$mode")
+        if [ "$#" -gt 0 ]; then
+          relay_args+=("$@")
+        fi
+
+        exec "$sudo_bin" "$self" "''${relay_args[@]}"
       fi
 
       if [ "$#" -ne 0 ]; then
