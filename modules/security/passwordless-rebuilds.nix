@@ -4,14 +4,17 @@ let
     set -euo pipefail
 
     git_bin=${lib.getExe pkgs.git}
+    env_bin=${lib.getExe' pkgs.coreutils "env"}
     nproc_bin=${lib.getExe' pkgs.coreutils "nproc"}
     openclaw_bin=/run/current-system/sw/bin/openclaw
+    runuser_bin=${lib.getExe' pkgs.util-linux "runuser"}
     systemctl=${lib.getExe' pkgs.systemd "systemctl"}
     sudo_bin=/run/wrappers/bin/sudo
     nixos_rebuild=/run/current-system/sw/bin/nixos-rebuild
     self=/run/current-system/sw/bin/mainframe-rebuild
     flake=path:/home/iva/nix#mainframe
     gateway_unit=openclaw-gateway.service
+    openclaw_home=/home/iva
     runtime_dir=/run/mainframe-rebuild
 
     default_cores() {
@@ -133,7 +136,7 @@ let
     wait_for_gateway() {
       local attempt=0
       while [ "$attempt" -lt 30 ]; do
-        if "$openclaw_bin" gateway probe >/dev/null 2>&1; then
+        if "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" gateway probe >/dev/null 2>&1; then
           return 0
         fi
         attempt=$((attempt + 1))
@@ -181,14 +184,14 @@ EOF
       )
 
       if [ -n "''${NOTIFY_SESSION_ID:-}" ]; then
-        "$openclaw_bin" agent \
+        "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" agent \
           --agent main \
           --session-id "$NOTIFY_SESSION_ID" \
           --deliver \
           --message "$prompt" \
           --timeout 120 >/dev/null 2>&1 || true
       else
-        "$openclaw_bin" agent \
+        "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" agent \
           --agent main \
           --channel last \
           --deliver \
