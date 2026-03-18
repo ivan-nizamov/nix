@@ -5,7 +5,7 @@ let
 
     systemd_run=${lib.getExe' pkgs.systemd "systemd-run"}
     systemctl=${lib.getExe' pkgs.systemd "systemctl"}
-    sudo_bin=${lib.getExe' pkgs.sudo "sudo"}
+    sudo_bin=/run/wrappers/bin/sudo
     nixos_rebuild=/run/current-system/sw/bin/nixos-rebuild
     self=/run/current-system/sw/bin/mainframe-rebuild
     flake=/home/iva/nix#mainframe
