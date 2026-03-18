@@ -65,6 +65,10 @@
       nrs() {
         command mainframe-rebuild switch
       }
+
+      nrsa() {
+        command mainframe-rebuild --notify-openclaw switch
+      }
     '';
   };
 }
