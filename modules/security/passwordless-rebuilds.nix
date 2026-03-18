@@ -7,6 +7,7 @@ let
     env_bin=${lib.getExe' pkgs.coreutils "env"}
     nproc_bin=${lib.getExe' pkgs.coreutils "nproc"}
     openclaw_bin=/run/current-system/sw/bin/openclaw
+    perl_bin=${lib.getExe pkgs.perl}
     runuser_bin=${lib.getExe' pkgs.util-linux "runuser"}
     systemctl=${lib.getExe' pkgs.systemd "systemctl"}
     sudo_bin=/run/wrappers/bin/sudo
@@ -151,8 +152,46 @@ let
       return 1
     }
 
+    resolve_delivery_context() {
+      local session_id=$1
+      local sessions_file="$openclaw_home/.openclaw/agents/main/sessions/sessions.json"
+
+      if [ -z "$session_id" ] || [ ! -f "$sessions_file" ]; then
+        return 1
+      fi
+
+      "$perl_bin" -MJSON::PP -e '
+        use strict;
+        use warnings;
+
+        my ($path, $target) = @ARGV;
+        my $data = eval {
+          local $/;
+          open my $fh, "<", $path or die $!;
+          JSON::PP->new->decode(<$fh>);
+        };
+        exit 1 if !$data || ref($data) ne "HASH";
+
+        my ($session) = grep {
+          ref($_) eq "HASH" && ($_->{sessionId} // q{}) eq $target
+        } @{ $data->{sessions} // [] };
+        exit 1 if !$session;
+
+        my $ctx = $session->{deliveryContext} // {};
+        for my $field (qw(channel to accountId)) {
+          my $value = $ctx->{$field};
+          next if !defined($value) || $value eq q{};
+          print uc($field), q{=}, $value, "\n";
+        }
+      ' "$sessions_file" "$session_id"
+    }
+
     notify_agent() {
       local status=$1
+      local delivery_context
+      local delivery_channel=""
+      local delivery_to=""
+      local delivery_account=""
       local state_text
       local diff_stat
       local prompt
@@ -169,6 +208,20 @@ let
 
       state_text=$("$git_bin" -C /home/iva/nix status --short || true)
       diff_stat=$("$git_bin" -C /home/iva/nix diff --stat || true)
+      if [ -n "''${NOTIFY_SESSION_ID:-}" ]; then
+        delivery_context=$(resolve_delivery_context "$NOTIFY_SESSION_ID" || true)
+        if [ -n "$delivery_context" ]; then
+          while IFS='=' read -r key value; do
+            case "$key" in
+              CHANNEL) delivery_channel=$value ;;
+              TO) delivery_to=$value ;;
+              ACCOUNTID) delivery_account=$value ;;
+            esac
+          done <<EOF
+$delivery_context
+EOF
+        fi
+      fi
 
       prompt=$(
         cat <<EOF
@@ -184,18 +237,32 @@ $state_text
 Current diff stat for /home/iva/nix:
 $diff_stat
 
-Reply in the originating OpenClaw session with a concise summary of what changed and whether the rebuild succeeded.
+Write a concise human-facing update about what changed and whether the rebuild succeeded.
 If the rebuild failed, say that clearly and mention the current repo status instead of guessing.
 EOF
       )
 
       if [ -n "''${NOTIFY_SESSION_ID:-}" ]; then
-        "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" agent \
-          --agent main \
-          --session-id "$NOTIFY_SESSION_ID" \
-          --deliver \
-          --message "$prompt" \
-          --timeout 120 >/dev/null 2>&1 || true
+        notify_args=(
+          agent
+          --agent main
+          --session-id "$NOTIFY_SESSION_ID"
+          --message "$prompt"
+          --timeout 120
+        )
+        if [ -n "$delivery_channel" ]; then
+          notify_args+=(--channel "$delivery_channel")
+        fi
+        if [ -n "$delivery_to" ]; then
+          notify_args+=(--deliver --reply-channel "${delivery_channel:-last}" --reply-to "$delivery_to")
+          if [ -n "$delivery_account" ]; then
+            notify_args+=(--reply-account "$delivery_account")
+          fi
+        else
+          notify_args+=(--deliver)
+        fi
+
+        "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" "''${notify_args[@]}" >/dev/null 2>&1 || true
       else
         "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" agent \
           --agent main \
