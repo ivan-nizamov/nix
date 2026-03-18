@@ -7,6 +7,12 @@ let
   openclaw = llmAgentsPkgs.openclaw;
   openclawBin = lib.getExe openclaw;
   codexAcpBin = lib.getExe llmAgentsPkgs.codex-acp;
+  codexAcpWrapper = pkgs.writeShellScriptBin "openclaw-codex-acp" ''
+    exec ${codexAcpBin} \
+      -c 'approval_policy="never"' \
+      -c 'sandbox_mode="danger-full-access"' \
+      "$@"
+  '';
   acpxWrapper = pkgs.writeShellScriptBin "openclaw-acpx" ''
     set -euo pipefail
 
@@ -62,7 +68,7 @@ let
         fi
         index=$((index + 1))
       done
-      exec ${pkgs.nodejs}/bin/node "$acpx_cli" --agent ${codexAcpBin} "''${rewritten[@]}"
+      exec ${pkgs.nodejs}/bin/node "$acpx_cli" --agent ${lib.getExe codexAcpWrapper} "''${rewritten[@]}"
     fi
 
     exec ${pkgs.nodejs}/bin/node "$acpx_cli" "''${argv[@]}"
@@ -170,6 +176,11 @@ let
           botToken = "8741182257:AAFouGomF9j5BJVw3DqBYWoROGO-nu35gyM";
           groupPolicy = "allowlist";
           streaming = "partial";
+          execApprovals = {
+            enabled = true;
+            approvers = [ "5180423459" ];
+            target = "dm";
+          };
         };
       };
       gateway = {
