@@ -173,8 +173,8 @@ let
         exit 1 if !$data || ref($data) ne "HASH";
 
         my ($session) = grep {
-          ref($_) eq "HASH" && ($_->{sessionId} // q{}) eq $target
-        } @{ $data->{sessions} // [] };
+          ref($_) eq "HASH" && (($_->{sessionId} // q{}) eq $target)
+        } values %{$data};
         exit 1 if !$session;
 
         my $ctx = $session->{deliveryContext} // {};
