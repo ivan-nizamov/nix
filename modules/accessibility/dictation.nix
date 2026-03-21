@@ -40,9 +40,10 @@ in
     key = "Insert"
 
     [output]
-    mode = "type"
-    driver_order = ["dotool", "clipboard"]
+    mode = "paste"
+    paste_keys = "ctrl+shift+v"
     pre_type_delay_ms = 400
+    restore_clipboard = false
 
     [output.notification]
     on_recording_start = false
