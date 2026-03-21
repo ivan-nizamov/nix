@@ -31,7 +31,7 @@ in
     engine = "whisper"
 
     [audio]
-    device = "alsa_input.pci-0000_05_00.6.analog-stereo"
+    device = "pipewire"
     max_duration_secs = 60
     sample_rate = 16000
 
