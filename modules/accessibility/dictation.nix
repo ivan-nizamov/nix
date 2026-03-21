@@ -38,13 +38,11 @@ in
     [hotkey]
     enabled = true
     key = "Insert"
-    modifiers = ["RIGHTCTRL"]
 
     [output]
-    mode = "paste"
-    paste_keys = "shift+insert"
+    mode = "type"
+    driver_order = ["dotool", "clipboard"]
     pre_type_delay_ms = 400
-    restore_clipboard = false
 
     [output.notification]
     on_recording_start = false
