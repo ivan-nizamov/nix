@@ -53,6 +53,9 @@ in
     language = ["en", "ru", "fr", "ro"]
     model = "${voxtypeModel}"
     translate = false
+    eager_processing = true
+    eager_chunk_secs = 3.0
+    eager_overlap_secs = 0.5
   '';
 
   systemd.tmpfiles.rules = [
