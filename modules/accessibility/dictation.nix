@@ -12,7 +12,6 @@ let
   voxtypePath = lib.makeBinPath [
     pkgs.dotool
     pkgs.wl-clipboard
-    pkgs.wtype
     pkgs.ydotool
   ];
   userHome = config.users.users.iva.home;
