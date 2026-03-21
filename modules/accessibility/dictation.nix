@@ -42,7 +42,7 @@ in
     mode = "paste"
     pre_type_delay_ms = 250
     paste_keys = "shift+insert"
-    restore_clipboard = true
+    restore_clipboard = false
     restore_clipboard_delay_ms = 250
 
     [output.notification]
