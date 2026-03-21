@@ -1,7 +1,6 @@
-diff --git a/src/output/paste.rs b/src/output/paste.rs
 --- a/src/output/paste.rs
 +++ b/src/output/paste.rs
-@@ -116,6 +116,15 @@ fn key_name_to_evdev(name: &str) -> Result<u16, String> {
+@@ -156,6 +156,14 @@
      }
  }
  
@@ -14,9 +13,9 @@ diff --git a/src/output/paste.rs b/src/output/paste.rs
 +}
 +
  /// Clipboard content with MIME type for restoration
+ #[derive(Clone)]
  struct ClipboardContent {
-     data: Vec<u8>,
-@@ -320,8 +329,10 @@ impl PasteOutput {
+@@ -320,8 +328,9 @@
  
          // Read the actual content
          let content_output = Command::new("wl-paste")
@@ -28,11 +27,10 @@ diff --git a/src/output/paste.rs b/src/output/paste.rs
              .stdout(Stdio::piped())
              .stderr(Stdio::piped())
              .output()
-@@ -861,4 +873,14 @@ mod tests {
-         assert!(debug_str.contains("[5 bytes]"));
+@@ -857,4 +866,16 @@
          assert!(debug_str.contains("text/plain"));
          assert!(!debug_str.contains("[1, 2, 3"));
-+    }
+     }
 +
 +    #[test]
 +    fn test_wl_paste_read_args_disables_added_newline() {
@@ -44,5 +42,5 @@ diff --git a/src/output/paste.rs b/src/output/paste.rs
 +                "text/plain".to_string()
 +            ]
 +        );
-     }
++    }
  }

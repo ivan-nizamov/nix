@@ -1,7 +1,6 @@
-diff --git a/src/hotkey/evdev_listener.rs b/src/hotkey/evdev_listener.rs
 --- a/src/hotkey/evdev_listener.rs
 +++ b/src/hotkey/evdev_listener.rs
-@@ -117,6 +117,15 @@ struct DeviceManager {
+@@ -131,6 +131,15 @@
      last_validation: Instant,
  }
  
@@ -17,7 +16,7 @@ diff --git a/src/hotkey/evdev_listener.rs b/src/hotkey/evdev_listener.rs
  impl DeviceManager {
      /// Create a new device manager with inotify watcher
      fn new() -> Result<Self, HotkeyError> {
-@@ -188,6 +197,14 @@ impl DeviceManager {
+@@ -207,6 +216,15 @@
                      })
                      .unwrap_or(false);
  
@@ -33,11 +32,10 @@ diff --git a/src/hotkey/evdev_listener.rs b/src/hotkey/evdev_listener.rs
                  if has_keys {
                      // Set device to non-blocking mode
                      let fd = device.as_raw_fd();
-@@ -759,6 +776,18 @@ mod tests {
-         assert_eq!(parse_key_name("xev_234").unwrap(), Key::KEY_MEDIA);
+@@ -755,6 +773,19 @@
      }
  
-+    #[test]
+     #[test]
 +    fn test_should_skip_ydotool_virtual_keyboard() {
 +        assert!(should_skip_keyboard(Some("ydotoold virtual device")));
 +        assert!(should_skip_keyboard(Some("YDOTOOLD VIRTUAL DEVICE")));
@@ -50,6 +48,7 @@ diff --git a/src/hotkey/evdev_listener.rs b/src/hotkey/evdev_listener.rs
 +        assert!(!should_skip_keyboard(None));
 +    }
 +
-     #[test]
++    #[test]
      fn test_parse_evtest_keycode() {
          // evtest shows raw kernel keycode 226 for KEY_MEDIA
+         assert_eq!(parse_key_name("evtest_226").unwrap(), Key::KEY_MEDIA);
