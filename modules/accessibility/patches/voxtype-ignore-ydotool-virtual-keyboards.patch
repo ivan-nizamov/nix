@@ -1,0 +1,55 @@
+diff --git a/src/hotkey/evdev_listener.rs b/src/hotkey/evdev_listener.rs
+--- a/src/hotkey/evdev_listener.rs
++++ b/src/hotkey/evdev_listener.rs
+@@ -117,6 +117,15 @@ struct DeviceManager {
+     last_validation: Instant,
+ }
+ 
++fn should_skip_keyboard(device_name: Option<&str>) -> bool {
++    device_name
++        .map(|name| {
++            let name = name.to_ascii_lowercase();
++            name.contains("ydotoold virtual device")
++        })
++        .unwrap_or(false)
++}
++
+ impl DeviceManager {
+     /// Create a new device manager with inotify watcher
+     fn new() -> Result<Self, HotkeyError> {
+@@ -188,6 +197,14 @@ impl DeviceManager {
+                     })
+                     .unwrap_or(false);
+ 
++                if has_keys && should_skip_keyboard(device.name()) {
++                    tracing::debug!(
++                        "Skipping synthetic keyboard: {:?} ({:?})",
++                        path,
++                        device.name().unwrap_or("unknown")
++                    );
++                    return;
++                }
++
+                 if has_keys {
+                     // Set device to non-blocking mode
+                     let fd = device.as_raw_fd();
+@@ -759,6 +776,18 @@ mod tests {
+         assert_eq!(parse_key_name("xev_234").unwrap(), Key::KEY_MEDIA);
+     }
+ 
++    #[test]
++    fn test_should_skip_ydotool_virtual_keyboard() {
++        assert!(should_skip_keyboard(Some("ydotoold virtual device")));
++        assert!(should_skip_keyboard(Some("YDOTOOLD VIRTUAL DEVICE")));
++        assert!(!should_skip_keyboard(Some(
++            "ITE Tech. Inc. ITE Device(8910) Keyboard"
++        )));
++        assert!(!should_skip_keyboard(Some(
++            "Thomas Haukland Cheapino2 Keyboard"
++        )));
++        assert!(!should_skip_keyboard(None));
++    }
++
+     #[test]
+     fn test_parse_evtest_keycode() {
+         // evtest shows raw kernel keycode 226 for KEY_MEDIA

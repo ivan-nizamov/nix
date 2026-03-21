@@ -3,6 +3,7 @@ let
   voxtypePackage = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.vulkan.overrideAttrs (old: {
     patches = (old.patches or []) ++ [
       ./patches/voxtype-clipboard-restore-no-newline.patch
+      ./patches/voxtype-ignore-ydotool-virtual-keyboards.patch
     ];
   });
   voxtypeModel = pkgs.fetchurl {
