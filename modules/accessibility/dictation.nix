@@ -41,7 +41,7 @@ in
 
     [output]
     mode = "paste"
-    paste_keys = "ctrl+shift+v"
+    paste_keys = "shift+insert"
     restore_clipboard = true
     restore_clipboard_delay_ms = 250
 
