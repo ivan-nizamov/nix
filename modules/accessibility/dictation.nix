@@ -1,11 +1,32 @@
 { config, inputs, lib, pkgs, ... }:
 let
-  voxtypePackage = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.vulkan.overrideAttrs (old: {
+  voxtypeBasePackage = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.voxtype-vulkan-unwrapped.overrideAttrs (old: {
     patches = (old.patches or []) ++ [
       ./patches/voxtype-clipboard-restore-no-newline.patch
       ./patches/voxtype-ignore-ydotool-virtual-keyboards.patch
     ];
   });
+  voxtypePackage = pkgs.symlinkJoin {
+    name = "${voxtypeBasePackage.pname or "voxtype"}-wrapped-${voxtypeBasePackage.version}";
+    paths = [ voxtypeBasePackage ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/voxtype \
+        --prefix PATH : ${
+          lib.makeBinPath [
+            pkgs.wtype
+            pkgs.dotool
+            pkgs.wl-clipboard
+            pkgs.ydotool
+            pkgs.xdotool
+            pkgs.xclip
+            pkgs.libnotify
+            pkgs.pciutils
+          ]
+        }
+    '';
+    inherit (voxtypeBasePackage) meta;
+  };
   voxtypeModel = pkgs.fetchurl {
     url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin";
     hash = "sha256-H8cPd0046xaZk6w5Huo1fvR8iHV+9y7llDh5t+jivGk=";
