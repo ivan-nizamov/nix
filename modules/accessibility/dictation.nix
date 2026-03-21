@@ -43,8 +43,8 @@ in
     [output]
     mode = "paste"
     paste_keys = "shift+insert"
-    restore_clipboard = true
-    restore_clipboard_delay_ms = 1000
+    pre_type_delay_ms = 400
+    restore_clipboard = false
 
     [output.notification]
     on_recording_start = false
