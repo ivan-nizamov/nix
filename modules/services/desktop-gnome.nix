@@ -119,6 +119,16 @@ let
   telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   zenBrowser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
+  zedKeymap = ''
+    [
+      {
+        "context": "Editor",
+        "bindings": {
+          "ctrl-shift-v": "editor::Paste"
+        }
+      }
+    ]
+  '';
   lidInhibitExtension = pkgs.stdenvNoCC.mkDerivation {
     pname = "gnome-shell-extension-lid-inhibit";
     version = "1";
@@ -156,6 +166,8 @@ in
     zedEditor
     zenBrowser
   ];
+
+  environment.etc."zed/keymap.json".text = zedKeymap;
 
   programs.dconf.profiles.user.databases = [
     {
@@ -245,6 +257,11 @@ in
       RestartSec = 2;
     };
   };
+
+  systemd.tmpfiles.rules = [
+    "d /home/iva/.config/zed 0755 iva users - -"
+    "L+ /home/iva/.config/zed/keymap.json - - - - /etc/zed/keymap.json"
+  ];
 
   services.xserver.enable = true;
   services.displayManager.gdm.enable = true;
