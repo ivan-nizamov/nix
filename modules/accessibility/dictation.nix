@@ -123,7 +123,7 @@ let
         sys.exit(main())
   '';
 
-  eitypePackage = (pkgs.writeScriptBin "eitype" ''
+  eitypePackage = (pkgs.writeShellScriptBin "eitype" ''
     exec ${eitypePython}/bin/python ${eitypeCli} "$@"
   '').overrideAttrs (_: {
     meta = with lib; {
