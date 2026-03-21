@@ -38,6 +38,7 @@ in
     [hotkey]
     enabled = true
     key = "Insert"
+    modifiers = ["LEFTCTRL"]
 
     [output]
     mode = "paste"
