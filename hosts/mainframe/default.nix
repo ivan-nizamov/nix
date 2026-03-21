@@ -10,6 +10,7 @@
     ../../modules/hardware/hybrid-graphics.nix
     ../../modules/input/wayland-text-injection.nix
     ../../modules/programs/llm-agents.nix
+    ../../modules/programs/obs-studio.nix
     ../../modules/programs/obsidian.nix
     ../../modules/security/passwordless-rebuilds.nix
     ../../modules/services/audio-pipewire.nix
