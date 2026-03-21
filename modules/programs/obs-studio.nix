@@ -1,6 +1,12 @@
 { pkgs, ... }:
+let
+  obsStudio = pkgs.obs-studio.override {
+    cudaSupport = true;
+  };
+in
 {
-  environment.systemPackages = [
-    pkgs.obs-studio
-  ];
+  programs.obs-studio = {
+    enable = true;
+    package = obsStudio;
+  };
 }
