@@ -28,6 +28,11 @@
           id = "openclaw-workspace";
           label = "OpenClaw Workspace";
           devices = [ "a53" ];
+          type = "sendonly";
+          ignorePatterns = [
+            "/.git"
+            "/.obsidian/workspace*.json"
+          ];
         };
         sync = {
           path = "/home/iva/Sync";
