@@ -4,7 +4,7 @@
     gh
     git
     micro
-    "nix-search-cli"
+    pkgs."nix-search-cli"
     pay-respects
     ripgrep
   ];

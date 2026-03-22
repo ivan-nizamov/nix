@@ -16,11 +16,23 @@
         localAnnounceEnabled = true;
       };
 
+      devices = {
+        a53 = {
+          id = "2WGUA6E-OJLUMYK-7NJLC4C-42JON6A-FOLZZQX-VT4JEGC-AA3CGJ7-BPNFZQX";
+        };
+      };
+
       folders = {
         "openclaw-workspace" = {
           path = "/home/iva/.openclaw/workspace";
           id = "openclaw-workspace";
           label = "OpenClaw Workspace";
+        };
+        sync = {
+          path = "/home/iva/Sync";
+          id = "sync";
+          label = "Sync";
+          devices = [ "a53" ];
         };
       };
     };
