@@ -2,8 +2,8 @@
 {
   networking.networkmanager.enable = true;
 
-  environment.systemPackages = [
-    pkgs.tailscale
+  environment.systemPackages = with pkgs; [
+    tailscale
   ];
 
   services.tailscale = {

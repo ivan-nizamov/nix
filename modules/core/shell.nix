@@ -1,12 +1,12 @@
 { pkgs, ... }:
 {
-  environment.systemPackages = [
-    pkgs.gh
-    pkgs.git
-    pkgs.micro
-    pkgs."nix-search-cli"
-    pkgs.pay-respects
-    pkgs.ripgrep
+  environment.systemPackages = with pkgs; [
+    gh
+    git
+    micro
+    "nix-search-cli"
+    pay-respects
+    ripgrep
   ];
 
   programs.starship.enable = true;
