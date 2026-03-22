@@ -27,6 +27,7 @@
           path = "/home/iva/.openclaw/workspace";
           id = "openclaw-workspace";
           label = "OpenClaw Workspace";
+          devices = [ "a53" ];
         };
         sync = {
           path = "/home/iva/Sync";
