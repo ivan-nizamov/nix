@@ -174,7 +174,15 @@ let
           enabled = true;
           dmPolicy = "pairing";
           botToken = "8741182257:AAFouGomF9j5BJVw3DqBYWoROGO-nu35gyM";
+          allowFrom = [ "5180423459" ];
           groupPolicy = "allowlist";
+          groupAllowFrom = [ "5180423459" ];
+          groups = {
+            "-1003536453089" = {
+              requireMention = false;
+              allowFrom = [ "5180423459" ];
+            };
+          };
           streaming = "partial";
           execApprovals = {
             enabled = true;
