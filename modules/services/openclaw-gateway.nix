@@ -110,6 +110,7 @@ let
           model = {
             primary = "openai-codex/gpt-5.4";
           };
+          thinkingDefault = "high";
           workspace = "/home/iva/.openclaw/workspace";
           compaction = {
             mode = "safeguard";
