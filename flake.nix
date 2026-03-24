@@ -12,15 +12,34 @@
     };
   };
 
-  outputs = inputs@{ nixpkgs, ... }: {
-    nixosConfigurations.mainframe = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = {
-        inherit inputs;
+  outputs = inputs@{ self, nixpkgs, ... }:
+    let
+      systems = [ "x86_64-linux" ];
+      forAllSystems = nixpkgs.lib.genAttrs systems;
+    in
+    {
+      packages = forAllSystems (system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfreePredicate = pkg:
+              builtins.elem (nixpkgs.lib.getName pkg) [ "happ" ];
+          };
+          happ = pkgs.callPackage ./pkgs/happ { };
+        in
+        {
+          inherit happ;
+          default = happ;
+        });
+
+      nixosConfigurations.mainframe = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit inputs self;
+        };
+        modules = [
+          ./hosts/mainframe
+        ];
       };
-      modules = [
-        ./hosts/mainframe
-      ];
     };
-  };
 }
