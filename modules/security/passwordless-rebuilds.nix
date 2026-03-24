@@ -178,7 +178,7 @@ let
         exit 1 if !$session;
 
         my $ctx = $session->{deliveryContext} // {};
-        for my $field (qw(channel to accountId)) {
+        for my $field (qw(channel to accountId threadId)) {
           my $value = $ctx->{$field};
           next if !defined($value) || $value eq q{};
           print uc($field), q{=}, $value, "\n";
@@ -192,6 +192,8 @@ let
       local delivery_channel=""
       local effective_reply_channel=""
       local delivery_to=""
+      local delivery_thread_id=""
+      local final_reply_to=""
       local delivery_account=""
       local state_text
       local diff_stat
@@ -216,6 +218,7 @@ let
             case "$key" in
               CHANNEL) delivery_channel=$value ;;
               TO) delivery_to=$value ;;
+              THREADID) delivery_thread_id=$value ;;
               ACCOUNTID) delivery_account=$value ;;
             esac
           done <<EOF
@@ -259,7 +262,11 @@ EOF
           if [ -z "$effective_reply_channel" ]; then
             effective_reply_channel=last
           fi
-          notify_args+=(--deliver --reply-channel "$effective_reply_channel" --reply-to "$delivery_to")
+          final_reply_to=$delivery_to
+          if [ -n "$delivery_thread_id" ] && [ "$effective_reply_channel" = "telegram" ] && [[ "$final_reply_to" != *:topic:* ]]; then
+            final_reply_to="$final_reply_to:topic:$delivery_thread_id"
+          fi
+          notify_args+=(--deliver --reply-channel "$effective_reply_channel" --reply-to "$final_reply_to")
           if [ -n "$delivery_account" ]; then
             notify_args+=(--reply-account "$delivery_account")
           fi
