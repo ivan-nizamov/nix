@@ -39,6 +39,14 @@
         };
         modules = [
           ./hosts/mainframe
+          ({ lib, pkgs, ... }: {
+            nixpkgs.config.allowUnfreePredicate = pkg:
+              builtins.elem (lib.getName pkg) [ "happ" ];
+
+            environment.systemPackages = [
+              self.packages.${pkgs.system}.happ
+            ];
+          })
         ];
       };
     };
