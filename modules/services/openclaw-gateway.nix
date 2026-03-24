@@ -13,22 +13,33 @@ let
       -c 'sandbox_mode="danger-full-access"' \
       "$@"
   '';
+  acpxVersion = "0.3.1";
+  acpxPackage = pkgs.buildNpmPackage {
+    pname = "acpx";
+    version = acpxVersion;
+    src = pkgs.fetchurl {
+      url = "https://registry.npmjs.org/acpx/-/acpx-${acpxVersion}.tgz";
+      hash = "sha256-6WNw7N/DMmZJHMOaSPpXCpCGT0a9VygLNzsBWKRmhpo=";
+    };
+    npmDepsHash = "sha256-i2bpDwABCLEjCAbJaaxOZap+pSCECSP8ibYhbLHGR1Q=";
+    postPatch = ''
+      cp ${./acpx-package-lock.json} package-lock.json
+    '';
+    dontNpmBuild = true;
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/lib/node_modules/acpx $out/bin
+      cp -r . $out/lib/node_modules/acpx/
+      chmod +x $out/lib/node_modules/acpx/dist/cli.js
+      ln -s $out/lib/node_modules/acpx/dist/cli.js $out/bin/acpx
+      runHook postInstall
+    '';
+  };
+  acpxCli = "${acpxPackage}/bin/acpx";
   acpxWrapper = pkgs.writeShellScriptBin "openclaw-acpx" ''
     set -euo pipefail
 
-    openclaw_root="${openclaw}/lib/openclaw"
-    acpx_cli=""
-    for candidate in "$openclaw_root"/node_modules/.pnpm/acpx@*/node_modules/acpx/dist/cli.js; do
-      if [ -f "$candidate" ]; then
-        acpx_cli="$candidate"
-        break
-      fi
-    done
-
-    if [ -z "$acpx_cli" ]; then
-      echo "openclaw-acpx: could not locate bundled acpx cli.js under $openclaw_root" >&2
-      exit 127
-    fi
+    acpx_cli="${acpxCli}"
 
     argv=("$@")
     has_agent_override=0
