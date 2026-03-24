@@ -190,14 +190,14 @@ let
       local status=$1
       local delivery_context
       local delivery_channel=""
-      local effective_reply_channel=""
       local delivery_to=""
+      local delivery_target=""
       local delivery_thread_id=""
-      local final_reply_to=""
       local delivery_account=""
       local state_text
       local diff_stat
       local prompt
+      local agent_reply=""
 
       if [ "$notify_requested" -ne 1 ]; then
         return 0
@@ -257,24 +257,34 @@ EOF
         if [ -n "$delivery_channel" ]; then
           notify_args+=(--channel "$delivery_channel")
         fi
-        if [ -n "$delivery_to" ]; then
-          effective_reply_channel=$delivery_channel
-          if [ -z "$effective_reply_channel" ]; then
-            effective_reply_channel=last
-          fi
-          final_reply_to=$delivery_to
-          if [ -n "$delivery_thread_id" ] && [ "$effective_reply_channel" = "telegram" ] && [[ "$final_reply_to" != *:topic:* ]]; then
-            final_reply_to="$final_reply_to:topic:$delivery_thread_id"
-          fi
-          notify_args+=(--deliver --reply-channel "$effective_reply_channel" --reply-to "$final_reply_to")
-          if [ -n "$delivery_account" ]; then
-            notify_args+=(--reply-account "$delivery_account")
-          fi
-        else
-          notify_args+=(--deliver)
-        fi
 
-        "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" "''${notify_args[@]}" >/dev/null 2>&1 || true
+        agent_reply=$("$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" "''${notify_args[@]}" 2>/dev/null || true)
+
+        if [ -n "$agent_reply" ] && [ -n "$delivery_channel" ] && [ -n "$delivery_to" ]; then
+          delivery_target=$delivery_to
+          if [ "$delivery_channel" = "telegram" ]; then
+            delivery_target="''${delivery_target#telegram:}"
+            delivery_target="''${delivery_target%%:topic:*}"
+          fi
+
+          message_args=(
+            message
+            send
+            --channel "$delivery_channel"
+            --target "$delivery_target"
+            --message "$agent_reply"
+          )
+          if [ -n "$delivery_account" ]; then
+            message_args+=(--account "$delivery_account")
+          fi
+          if [ -n "$delivery_thread_id" ] && [ "$delivery_channel" = "telegram" ]; then
+            message_args+=(--thread-id "$delivery_thread_id")
+          fi
+
+          "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" "''${message_args[@]}" >/dev/null 2>&1 || true
+        elif [ -n "$agent_reply" ]; then
+          printf '%s\n' "$agent_reply" >&2
+        fi
       else
         "$runuser_bin" -u iva -- "$env_bin" HOME="$openclaw_home" OPENCLAW_STATE_DIR="$openclaw_home/.openclaw" "$openclaw_bin" agent \
           --agent main \
