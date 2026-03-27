@@ -146,16 +146,25 @@ in
 {
   programs.dconf.enable = true;
 
-  # Suspend by default on lid close. The GNOME extension opts into staying
-  # awake by starting a user-scoped inhibitor only when you explicitly enable it.
+  # Suspend by default on lid close, even if background processes take generic
+  # sleep inhibitors. The GNOME extension still opts into staying awake by
+  # taking the dedicated lid-switch inhibitor only when you explicitly enable it.
   services.logind.settings.Login = {
     HandlePowerKey = "suspend";
     HandleLidSwitch = "suspend";
     HandleLidSwitchDocked = "suspend";
     HandleLidSwitchExternalPower = "suspend";
+    LidSwitchIgnoreInhibited = true;
     HoldoffTimeoutSec = 2;
     IdleAction = "ignore";
   };
+
+  # Force suspend-to-RAM instead of lighter idle states so a closed lid leaves
+  # the machine quiescent until you open it again.
+  systemd.sleep.extraConfig = ''
+    SuspendState=mem
+    MemorySleepMode=deep
+  '';
 
   environment.systemPackages = with pkgs; [
     lidInhibitExtension
