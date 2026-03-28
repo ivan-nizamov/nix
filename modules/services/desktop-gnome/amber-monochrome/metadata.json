@@ -1,0 +1,7 @@
+{
+  "uuid": "amber-monochrome@localhost",
+  "name": "Amber Monochrome",
+  "description": "Render the composed GNOME scene in monochrome amber.",
+  "version": 1,
+  "shell-version": ["45", "46", "47", "48", "49"]
+}
