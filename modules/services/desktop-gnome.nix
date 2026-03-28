@@ -1,87 +1,10 @@
 { inputs, lib, pkgs, ... }:
 let
   gv = lib.gvariant;
-  amberGreenLevel = 0.69;
-  amberGreenBrightness = amberGreenLevel / 2.0 - 0.5;
-  amberGreenContrast = amberGreenLevel - 1.0;
-  amberToggleBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-screen-toggle/";
-  amberResetBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-screen-reset/";
   nightLightTemperatureStep = 1000;
-  nightLightTemperatureDefault = 5000;
+  nightLightTemperatureDefault = 1000;
   nightLightTemperatureMin = 1000;
   nightLightTemperatureMax = 10000;
-  amberScreenMode = pkgs.writeShellApplication {
-    name = "amber-screen-mode";
-    runtimeInputs = [
-      pkgs.dconf
-    ];
-    text = ''
-      set -eu
-
-      appsPath="/org/gnome/desktop/a11y/applications"
-      magnifierPath="/org/gnome/desktop/a11y/magnifier"
-
-      write_on() {
-        dconf write "$appsPath/screen-magnifier-enabled" true
-        dconf write "$magnifierPath/screen-position" "'full-screen'"
-        dconf write "$magnifierPath/lens-mode" false
-        dconf write "$magnifierPath/mag-factor" 1.0
-        dconf write "$magnifierPath/invert-lightness" false
-        dconf write "$magnifierPath/color-saturation" 0.0
-        dconf write "$magnifierPath/brightness-red" 0.0
-        dconf write "$magnifierPath/contrast-red" 0.0
-        dconf write "$magnifierPath/brightness-green" ${toString amberGreenBrightness}
-        dconf write "$magnifierPath/contrast-green" ${toString amberGreenContrast}
-        dconf write "$magnifierPath/brightness-blue" -0.5
-        dconf write "$magnifierPath/contrast-blue" -1.0
-        dconf write "$magnifierPath/show-cross-hairs" false
-      }
-
-      write_off() {
-        dconf write "$magnifierPath/brightness-red" 0.0
-        dconf write "$magnifierPath/brightness-green" 0.0
-        dconf write "$magnifierPath/brightness-blue" 0.0
-        dconf write "$magnifierPath/contrast-red" 0.0
-        dconf write "$magnifierPath/contrast-green" 0.0
-        dconf write "$magnifierPath/contrast-blue" 0.0
-        dconf write "$magnifierPath/color-saturation" 1.0
-        dconf write "$magnifierPath/invert-lightness" false
-        dconf write "$magnifierPath/mag-factor" 1.0
-        dconf write "$appsPath/screen-magnifier-enabled" false
-      }
-
-      is_on() {
-        [ "$(dconf read "$appsPath/screen-magnifier-enabled" 2>/dev/null || echo false)" = "true" ]
-      }
-
-      case "''${1-on}" in
-        on)
-          write_on
-          ;;
-        off)
-          write_off
-          ;;
-        toggle)
-          if is_on; then
-            write_off
-          else
-            write_on
-          fi
-          ;;
-        status)
-          if is_on; then
-            echo on
-          else
-            echo off
-          fi
-          ;;
-        *)
-          echo "usage: amber-screen-mode {on|off|toggle|status}" >&2
-          exit 1
-          ;;
-      esac
-    '';
-  };
   nightLightControl = pkgs.writeShellApplication {
     name = "night-light-control";
     runtimeInputs = [
@@ -162,19 +85,18 @@ let
 
     .space-bar-workspace-label.active {
       margin: 0 4px;
-      background-color: rgba(255,255,255,0.3);
-      color: rgba(255,255,255,1);
-      border-color: rgba(0,0,0,0);
+      background-color: rgba(255, 166, 61, 0.16);
+      color: rgba(255, 191, 102, 1);
+      border: 1px solid rgba(255, 166, 61, 0.45);
       font-weight: 700;
       border-radius: 4px;
-      border-width: 0px;
       padding: 3px 8px;
     }
 
     .space-bar-workspace-label.inactive {
       margin: 0 4px;
       background-color: rgba(0,0,0,0);
-      color: rgba(255,255,255,1);
+      color: rgba(210, 148, 71, 0.95);
       border-color: rgba(0,0,0,0);
       font-weight: 700;
       border-radius: 4px;
@@ -185,7 +107,7 @@ let
     .space-bar-workspace-label.inactive.empty {
       margin: 0 4px;
       background-color: rgba(0,0,0,0);
-      color: rgba(255,255,255,0.5);
+      color: rgba(146, 103, 45, 0.75);
       border-color: rgba(0,0,0,0);
       font-weight: 700;
       border-radius: 4px;
@@ -244,7 +166,6 @@ in
   '';
 
   environment.systemPackages = with pkgs; [
-    amberScreenMode
     lidInhibitExtension
     gnomeExtensions.space-bar
     nightLightControl
@@ -275,22 +196,18 @@ in
         "org/gnome/desktop/peripherals/touchpad" = {
           two-finger-scrolling-enabled = true;
         };
-        "org/gnome/desktop/a11y/applications" = {
-          screen-magnifier-enabled = true;
+        "org/gnome/desktop/background" = {
+          color-shading-type = "solid";
+          picture-options = "none";
+          picture-uri = "";
+          picture-uri-dark = "";
+          primary-color = "#000000";
+          secondary-color = "#000000";
         };
-        "org/gnome/desktop/a11y/magnifier" = {
-          lens-mode = false;
-          mag-factor = 1.0;
-          screen-position = "full-screen";
-          invert-lightness = false;
-          color-saturation = 0.0;
-          brightness-red = 0.0;
-          contrast-red = 0.0;
-          brightness-green = amberGreenBrightness;
-          contrast-green = amberGreenContrast;
-          brightness-blue = -0.5;
-          contrast-blue = -1.0;
-          show-cross-hairs = false;
+        "org/gnome/desktop/interface" = {
+          accent-color = "orange";
+          color-scheme = "prefer-dark";
+          gtk-theme = "Adwaita-dark";
         };
         "org/gnome/settings-daemon/plugins/color" = {
           night-light-enabled = true;
@@ -301,21 +218,9 @@ in
         };
         "org/gnome/settings-daemon/plugins/media-keys" = {
           custom-keybindings = [
-            amberToggleBindingPath
-            amberResetBindingPath
             nightLightCoolerBindingPath
             nightLightWarmerBindingPath
           ];
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-screen-toggle" = {
-          binding = "<Super>backslash";
-          command = "${amberScreenMode}/bin/amber-screen-mode toggle";
-          name = "Amber Screen Toggle";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-screen-reset" = {
-          binding = "<Shift><Super>backslash";
-          command = "${amberScreenMode}/bin/amber-screen-mode off";
-          name = "Amber Screen Reset";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler" = {
           binding = "<Super>bracketleft";
@@ -329,6 +234,9 @@ in
         };
         "org/gnome/desktop/wm/keybindings" = {
           close = [ "<Super>q" ];
+        };
+        "org/gnome/desktop/wm/preferences" = {
+          theme = "Adwaita-dark";
         };
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "nothing";
@@ -371,18 +279,6 @@ in
       ExecStart = "${pkgs.systemd}/bin/systemd-inhibit --what=handle-lid-switch --mode=block --who=LidIgnore --why='Ignore lid close' ${pkgs.coreutils}/bin/sleep infinity";
       Restart = "on-failure";
       RestartSec = 2;
-    };
-  };
-
-  systemd.user.services.amber-monochrome = {
-    description = "Apply amber monochrome display filter";
-    after = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    wantedBy = [ "graphical-session.target" ];
-
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${amberScreenMode}/bin/amber-screen-mode on";
     };
   };
 
