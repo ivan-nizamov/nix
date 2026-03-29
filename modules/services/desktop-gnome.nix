@@ -3,8 +3,8 @@ let
   gv = lib.gvariant;
   amberToggleBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-toggle/";
   amberOffBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-off/";
-  nightLightTemperatureStep = 500;
-  nightLightTemperatureDefault = 1800;
+  nightLightTemperatureStep = 100;
+  nightLightTemperatureDefault = 2000;
   nightLightTemperatureMin = 1000;
   nightLightTemperatureMax = 10000;
   amberMonochromeMode = pkgs.writeShellApplication {
@@ -25,6 +25,7 @@ let
         dconf write "$basePath/night-light-schedule-automatic" false
         dconf write "$basePath/night-light-schedule-from" 0.0
         dconf write "$basePath/night-light-schedule-to" 24.0
+        dconf write "$basePath/night-light-temperature" "uint32 ${toString nightLightTemperatureDefault}"
         ${pkgs.gnome-shell}/bin/gnome-extensions enable "$uuid"
       }
 
@@ -363,6 +364,21 @@ in
       ExecStart = "${pkgs.systemd}/bin/systemd-inhibit --what=handle-lid-switch --mode=block --who=LidIgnore --why='Ignore lid close' ${pkgs.coreutils}/bin/sleep infinity";
       Restart = "on-failure";
       RestartSec = 2;
+    };
+  };
+
+  systemd.user.services.amber-monochrome-login = {
+    description = "Reassert amber monochrome mode on graphical login";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "default.target" "graphical-session.target" ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      Environment = [
+        "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
+      ];
+      ExecStart = "${pkgs.bash}/bin/bash -lc 'sleep 3; exec ${amberMonochromeMode}/bin/amber-monochrome-mode on'";
     };
   };
 
