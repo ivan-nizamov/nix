@@ -1,44 +1,42 @@
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import Clutter from 'gi://Clutter';
-import GObject from 'gi://GObject';
+import Cogl from 'gi://Cogl';
 
-const EFFECT_NAME = 'amber-monochrome-shader';
-const SHADER_SOURCE = `
-uniform sampler2D tex;
-varying vec2 cogl_tex_coord_in;
+const AMBER_TINT = [1.0, 0.74, 0.24, 1.0];
+const EFFECT_PREFIX = 'amber-monochrome';
 
-void main() {
-    vec4 color = texture2D(tex, cogl_tex_coord_in.st);
-    float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-    float tone = pow(gray, 1.1);
-    vec3 amber = vec3(1.0, 0.72, 0.22) * tone;
-    gl_FragColor = vec4(amber, color.a);
+function makeAmberTint() {
+  const tint = new Cogl.Color();
+  tint.init_from_4f(...AMBER_TINT);
+  return tint;
 }
-`;
 
-const AmberMonochromeEffect = GObject.registerClass(
-class AmberMonochromeEffect extends Clutter.ShaderEffect {
-  _init() {
-    super._init();
-    this.set_shader_source(SHADER_SOURCE);
-  }
+function buildEffects() {
+  const desaturate = new Clutter.DesaturateEffect({factor: 1.0});
+  const colorize = new Clutter.ColorizeEffect();
+  colorize.set_tint(makeAmberTint());
 
-  vfunc_paint_target(...args) {
-    this.set_uniform_value('tex', 0);
-    super.vfunc_paint_target(...args);
-  }
-});
+  const contrast = new Clutter.BrightnessContrastEffect();
+  contrast.set_brightness_full(-0.18, -0.18, -0.18);
+  contrast.set_contrast_full(0.35, 0.2, -0.1);
+
+  return [
+    [ "desaturate", desaturate ],
+    [ "colorize", colorize ],
+    [ "contrast", contrast ],
+  ];
+}
 
 export default class AmberMonochromeExtension extends Extension {
   enable() {
-    this._targets = [
-      global.window_group,
-      Main.layoutManager.uiGroup,
-    ].filter((actor, index, actors) => actor && actors.indexOf(actor) === index);
+    const target = global.stage ?? global.window_group ?? Main.layoutManager.uiGroup;
+    this._targets = target ? [target] : [];
 
     for (const actor of this._targets) {
-      actor.add_effect_with_name(EFFECT_NAME, new AmberMonochromeEffect());
+      for (const [suffix, effect] of buildEffects()) {
+        actor.add_effect_with_name(`${EFFECT_PREFIX}-${suffix}`, effect);
+      }
     }
   }
 
@@ -48,7 +46,9 @@ export default class AmberMonochromeExtension extends Extension {
     }
 
     for (const actor of this._targets) {
-      actor.remove_effect_by_name(EFFECT_NAME);
+      actor.remove_effect_by_name(`${EFFECT_PREFIX}-desaturate`);
+      actor.remove_effect_by_name(`${EFFECT_PREFIX}-colorize`);
+      actor.remove_effect_by_name(`${EFFECT_PREFIX}-contrast`);
     }
 
     this._targets = null;
