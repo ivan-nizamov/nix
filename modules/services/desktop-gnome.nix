@@ -21,11 +21,7 @@ let
       enabled="$(${pkgs.gnome-shell}/bin/gnome-extensions list --enabled | grep -Fx "$uuid" || true)"
 
       enableAmber() {
-        dconf write "$basePath/night-light-enabled" true
-        dconf write "$basePath/night-light-schedule-automatic" false
-        dconf write "$basePath/night-light-schedule-from" 0.0
-        dconf write "$basePath/night-light-schedule-to" 24.0
-        dconf write "$basePath/night-light-temperature" "uint32 ${toString nightLightTemperatureDefault}"
+        dconf write "$basePath/night-light-enabled" false
         ${pkgs.gnome-shell}/bin/gnome-extensions enable "$uuid"
       }
 
@@ -283,7 +279,7 @@ in
           gtk-theme = "Adwaita-dark";
         };
         "org/gnome/settings-daemon/plugins/color" = {
-          night-light-enabled = true;
+          night-light-enabled = false;
           night-light-schedule-automatic = false;
           night-light-schedule-from = 0.0;
           night-light-schedule-to = 24.0;

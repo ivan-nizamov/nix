@@ -3,7 +3,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import Clutter from 'gi://Clutter';
 import Cogl from 'gi://Cogl';
 
-const AMBER_TINT = [1.0, 0.78, 0.18, 1.0];
+const AMBER_TINT = [1.0, 0.62, 0.0, 1.0];
 const EFFECT_PREFIX = 'amber-monochrome';
 
 function makeAmberTint() {
@@ -18,8 +18,8 @@ function buildEffects() {
   colorize.set_tint(makeAmberTint());
 
   const contrast = new Clutter.BrightnessContrastEffect();
-  contrast.set_brightness_full(-0.05, -0.1, -0.95);
-  contrast.set_contrast_full(1.0, 0.72, -1.0);
+  contrast.set_brightness_full(0.12, -0.08, -1.0);
+  contrast.set_contrast_full(1.0, 0.9, -1.0);
 
   return [
     [ "desaturate", desaturate ],
@@ -30,8 +30,10 @@ function buildEffects() {
 
 export default class AmberMonochromeExtension extends Extension {
   enable() {
-    const target = global.stage ?? global.window_group ?? Main.layoutManager.uiGroup;
-    this._targets = target ? [target] : [];
+    this._targets = [
+      global.window_group,
+      Main.layoutManager.uiGroup,
+    ].filter((actor, index, actors) => actor && actors.indexOf(actor) === index);
 
     for (const actor of this._targets) {
       for (const [suffix, effect] of buildEffects()) {
