@@ -10,26 +10,41 @@ let
   amberMonochromeMode = pkgs.writeShellApplication {
     name = "amber-monochrome-mode";
     runtimeInputs = [
+      pkgs.dconf
       pkgs.gnugrep
     ];
     text = ''
       set -eu
 
       uuid="amber-monochrome@localhost"
+      basePath="/org/gnome/settings-daemon/plugins/color"
       enabled="$(${pkgs.gnome-shell}/bin/gnome-extensions list --enabled | grep -Fx "$uuid" || true)"
+
+      enableAmber() {
+        dconf write "$basePath/night-light-enabled" true
+        dconf write "$basePath/night-light-schedule-automatic" false
+        dconf write "$basePath/night-light-schedule-from" 0.0
+        dconf write "$basePath/night-light-schedule-to" 24.0
+        ${pkgs.gnome-shell}/bin/gnome-extensions enable "$uuid"
+      }
+
+      disableAmber() {
+        ${pkgs.gnome-shell}/bin/gnome-extensions disable "$uuid"
+        dconf write "$basePath/night-light-enabled" false
+      }
 
       case "''${1-toggle}" in
         on)
-          exec ${pkgs.gnome-shell}/bin/gnome-extensions enable "$uuid"
+          enableAmber
           ;;
         off)
-          exec ${pkgs.gnome-shell}/bin/gnome-extensions disable "$uuid"
+          disableAmber
           ;;
         toggle)
           if [ -n "$enabled" ]; then
-            exec ${pkgs.gnome-shell}/bin/gnome-extensions disable "$uuid"
+            disableAmber
           else
-            exec ${pkgs.gnome-shell}/bin/gnome-extensions enable "$uuid"
+            enableAmber
           fi
           ;;
         status)
