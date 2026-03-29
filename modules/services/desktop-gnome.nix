@@ -1,52 +1,10 @@
 { inputs, lib, pkgs, ... }:
 let
   gv = lib.gvariant;
-  amberToggleBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-toggle/";
-  amberOffBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-off/";
   nightLightTemperatureStep = 1000;
   nightLightTemperatureDefault = 1000;
   nightLightTemperatureMin = 1000;
   nightLightTemperatureMax = 10000;
-  amberMonochromeMode = pkgs.writeShellApplication {
-    name = "amber-monochrome-mode";
-    runtimeInputs = [
-      pkgs.glib
-      pkgs.gnugrep
-    ];
-    text = ''
-      set -eu
-
-      uuid="amber-monochrome@localhost"
-      enabled="$(${pkgs.gnome-shell}/bin/gnome-extensions list --enabled | grep -Fx "$uuid" || true)"
-
-      case "''${1-toggle}" in
-        on)
-          exec ${pkgs.gnome-shell}/bin/gnome-extensions enable "$uuid"
-          ;;
-        off)
-          exec ${pkgs.gnome-shell}/bin/gnome-extensions disable "$uuid"
-          ;;
-        toggle)
-          if [ -n "$enabled" ]; then
-            exec ${pkgs.gnome-shell}/bin/gnome-extensions disable "$uuid"
-          else
-            exec ${pkgs.gnome-shell}/bin/gnome-extensions enable "$uuid"
-          fi
-          ;;
-        status)
-          if [ -n "$enabled" ]; then
-            printf 'on\n'
-          else
-            printf 'off\n'
-          fi
-          ;;
-        *)
-          echo "usage: amber-monochrome-mode {on|off|toggle|status}" >&2
-          exit 1
-          ;;
-      esac
-    '';
-  };
   nightLightControl = pkgs.writeShellApplication {
     name = "night-light-control";
     runtimeInputs = [
@@ -183,19 +141,6 @@ let
       runHook postInstall
     '';
   };
-  amberMonochromeExtension = pkgs.stdenvNoCC.mkDerivation {
-    pname = "gnome-shell-extension-amber-monochrome";
-    version = "1";
-    src = ./desktop-gnome/amber-monochrome;
-
-    installPhase = ''
-      runHook preInstall
-      target="$out/share/gnome-shell/extensions/amber-monochrome@localhost"
-      mkdir -p "$target"
-      cp -r "$src"/. "$target"/
-      runHook postInstall
-    '';
-  };
 in
 {
   programs.dconf.enable = true;
@@ -221,8 +166,6 @@ in
   '';
 
   environment.systemPackages = with pkgs; [
-    amberMonochromeExtension
-    amberMonochromeMode
     lidInhibitExtension
     gnomeExtensions.space-bar
     nightLightControl
@@ -239,7 +182,6 @@ in
       settings = {
         "org/gnome/shell" = {
           enabled-extensions = [
-            "amber-monochrome@localhost"
             "space-bar@luchrioh"
             "lid-inhibit@localhost"
           ];
@@ -276,21 +218,9 @@ in
         };
         "org/gnome/settings-daemon/plugins/media-keys" = {
           custom-keybindings = [
-            amberToggleBindingPath
-            amberOffBindingPath
             nightLightCoolerBindingPath
             nightLightWarmerBindingPath
           ];
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-toggle" = {
-          binding = "<Super>backslash";
-          command = "${amberMonochromeMode}/bin/amber-monochrome-mode toggle";
-          name = "Amber Monochrome Toggle";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-off" = {
-          binding = "<Shift><Super>backslash";
-          command = "${amberMonochromeMode}/bin/amber-monochrome-mode off";
-          name = "Amber Monochrome Off";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler" = {
           binding = "<Super>bracketleft";
