@@ -1,136 +1,6 @@
 { inputs, lib, pkgs, ... }:
 let
   gv = lib.gvariant;
-  amberToggleBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-toggle/";
-  amberOffBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-off/";
-  nightLightTemperatureStep = 100;
-  nightLightTemperatureDefault = 2600;
-  nightLightTemperatureMin = 1000;
-  nightLightTemperatureMax = 10000;
-  amberMonochromeMode = pkgs.writeShellApplication {
-    name = "amber-monochrome-mode";
-    runtimeInputs = [
-      pkgs.dconf
-      pkgs.gnugrep
-    ];
-    text = ''
-      set -eu
-
-      uuid="amber-monochrome@localhost"
-      basePath="/org/gnome/settings-daemon/plugins/color"
-      enabled="$(${pkgs.gnome-shell}/bin/gnome-extensions list --enabled | grep -Fx "$uuid" || true)"
-
-      enableAmber() {
-        dconf write "$basePath/night-light-enabled" false
-        ${pkgs.gnome-shell}/bin/gnome-extensions enable "$uuid"
-      }
-
-      disableAmber() {
-        ${pkgs.gnome-shell}/bin/gnome-extensions disable "$uuid"
-        dconf write "$basePath/night-light-enabled" false
-      }
-
-      case "''${1-toggle}" in
-        on)
-          enableAmber
-          ;;
-        off)
-          disableAmber
-          ;;
-        toggle)
-          if [ -n "$enabled" ]; then
-            disableAmber
-          else
-            enableAmber
-          fi
-          ;;
-        status)
-          if [ -n "$enabled" ]; then
-            printf 'on\n'
-          else
-            printf 'off\n'
-          fi
-          ;;
-        *)
-          echo "usage: amber-monochrome-mode {on|off|toggle|status}" >&2
-          exit 1
-          ;;
-      esac
-    '';
-  };
-  nightLightControl = pkgs.writeShellApplication {
-    name = "night-light-control";
-    runtimeInputs = [
-      pkgs.dconf
-    ];
-    text = ''
-      set -eu
-
-      basePath="/org/gnome/settings-daemon/plugins/color"
-      step=${toString nightLightTemperatureStep}
-      min=${toString nightLightTemperatureMin}
-      max=${toString nightLightTemperatureMax}
-
-      current=$(dconf read "$basePath/night-light-temperature" | awk '{ print $2 }')
-      enabled=$(dconf read "$basePath/night-light-enabled")
-      automatic=$(dconf read "$basePath/night-light-schedule-automatic")
-      scheduleFrom=$(dconf read "$basePath/night-light-schedule-from")
-      scheduleTo=$(dconf read "$basePath/night-light-schedule-to")
-      changed=0
-
-      case "''${1-}" in
-        warmer)
-          next=$((current - step))
-          ;;
-        cooler)
-          next=$((current + step))
-          ;;
-        *)
-          echo "usage: night-light-control {warmer|cooler}" >&2
-          exit 1
-          ;;
-      esac
-
-      if [ "$next" -lt "$min" ]; then
-        next=$min
-      fi
-
-      if [ "$next" -gt "$max" ]; then
-        next=$max
-      fi
-
-      if [ "$enabled" != "true" ]; then
-        dconf write "$basePath/night-light-enabled" true
-        changed=1
-      fi
-
-      if [ "$automatic" != "false" ]; then
-        dconf write "$basePath/night-light-schedule-automatic" false
-        changed=1
-      fi
-
-      if [ "$scheduleFrom" != "0.0" ]; then
-        dconf write "$basePath/night-light-schedule-from" 0.0
-        changed=1
-      fi
-
-      if [ "$scheduleTo" != "24.0" ]; then
-        dconf write "$basePath/night-light-schedule-to" 24.0
-        changed=1
-      fi
-
-      if [ "$next" != "$current" ]; then
-        dconf write "$basePath/night-light-temperature" "uint32 ''${next}"
-        changed=1
-      fi
-
-      if [ "$changed" -eq 0 ]; then
-        exit 0
-      fi
-    '';
-  };
-  nightLightCoolerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler/";
-  nightLightWarmerBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer/";
   spaceBarStyles = ''
     .space-bar {
       -natural-hpadding: 12px;
@@ -194,19 +64,6 @@ let
       runHook postInstall
     '';
   };
-  amberMonochromeExtension = pkgs.stdenvNoCC.mkDerivation {
-    pname = "gnome-shell-extension-amber-monochrome";
-    version = "1";
-    src = ./desktop-gnome/amber-monochrome;
-
-    installPhase = ''
-      runHook preInstall
-      target="$out/share/gnome-shell/extensions/amber-monochrome@localhost"
-      mkdir -p "$target"
-      cp -r "$src"/. "$target"/
-      runHook postInstall
-    '';
-  };
 in
 {
   programs.dconf.enable = true;
@@ -232,11 +89,8 @@ in
   '';
 
   environment.systemPackages = with pkgs; [
-    amberMonochromeExtension
-    amberMonochromeMode
     lidInhibitExtension
     gnomeExtensions.space-bar
-    nightLightControl
     telegramDesktop
     vial
     zedEditor
@@ -250,7 +104,6 @@ in
       settings = {
         "org/gnome/shell" = {
           enabled-extensions = [
-            "amber-monochrome@localhost"
             "space-bar@luchrioh"
             "lid-inhibit@localhost"
           ];
@@ -277,41 +130,6 @@ in
           accent-color = "orange";
           color-scheme = "prefer-dark";
           gtk-theme = "Adwaita-dark";
-        };
-        "org/gnome/settings-daemon/plugins/color" = {
-          night-light-enabled = false;
-          night-light-schedule-automatic = false;
-          night-light-schedule-from = 0.0;
-          night-light-schedule-to = 24.0;
-          night-light-temperature = gv.mkUint32 nightLightTemperatureDefault;
-        };
-        "org/gnome/settings-daemon/plugins/media-keys" = {
-          custom-keybindings = [
-            amberToggleBindingPath
-            amberOffBindingPath
-            nightLightCoolerBindingPath
-            nightLightWarmerBindingPath
-          ];
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-toggle" = {
-          binding = "<Super>backslash";
-          command = "${amberMonochromeMode}/bin/amber-monochrome-mode toggle";
-          name = "Amber Monochrome Toggle";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-off" = {
-          binding = "<Shift><Super>backslash";
-          command = "${amberMonochromeMode}/bin/amber-monochrome-mode off";
-          name = "Amber Monochrome Off";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-cooler" = {
-          binding = "<Super>bracketleft";
-          command = "${nightLightControl}/bin/night-light-control cooler";
-          name = "Night Light Cooler";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/night-light-warmer" = {
-          binding = "<Super>bracketright";
-          command = "${nightLightControl}/bin/night-light-control warmer";
-          name = "Night Light Warmer";
         };
         "org/gnome/desktop/wm/keybindings" = {
           close = [ "<Super>q" ];
@@ -360,21 +178,6 @@ in
       ExecStart = "${pkgs.systemd}/bin/systemd-inhibit --what=handle-lid-switch --mode=block --who=LidIgnore --why='Ignore lid close' ${pkgs.coreutils}/bin/sleep infinity";
       Restart = "on-failure";
       RestartSec = 2;
-    };
-  };
-
-  systemd.user.services.amber-monochrome-login = {
-    description = "Reassert amber monochrome mode on graphical login";
-    after = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    wantedBy = [ "default.target" "graphical-session.target" ];
-
-    serviceConfig = {
-      Type = "oneshot";
-      Environment = [
-        "DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus"
-      ];
-      ExecStart = "${pkgs.bash}/bin/bash -lc 'sleep 3; exec ${amberMonochromeMode}/bin/amber-monochrome-mode on'";
     };
   };
 
