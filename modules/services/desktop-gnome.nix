@@ -267,7 +267,7 @@ in
           gtk-theme = "Adwaita-dark";
         };
         "org/gnome/settings-daemon/plugins/color" = {
-          night-light-enabled = false;
+          night-light-enabled = true;
           night-light-schedule-automatic = false;
           night-light-schedule-from = 0.0;
           night-light-schedule-to = 24.0;
