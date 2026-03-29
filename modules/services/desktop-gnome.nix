@@ -4,7 +4,7 @@ let
   amberToggleBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-toggle/";
   amberOffBindingPath = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/amber-monochrome-off/";
   nightLightTemperatureStep = 100;
-  nightLightTemperatureDefault = 2000;
+  nightLightTemperatureDefault = 2600;
   nightLightTemperatureMin = 1000;
   nightLightTemperatureMax = 10000;
   amberMonochromeMode = pkgs.writeShellApplication {
