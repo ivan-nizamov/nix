@@ -34,7 +34,7 @@ let
 
     layout {
         gaps 12
-        center-focused-column "never"
+        center-focused-column "always"
         always-center-single-column
         empty-workspace-above-first
 
@@ -73,6 +73,11 @@ let
 
     prefer-no-csd
     screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+    window-rule {
+        match app-id=r#"^zen-beta$"#
+        default-column-width { proportion 0.6; }
+    }
 
     cursor {
         hide-when-typing
