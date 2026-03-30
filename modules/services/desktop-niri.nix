@@ -288,7 +288,6 @@ let
       color: #ffc87f;
       font-weight: 700;
       margin-left: 10px;
-      text-transform: uppercase;
     }
 
     #tray {
