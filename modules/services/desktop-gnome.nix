@@ -92,6 +92,7 @@ in
     anki-bin
     lidInhibitExtension
     gnomeExtensions.space-bar
+    mpv
     telegramDesktop
     vial
     zedEditor
