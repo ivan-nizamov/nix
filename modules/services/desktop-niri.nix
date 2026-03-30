@@ -272,6 +272,34 @@ let
   '';
 in
 {
+  fonts = {
+    packages = with pkgs; [
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.symbols-only
+      nerd-fonts.ubuntu
+      noto-fonts
+      noto-fonts-color-emoji
+    ];
+
+    fontconfig.defaultFonts = {
+      sansSerif = [
+        "Ubuntu Nerd Font"
+        "Symbols Nerd Font"
+      ];
+      serif = [
+        "Ubuntu Nerd Font"
+        "Symbols Nerd Font"
+      ];
+      monospace = [
+        "JetBrainsMono Nerd Font Mono"
+        "Symbols Nerd Font"
+      ];
+      emoji = [
+        "Noto Color Emoji"
+      ];
+    };
+  };
+
   environment.sessionVariables = {
     MOZ_ENABLE_WAYLAND = "1";
     NIXOS_OZONE_WL = "1";
@@ -308,7 +336,10 @@ in
       settings = {
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
+          document-font-name = "Ubuntu Nerd Font 11";
+          font-name = "Ubuntu Nerd Font 11";
           gtk-theme = "Adwaita-dark";
+          monospace-font-name = "JetBrainsMono Nerd Font Mono 11";
         };
       };
     }
