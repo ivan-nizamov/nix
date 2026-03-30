@@ -34,7 +34,7 @@ let
 
     layout {
         gaps 12
-        center-focused-column "on-overflow"
+        center-focused-column "never"
         always-center-single-column
         empty-workspace-above-first
 
