@@ -65,7 +65,7 @@ in
     description = "VoxType push-to-talk voice-to-text daemon";
     after = [ "graphical-session.target" "sound.target" ];
     partOf = [ "graphical-session.target" ];
-    wantedBy = [ "default.target" "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${voxtypePackage}/bin/voxtype daemon";
