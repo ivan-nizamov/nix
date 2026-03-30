@@ -28,7 +28,7 @@ let
             accel-profile "flat"
         }
 
-        focus-follows-mouse max-scroll-amount="0%"
+        focus-follows-mouse
         workspace-auto-back-and-forth
     }
 
