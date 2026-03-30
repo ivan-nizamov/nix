@@ -34,7 +34,7 @@ let
 
     layout {
         gaps 12
-        center-focused-column "never"
+        center-focused-column "always"
         always-center-single-column
         empty-workspace-above-first
 
@@ -100,7 +100,7 @@ let
     binds {
         Mod+Shift+Slash { show-hotkey-overlay; }
 
-        Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "${lib.getExe pkgs.alacritty}"; }
+        Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "${lib.getExe pkgs.alacritty}"; }
         Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "${lib.getExe pkgs.fuzzel}"; }
         Mod+E hotkey-overlay-title="Open Files: nautilus" { spawn "${lib.getExe pkgs.nautilus}" "--new-window"; }
         Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "${lib.getExe pkgs.swaylock-effects}" "-f"; }
