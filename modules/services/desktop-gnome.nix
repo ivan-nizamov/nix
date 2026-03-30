@@ -89,6 +89,7 @@ in
   '';
 
   environment.systemPackages = with pkgs; [
+    anki-bin
     lidInhibitExtension
     gnomeExtensions.space-bar
     telegramDesktop
