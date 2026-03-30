@@ -14,7 +14,7 @@
     ../../modules/programs/obsidian.nix
     ../../modules/security/passwordless-rebuilds.nix
     ../../modules/services/audio-pipewire.nix
-    ../../modules/services/desktop-gnome.nix
+    ../../modules/services/desktop-niri.nix
     ../../modules/services/failure-reporting.nix
     ../../modules/services/openclaw-embeddings.nix
     ../../modules/services/openclaw-gateway.nix
