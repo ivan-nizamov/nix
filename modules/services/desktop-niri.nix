@@ -200,30 +200,55 @@ let
           "tray"
         ],
         "custom/session": {
-          "format": "niri",
+          "format": " niri",
           "tooltip": false
         },
         "clock": {
-          "format": "{:%a %d %b  %H:%M}"
+          "format": "󰃰 {:%a %d %b  %H:%M}"
         },
         "pulseaudio": {
-          "format": "vol {volume}%",
-          "format-muted": "vol mute",
+          "format": "{icon} {volume}%",
+          "format-muted": "󰝟 mute",
+          "format-icons": {
+            "default": [
+              "󰕿",
+              "󰖀",
+              "󰕾"
+            ],
+            "headphone": "󰋋",
+            "headset": "󰋎"
+          },
           "on-click": "${lib.getExe' pkgs.wireplumber "wpctl"} set-mute @DEFAULT_AUDIO_SINK@ toggle"
         },
         "backlight": {
-          "format": "light {percent}%"
+          "format": "{icon} {percent}%",
+          "format-icons": [
+            "󰃞",
+            "󰃟",
+            "󰃠"
+          ]
         },
         "network": {
-          "format-wifi": "wifi {essid} {signalStrength}%",
-          "format-ethernet": "eth",
-          "format-disconnected": "offline",
+          "format-wifi": "󰖩 {signalStrength}%",
+          "format-ethernet": "󰈀 wired",
+          "format-disconnected": "󰖪 offline",
           "tooltip-format": "{ifname}"
         },
         "battery": {
-          "format": "bat {capacity}%",
-          "format-charging": "chg {capacity}%",
-          "format-plugged": "ac"
+          "states": {
+            "warning": 30,
+            "critical": 15
+          },
+          "format": "{icon} {capacity}%",
+          "format-charging": "󰂄 {capacity}%",
+          "format-plugged": "󰚥 ac",
+          "format-icons": [
+            "󰂎",
+            "󰁺",
+            "󰁼",
+            "󰁾",
+            "󰂀"
+          ]
         },
         "tray": {
           "spacing": 8
@@ -235,7 +260,7 @@ let
     * {
       border: none;
       border-radius: 0;
-      font-family: monospace;
+      font-family: "Ubuntu Nerd Font", "Symbols Nerd Font", sans-serif;
       font-size: 13px;
       min-height: 0;
     }
@@ -414,7 +439,7 @@ in
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = lib.getExe pkgs.waybar;
+      ExecStart = "${lib.getExe pkgs.waybar} -c /etc/waybar/config.jsonc -s /etc/waybar/style.css";
       Restart = "on-failure";
       RestartSec = 2;
     };
