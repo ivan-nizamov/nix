@@ -53,6 +53,7 @@ in
 
   environment.systemPackages = with pkgs; [
     anki-bin
+    audacity
     lidInhibitExtension
     gnomeExtensions.paperwm
     mpv
