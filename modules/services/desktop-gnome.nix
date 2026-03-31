@@ -1,43 +1,6 @@
 { inputs, lib, pkgs, ... }:
 let
   gv = lib.gvariant;
-  spaceBarStyles = ''
-    .space-bar {
-      -natural-hpadding: 12px;
-    }
-
-    .space-bar-workspace-label.active {
-      margin: 0 4px;
-      background-color: rgba(255, 166, 61, 0.16);
-      color: rgba(255, 191, 102, 1);
-      border: 1px solid rgba(255, 166, 61, 0.45);
-      font-weight: 700;
-      border-radius: 4px;
-      padding: 3px 8px;
-    }
-
-    .space-bar-workspace-label.inactive {
-      margin: 0 4px;
-      background-color: rgba(0,0,0,0);
-      color: rgba(210, 148, 71, 0.95);
-      border-color: rgba(0,0,0,0);
-      font-weight: 700;
-      border-radius: 4px;
-      border-width: 0px;
-      padding: 3px 8px;
-    }
-
-    .space-bar-workspace-label.inactive.empty {
-      margin: 0 4px;
-      background-color: rgba(0,0,0,0);
-      color: rgba(146, 103, 45, 0.75);
-      border-color: rgba(0,0,0,0);
-      font-weight: 700;
-      border-radius: 4px;
-      border-width: 0px;
-      padding: 3px 8px;
-    }
-  '';
   telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   zenBrowser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
@@ -92,7 +55,6 @@ in
     anki-bin
     lidInhibitExtension
     gnomeExtensions.paperwm
-    gnomeExtensions.space-bar
     mpv
     telegramDesktop
     vial
@@ -112,7 +74,6 @@ in
         "org/gnome/shell" = {
           enabled-extensions = [
             "paperwm@paperwm.github.com"
-            "space-bar@luchrioh"
             "lid-inhibit@localhost"
           ];
           disable-user-extensions = false;
@@ -152,26 +113,6 @@ in
           sleep-inactive-ac-type = "nothing";
           sleep-inactive-battery-timeout = gv.mkUint32 0;
           sleep-inactive-battery-type = "nothing";
-        };
-        "org/gnome/shell/extensions/space-bar/appearance" = {
-          application-styles = spaceBarStyles;
-          active-workspace-font-weight = "700";
-          inactive-workspace-font-weight = "700";
-          empty-workspace-font-weight = "700";
-        };
-        "org/gnome/shell/extensions/space-bar/behavior" = {
-          always-show-numbers = false;
-          smart-workspace-names = false;
-          indicator-style = "workspaces-bar";
-          position = "left";
-          scroll-wheel = "panel";
-          toggle-overview = false;
-        };
-        "org/gnome/shell/extensions/space-bar/shortcuts" = {
-          enable-move-to-workspace-shortcuts = true;
-          enable-activate-workspace-shortcuts = true;
-          activate-empty-key = [ "<Super>j" ];
-          back-and-forth = false;
         };
       };
     }
