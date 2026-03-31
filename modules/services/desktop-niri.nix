@@ -12,14 +12,11 @@ let
 
     exec ${lib.getExe pkgs.swaylock} \
       --daemonize \
-      --clock \
-      --indicator \
       --indicator-idle-visible \
       --indicator-radius 110 \
       --indicator-thickness 8 \
       --font "Ubuntu Nerd Font" \
       --font-size 24 \
-      --fade-in 0.2 \
       --show-failed-attempts \
       --show-keyboard-layout \
       --color 111111 \
