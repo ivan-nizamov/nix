@@ -10,22 +10,19 @@ let
       exit 0
     fi
 
-    exec ${lib.getExe pkgs.swaylock-effects} \
+    exec ${lib.getExe pkgs.swaylock} \
       --daemonize \
-      --screenshots \
       --clock \
       --indicator \
       --indicator-idle-visible \
       --indicator-radius 110 \
       --indicator-thickness 8 \
-      --effect-blur 7x5 \
-      --effect-vignette 0.35:0.5 \
-      --fade-in 0.2 \
       --font "Ubuntu Nerd Font" \
       --font-size 24 \
-      --grace 2 \
-      --grace-no-mouse \
-      --grace-no-touch \
+      --fade-in 0.2 \
+      --show-failed-attempts \
+      --show-keyboard-layout \
+      --color 111111 \
       --inside-color 111111cc \
       --inside-clear-color 111111cc \
       --inside-ver-color 111111cc \
@@ -441,7 +438,7 @@ in
     nautilus
     playerctl
     swayidle
-    swaylock-effects
+    swaylock
     telegramDesktop
     vial
     waybar
