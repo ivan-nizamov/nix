@@ -91,6 +91,7 @@ in
   environment.systemPackages = with pkgs; [
     anki-bin
     lidInhibitExtension
+    gnomeExtensions.paperwm
     gnomeExtensions.space-bar
     mpv
     telegramDesktop
@@ -106,6 +107,7 @@ in
       settings = {
         "org/gnome/shell" = {
           enabled-extensions = [
+            "paperwm@paperwm.github.com"
             "space-bar@luchrioh"
             "lid-inhibit@localhost"
           ];
