@@ -141,7 +141,7 @@ let
         Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "${lib.getExe pkgs.alacritty}"; }
         Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "${lib.getExe pkgs.fuzzel}"; }
         Mod+E hotkey-overlay-title="Open Files: nautilus" { spawn "${lib.getExe pkgs.nautilus}" "--new-window"; }
-        Mod+L hotkey-overlay-title="Lock the Screen" { spawn "${lockCommand}"; }
+        Mod+L allow-inhibiting=false hotkey-overlay-title="Lock the Screen" { spawn "${lockCommand}"; }
         Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "${lib.getExe' pkgs.wireplumber "wpctl"} set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
