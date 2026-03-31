@@ -5,6 +5,47 @@ let
   telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${system}.zed-editor;
   zenBrowser = inputs.zen-browser.packages.${system}.beta;
+  lockCommand = pkgs.writeShellScript "niri-lock" ''
+    if ${lib.getExe' pkgs.procps "pgrep"} -u "$UID" -x swaylock >/dev/null; then
+      exit 0
+    fi
+
+    exec ${lib.getExe pkgs.swaylock-effects} \
+      --daemonize \
+      --screenshots \
+      --clock \
+      --indicator \
+      --indicator-idle-visible \
+      --indicator-radius 110 \
+      --indicator-thickness 8 \
+      --effect-blur 7x5 \
+      --effect-vignette 0.35:0.5 \
+      --fade-in 0.2 \
+      --font "Ubuntu Nerd Font" \
+      --font-size 24 \
+      --grace 2 \
+      --grace-no-mouse \
+      --grace-no-touch \
+      --inside-color 111111cc \
+      --inside-clear-color 111111cc \
+      --inside-ver-color 111111cc \
+      --inside-wrong-color 111111cc \
+      --line-color 00000000 \
+      --ring-color ffc87fcc \
+      --ring-clear-color ffc87fcc \
+      --ring-ver-color 88c0d0cc \
+      --ring-wrong-color bf616acc \
+      --key-hl-color ebcb8bcc \
+      --bs-hl-color d08770cc \
+      --separator-color 00000000 \
+      --text-color eceff4ff \
+      --text-clear-color eceff4ff \
+      --text-ver-color eceff4ff \
+      --text-wrong-color eceff4ff \
+      --layout-bg-color 00000000 \
+      --layout-border-color 00000000 \
+      --layout-text-color d8dee9ff
+  '';
   zedKeymap = ''
     [
       {
@@ -103,7 +144,7 @@ let
         Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "${lib.getExe pkgs.alacritty}"; }
         Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "${lib.getExe pkgs.fuzzel}"; }
         Mod+E hotkey-overlay-title="Open Files: nautilus" { spawn "${lib.getExe pkgs.nautilus}" "--new-window"; }
-        Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "${lib.getExe pkgs.swaylock-effects}" "-f"; }
+        Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "${lockCommand}"; }
         Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "${lib.getExe' pkgs.wireplumber "wpctl"} set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
@@ -485,8 +526,8 @@ in
       ExecStart = ''
         ${lib.getExe pkgs.swayidle} -w \
           timeout 601 '${lib.getExe pkgs.niri} msg action power-off-monitors' \
-          timeout 600 '${lib.getExe pkgs.swaylock-effects} -f' \
-          before-sleep '${lib.getExe pkgs.swaylock-effects} -f'
+          timeout 600 '${lockCommand}' \
+          before-sleep '${lockCommand}'
       '';
       Restart = "on-failure";
       RestartSec = 2;
