@@ -104,6 +104,10 @@ in
 
   programs.dconf.profiles.user.databases = [
     {
+      locks = [
+        "/org/gnome/shell/enabled-extensions"
+        "/org/gnome/desktop/wm/preferences/focus-mode"
+      ];
       settings = {
         "org/gnome/shell" = {
           enabled-extensions = [
@@ -139,6 +143,7 @@ in
           close = [ "<Super>q" ];
         };
         "org/gnome/desktop/wm/preferences" = {
+          focus-mode = "sloppy";
           theme = "Adwaita-dark";
         };
         "org/gnome/settings-daemon/plugins/power" = {
