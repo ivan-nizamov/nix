@@ -6,6 +6,7 @@ let
     config.allowUnfree = true;
   };
   baseObsidian = unstablePkgs.obsidian;
+  updatePattern = "obsidian*.asar*";
   obsidian = pkgs.symlinkJoin {
     name = "obsidian";
     paths = [ baseObsidian ];
@@ -28,12 +29,11 @@ let
           if [ -d "$config_dir" ]; then
             mkdir -p "$quarantine_dir"
 
-            # The Nix package should own the app bundle. Quarantine any
-            # self-downloaded .asar update so launches keep using the packaged
-            # version instead of a mismatched bundle from ~/.config/obsidian.
-            for update in "$config_dir"/obsidian*.asar*; do
+            # The Nix package owns the app bundle. Remove any self-downloaded
+            # .asar update so launches always use the packaged version.
+            for update in "$config_dir"/${updatePattern} "$quarantine_dir"/${updatePattern}; do
               [ -e "$update" ] || continue
-              mv -f "$update" "$quarantine_dir/$(basename "$update")"
+              rm -f "$update"
             done
           fi
         '
@@ -89,9 +89,9 @@ in
         install -d -o iva -g users -m 700 "$quarantine_dir"
       fi
 
-      for update in "$config_dir"/obsidian*.asar*; do
+      for update in "$config_dir"/${updatePattern} "$quarantine_dir"/${updatePattern}; do
         if [ -e "$update" ]; then
-          mv "$update" "$quarantine_dir/$(basename "$update")"
+          rm -f "$update"
         fi
       done
 
