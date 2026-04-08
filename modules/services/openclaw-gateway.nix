@@ -154,7 +154,6 @@ let
           search = {
             enabled = true;
             provider = "brave";
-            apiKey = "756284";
           };
         };
       };
@@ -195,7 +194,9 @@ let
               allowFrom = [ "5180423459" ];
             };
           };
-          streaming = "partial";
+          streaming = {
+            mode = "partial";
+          };
           execApprovals = {
             enabled = true;
             approvers = [ "5180423459" ];
@@ -232,13 +233,24 @@ let
           telegram = {
             enabled = true;
           };
+          brave = {
+            enabled = true;
+            config = {
+              webSearch = {
+                apiKey = "756284";
+              };
+            };
+          };
           acpx = {
             enabled = true;
             config = {
-              command = lib.getExe acpxWrapper;
-              expectedVersion = "any";
               permissionMode = "approve-all";
               nonInteractivePermissions = "fail";
+              agents = {
+                codex = {
+                  command = lib.getExe acpxWrapper;
+                };
+              };
             };
           };
         };
