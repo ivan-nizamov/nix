@@ -57,6 +57,7 @@ in
     lidInhibitExtension
     gnomeExtensions.paperwm
     mpv
+    nil
     telegramDesktop
     vial
     zedEditor
