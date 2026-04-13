@@ -111,6 +111,11 @@ in
         "/org/gnome/shell/enabled-extensions"
         "/org/gnome/desktop/input-sources/sources"
         "/org/gnome/desktop/wm/preferences/focus-mode"
+        "/org/gnome/settings-daemon/plugins/color/night-light-enabled"
+        "/org/gnome/settings-daemon/plugins/color/night-light-schedule-automatic"
+        "/org/gnome/settings-daemon/plugins/color/night-light-schedule-from"
+        "/org/gnome/settings-daemon/plugins/color/night-light-schedule-to"
+        "/org/gnome/settings-daemon/plugins/color/night-light-temperature"
       ];
       settings = {
         "org/gnome/shell" = {
@@ -171,6 +176,13 @@ in
           sleep-inactive-ac-type = "nothing";
           sleep-inactive-battery-timeout = gv.mkUint32 0;
           sleep-inactive-battery-type = "nothing";
+        };
+        "org/gnome/settings-daemon/plugins/color" = {
+          night-light-enabled = true;
+          night-light-schedule-automatic = false;
+          night-light-schedule-from = 19.0;
+          night-light-schedule-to = 8.0;
+          night-light-temperature = gv.mkUint32 1700;
         };
       };
     }
