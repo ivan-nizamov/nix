@@ -31,25 +31,17 @@ in
 {
   programs.dconf.enable = true;
 
-  # Suspend by default on lid close, even if background processes take generic
-  # sleep inhibitors. The GNOME extension still opts into staying awake by
-  # taking the dedicated lid-switch inhibitor only when you explicitly enable it.
+  # Lid-close suspend has produced GPU resume failures on this hybrid graphics
+  # laptop. Treat the lid like a display cover; use the power key for explicit
+  # suspend instead.
   services.logind.settings.Login = {
     HandlePowerKey = "suspend";
-    HandleLidSwitch = "suspend";
-    HandleLidSwitchDocked = "suspend";
-    HandleLidSwitchExternalPower = "suspend";
-    LidSwitchIgnoreInhibited = true;
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchDocked = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
     HoldoffTimeoutSec = 2;
     IdleAction = "ignore";
   };
-
-  # Force suspend-to-RAM instead of lighter idle states so a closed lid leaves
-  # the machine quiescent until you open it again.
-  systemd.sleep.extraConfig = ''
-    SuspendState=mem
-    MemorySleepMode=deep
-  '';
 
   environment.systemPackages = with pkgs; [
     anki-bin
