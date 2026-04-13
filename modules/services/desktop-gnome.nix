@@ -43,6 +43,10 @@ in
     IdleAction = "ignore";
   };
 
+  # logind exposes the lid policy as constant D-Bus properties, so reload it
+  # when NixOS switches this configuration.
+  systemd.services.systemd-logind.reloadIfChanged = true;
+
   environment.systemPackages = with pkgs; [
     anki-bin
     audacity
