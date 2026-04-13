@@ -109,6 +109,7 @@ in
     {
       locks = [
         "/org/gnome/shell/enabled-extensions"
+        "/org/gnome/desktop/input-sources/sources"
         "/org/gnome/desktop/wm/preferences/focus-mode"
       ];
       settings = {
@@ -140,6 +141,12 @@ in
           accent-color = "orange";
           color-scheme = "prefer-dark";
           gtk-theme = "Adwaita-dark";
+        };
+        "org/gnome/desktop/input-sources" = {
+          sources = [
+            (gv.mkTuple [ "xkb" "us" ])
+            (gv.mkTuple [ "xkb" "ro" ])
+          ];
         };
         "org/gnome/desktop/wm/keybindings" = {
           close = [ "<Super>q" ];
@@ -200,6 +207,7 @@ in
   ];
 
   services.xserver.enable = true;
+  services.xserver.xkb.layout = "us,ro";
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 }
