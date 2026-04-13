@@ -4,6 +4,46 @@ let
   telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   zenBrowser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
+  batteryConservationPath = "/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode";
+  batteryConservationRootToggle = pkgs.writeShellScriptBin "mainframe-battery-conservation-root-toggle" ''
+    set -euo pipefail
+
+    mode_path=${lib.escapeShellArg batteryConservationPath}
+
+    if [ ! -e "$mode_path" ]; then
+      echo "Battery conservation control is missing: $mode_path" >&2
+      exit 1
+    fi
+
+    current=$(cat "$mode_path")
+    case "$current" in
+      0)
+        next=1
+        message="Battery conservation enabled"
+        ;;
+      1)
+        next=0
+        message="Battery conservation disabled"
+        ;;
+      *)
+        echo "Unexpected battery conservation value: $current" >&2
+        exit 1
+        ;;
+    esac
+
+    printf '%s\n' "$next" > "$mode_path"
+    printf '%s\n' "$message"
+  '';
+  batteryConservationToggle = pkgs.writeShellScriptBin "battery-conservation-toggle" ''
+    set -euo pipefail
+
+    message=$(/run/wrappers/bin/sudo /run/current-system/sw/bin/mainframe-battery-conservation-root-toggle)
+    printf '%s\n' "$message"
+
+    if command -v notify-send >/dev/null 2>&1; then
+      notify-send "Battery conservation" "$message"
+    fi
+  '';
   zedKeymap = ''
     [
       {
@@ -50,7 +90,10 @@ in
   environment.systemPackages = with pkgs; [
     anki-bin
     audacity
+    batteryConservationRootToggle
+    batteryConservationToggle
     lidInhibitExtension
+    libnotify
     gnomeExtensions.paperwm
     mpv
     nil
@@ -101,6 +144,16 @@ in
         "org/gnome/desktop/wm/keybindings" = {
           close = [ "<Super>q" ];
         };
+        "org/gnome/settings-daemon/plugins/media-keys" = {
+          custom-keybindings = [
+            "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/battery-conservation/"
+          ];
+        };
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/battery-conservation" = {
+          name = "Toggle battery conservation";
+          command = "/run/current-system/sw/bin/battery-conservation-toggle";
+          binding = "<Super>b";
+        };
         "org/gnome/desktop/wm/preferences" = {
           focus-mode = "sloppy";
           theme = "Adwaita-dark";
@@ -132,6 +185,18 @@ in
   systemd.tmpfiles.rules = [
     "d /home/iva/.config/zed 0755 iva users - -"
     "L+ /home/iva/.config/zed/keymap.json - - - - /etc/zed/keymap.json"
+  ];
+
+  security.sudo.extraRules = [
+    {
+      users = [ "iva" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/mainframe-battery-conservation-root-toggle";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
   ];
 
   services.xserver.enable = true;
