@@ -1,4 +1,13 @@
-{ ... }:
+{ pkgs, ... }:
+
+let
+  openclawWorkspace = "/home/iva/.openclaw/workspace";
+  openclawWorkspaceIgnore = pkgs.writeText "openclaw-workspace-stignore" ''
+    !/memory
+    !/memory/**
+    *
+  '';
+in
 {
   services.syncthing = {
     enable = true;
@@ -24,9 +33,10 @@
 
       folders = {
         "openclaw-workspace" = {
-          path = "/home/iva/.openclaw/workspace";
+          path = openclawWorkspace;
           id = "openclaw-workspace";
-          label = "OpenClaw Workspace";
+          label = "OpenClaw Memory";
+          type = "receiveonly";
           devices = [ "a53" ];
         };
         sync = {
@@ -38,4 +48,9 @@
       };
     };
   };
+
+  system.activationScripts.openclawWorkspaceSyncthingIgnore = ''
+    ${pkgs.coreutils}/bin/install -d -o iva -g users -m 0755 ${openclawWorkspace}
+    ${pkgs.coreutils}/bin/install -o iva -g users -m 0644 ${openclawWorkspaceIgnore} ${openclawWorkspace}/.stignore
+  '';
 }
