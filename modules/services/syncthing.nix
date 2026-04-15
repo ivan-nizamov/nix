@@ -3,6 +3,10 @@
 let
   openclawWorkspace = "/home/iva/.openclaw/workspace";
   openclawWorkspaceIgnore = pkgs.writeText "openclaw-workspace-stignore" ''
+    (?d)/memory/**/*.sync-conflict-*
+    (?d)/memory/My vault/.obsidian/graph.json
+    (?d)/memory/My vault/.obsidian/workspace.json
+    (?d)/memory/My vault/.obsidian/workspace-mobile.json
     !/memory
     !/memory/**
     *
@@ -36,7 +40,7 @@ in
           path = openclawWorkspace;
           id = "openclaw-workspace";
           label = "OpenClaw Memory";
-          type = "receiveonly";
+          type = "sendreceive";
           devices = [ "a53" ];
         };
         sync = {
