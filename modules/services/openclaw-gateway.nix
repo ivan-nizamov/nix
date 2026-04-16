@@ -153,7 +153,7 @@ let
         web = {
           search = {
             enabled = true;
-            provider = "duckduckgo";
+            provider = "brave";
           };
         };
       };
@@ -232,6 +232,14 @@ let
         entries = {
           telegram = {
             enabled = true;
+          };
+          brave = {
+            enabled = true;
+            config = {
+              webSearch = {
+                apiKey = "BSAzJfMfyzmUXZ53-2pCDdqHdbfJvyw";
+              };
+            };
           };
           acpx = {
             enabled = true;
