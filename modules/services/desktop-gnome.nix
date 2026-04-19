@@ -4,6 +4,7 @@ let
   telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   zenBrowser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.beta;
+  yandexBrowser = pkgs.callPackage ../../pkgs/yandex-browser { };
   batteryConservationPath = "/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode";
   batteryConservationRootToggle = pkgs.writeShellScriptBin "mainframe-battery-conservation-root-toggle" ''
     set -euo pipefail
@@ -100,6 +101,7 @@ in
     orca-slicer
     telegramDesktop
     vial
+    yandexBrowser
     zedEditor
     zenBrowser
   ];

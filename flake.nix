@@ -23,7 +23,7 @@
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfreePredicate = pkg:
-              builtins.elem (nixpkgs.lib.getName pkg) [ "happ" ];
+              builtins.elem (nixpkgs.lib.getName pkg) [ "happ" "yandex-browser" ];
           };
           happ = pkgs.callPackage ./pkgs/happ { };
         in
@@ -41,7 +41,10 @@
           ./hosts/mainframe
           ({ lib, pkgs, ... }: {
             nixpkgs.config.allowUnfreePredicate = pkg:
-              builtins.elem (lib.getName pkg) [ "happ" ];
+              builtins.elem (lib.getName pkg) [ "happ" "yandex-browser" ];
+            nixpkgs.config.permittedInsecurePackages = [
+              "yandex-browser-26.3.1.1088-1"
+            ];
 
             environment.systemPackages = [
               self.packages.${pkgs.system}.happ
