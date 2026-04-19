@@ -21,7 +21,10 @@ in
     package = pkgs.nextcloud33;
     hostName = hostName;
     https = false;
-    notify_push.enable = true;
+    notify_push = {
+      enable = true;
+      bendDomainToLocalhost = true;
+    };
     database.createLocally = true;
 
     extraApps = {
