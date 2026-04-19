@@ -24,6 +24,7 @@ in
     notify_push = {
       enable = true;
       bendDomainToLocalhost = true;
+      nextcloudUrl = "http://127.0.0.1";
     };
     database.createLocally = true;
 
