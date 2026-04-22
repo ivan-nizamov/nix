@@ -119,7 +119,7 @@ let
       agents = {
         defaults = {
           model = {
-            primary = "openai-codex/gpt-5.4";
+            primary = "codex/gpt-5.4";
           };
           thinkingDefault = "high";
           workspace = "/home/iva/.openclaw/workspace";
@@ -250,6 +250,16 @@ let
                 codex = {
                   command = lib.getExe acpxWrapper;
                 };
+              };
+            };
+          };
+          codex = {
+            enabled = true;
+            config = {
+              appServer = {
+                command = lib.getExe llmAgentsPkgs.codex;
+                approvalPolicy = "never";
+                sandbox = "danger-full-access";
               };
             };
           };
