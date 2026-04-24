@@ -3,6 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/accessibility/dictation.nix
+    ../../modules/core/fonts.nix
     ../../modules/core/locale.nix
     ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
