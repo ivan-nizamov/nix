@@ -4,8 +4,60 @@ let
   userHome = "/home/iva";
   stateDir = "${userHome}/.openclaw";
   llmAgentsPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
-  openclaw = llmAgentsPkgs.openclaw;
-  openclawBin = lib.getExe openclaw;
+  baseOpenclaw = llmAgentsPkgs.openclaw;
+  openclaw = pkgs.runCommand "openclaw-${baseOpenclaw.version}-metadata-patched" { } ''
+    mkdir -p $out
+    ${pkgs.xorg.lndir}/bin/lndir -silent ${baseOpenclaw} $out
+    rm -rf $out/lib/openclaw/dist $out/lib/openclaw/dist-runtime
+    cp -r ${baseOpenclaw}/lib/openclaw/dist $out/lib/openclaw/dist
+    cp -r ${baseOpenclaw}/lib/openclaw/dist-runtime $out/lib/openclaw/dist-runtime
+    chmod -R u+w $out/lib/openclaw/dist $out/lib/openclaw/dist-runtime
+    ln -s ${baseOpenclaw}/lib/openclaw/node_modules $out/lib/openclaw/dist/node_modules
+    telegram_dev_deps=$(cat <<'EOF'
+  "devDependencies": {
+    "@openclaw/plugin-sdk": "workspace:*"
+  },
+EOF
+)
+    substituteInPlace $out/lib/openclaw/dist/extensions/telegram/package.json \
+      --replace-fail "$telegram_dev_deps" ""
+
+    rm $out/bin/openclaw
+    cp ${baseOpenclaw}/bin/openclaw $out/bin/openclaw
+    chmod u+w $out/bin/openclaw
+    substituteInPlace $out/bin/openclaw \
+      --replace-fail '${baseOpenclaw}/lib/openclaw/dist/entry.js' \
+      "$out/lib/openclaw/dist/entry.js"
+
+    for file in $out/lib/openclaw/dist/get-reply-*.js; do
+      if grep -q 'group_subject: normalizePromptMetadataString(ctx.GroupSubject),' "$file"; then
+        substituteInPlace "$file" \
+          --replace-fail 'group_subject: normalizePromptMetadataString(ctx.GroupSubject),' \
+          '/* group_subject omitted: redundant with conversation_label */'
+      fi
+    done
+
+    for file in $out/lib/openclaw/dist/bundled-runtime-root-*.js; do
+      substituteInPlace "$file" \
+        --replace-fail 'const mirrorDistRoot = path.join(params.installRoot, "dist");' \
+        'const mirrorDistRoot = path.join(params.installRoot, path.basename(sourceDistRoot));'
+    done
+
+    for file in $out/lib/openclaw/dist/loader-*.js; do
+      if grep -q 'fs.symlinkSync(sourceCanonicalDistRoot, targetCanonicalDistRoot, "junction");' "$file"; then
+        substituteInPlace "$file" \
+          --replace-fail 'fs.symlinkSync(sourceCanonicalDistRoot, targetCanonicalDistRoot, "junction");' \
+          'copyBundledPluginRuntimeRoot(sourceCanonicalDistRoot, targetCanonicalDistRoot);'
+      fi
+
+      # Keep the top-level dist/node_modules symlink and the SDK package under
+      # dist/extensions/node_modules, but avoid copying a full dependency tree.
+      ${pkgs.perl}/bin/perl -0pi -e '
+        s@if\s*\(\s*entry\.name\s*===\s*[\x22\x27]node_modules[\x22\x27]\s*\)\s*continue;@if (entry.name === "node_modules" && !entry.isSymbolicLink() && path.basename(sourceRoot) !== "extensions") continue;@g
+      ' "$file"
+    done
+  '';
+  openclawBin = "${openclaw}/bin/openclaw";
   codexAcpBin = lib.getExe llmAgentsPkgs.codex-acp;
   codexAcpWrapper = pkgs.writeShellScriptBin "openclaw-codex-acp" ''
     exec ${codexAcpBin} \
@@ -310,6 +362,7 @@ in
         "HOME=${userHome}"
         "TMPDIR=/tmp"
         "PATH=${openclawPath}"
+        "NODE_PATH=${openclaw}/lib/openclaw/node_modules"
         "OPENCLAW_STATE_DIR=${stateDir}"
         "OPENCLAW_CONFIG_PATH=${configFile}"
         "OPENCLAW_GATEWAY_PORT=18789"
