@@ -41,12 +41,13 @@
           ./hosts/mainframe
           ({ lib, pkgs, ... }: {
             nixpkgs.config.allowUnfreePredicate = pkg:
-              builtins.elem (lib.getName pkg) [ "happ" "yandex-browser" ];
+              builtins.elem (lib.getName pkg) [ "brave" "happ" "yandex-browser" ];
             nixpkgs.config.permittedInsecurePackages = [
               "yandex-browser-26.3.1.1088-1"
             ];
 
             environment.systemPackages = [
+              pkgs.brave
               self.packages.${pkgs.system}.happ
             ];
           })
