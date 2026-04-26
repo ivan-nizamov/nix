@@ -1,49 +1,35 @@
-{ lib, ... }:
+{ ... }:
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/accessibility/dictation.nix
+    ../../modules/core/fonts.nix
     ../../modules/core/locale.nix
     ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
+    ../../modules/hardware/espressif-serial.nix
+    ../../modules/hardware/hybrid-graphics.nix
+    ../../modules/input/wayland-text-injection.nix
     ../../modules/programs/llm-agents.nix
+    ../../modules/programs/obs-studio.nix
+    ../../modules/programs/obsidian.nix
     ../../modules/security/passwordless-rebuilds.nix
+    ../../modules/services/audio-pipewire.nix
+    ../../modules/services/desktop-gnome.nix
     ../../modules/services/failure-reporting.nix
+    ../../modules/services/openclaw-embeddings.nix
+    ../../modules/services/openclaw-gateway.nix
+    ../../modules/services/syncthing.nix
     ../../modules/users/iva.nix
   ];
 
-  boot.loader.grub.enable = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "mainframe";
-  networking.nameservers = [
-    "2001:4860:4860::8888"
-    "2001:4860:4860::8844"
-  ];
-  networking.defaultGateway6 = {
-    address = "2a0c:4ac1:4::1";
-    interface = "eth0";
-  };
-  networking.dhcpcd.enable = false;
-  networking.usePredictableInterfaceNames = lib.mkForce false;
-  networking.interfaces.eth0 = {
-    ipv4.addresses = [ ];
-    ipv6.addresses = [
-      {
-        address = "2a0c:4ac1:4:1f3::a";
-        prefixLength = 64;
-      }
-      {
-        address = "fe80::2f9:65ff:feb5:c9e7";
-        prefixLength = 64;
-      }
-    ];
-    ipv6.routes = [
-      {
-        address = "2a0c:4ac1:4::1";
-        prefixLength = 128;
-      }
-    ];
-  };
+  networking.hostName = "legion";
+
+  hardware.keyboard.qmk.enable = true;
 
   zramSwap = {
     enable = true;
@@ -52,14 +38,6 @@
   };
 
   boot.kernel.sysctl."vm.swappiness" = 180;
-  services.openssh.enable = true;
-  services.openssh.settings = {
-    PasswordAuthentication = false;
-    KbdInteractiveAuthentication = false;
-  };
-  services.udev.extraRules = ''
-    ATTR{address}=="00:f9:65:b5:c9:e7", NAME="eth0"
-  '';
 
   system.stateVersion = "25.11";
 }

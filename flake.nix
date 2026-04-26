@@ -39,6 +39,28 @@
         };
         modules = [
           ./hosts/mainframe
+          ({ lib, pkgs, ... }: {
+            nixpkgs.config.allowUnfreePredicate = pkg:
+              builtins.elem (lib.getName pkg) [ "brave" "happ" "yandex-browser" ];
+            nixpkgs.config.permittedInsecurePackages = [
+              "yandex-browser-26.3.1.1088-1"
+            ];
+
+            environment.systemPackages = [
+              pkgs.brave
+              self.packages.${pkgs.system}.happ
+            ];
+          })
+        ];
+      };
+
+      nixosConfigurations.mainframe-server = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit inputs self;
+        };
+        modules = [
+          ./hosts/mainframe-server
         ];
       };
     };
