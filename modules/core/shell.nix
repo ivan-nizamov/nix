@@ -1,4 +1,7 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
+let
+  flakeTarget = config.mainframe.rebuild.flakeTarget;
+in
 {
   environment.systemPackages = with pkgs; [
     bat
@@ -59,7 +62,7 @@
       nrb() {
         local cores
         cores=$(_nixos_rebuild_cores)
-        command nixos-rebuild build --flake /home/iva/nix#mainframe --max-jobs 1 --cores "$cores" "$@"
+        command nixos-rebuild build --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
       }
 
       nrt() {

@@ -1,5 +1,6 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
+  cfg = config.mainframe.rebuild;
   safeRebuild = pkgs.writeShellScriptBin "mainframe-rebuild" ''
     set -euo pipefail
 
@@ -13,7 +14,7 @@ let
     sudo_bin=/run/wrappers/bin/sudo
     nixos_rebuild=/run/current-system/sw/bin/nixos-rebuild
     self=/run/current-system/sw/bin/mainframe-rebuild
-    flake=path:/home/iva/nix#mainframe
+    flake=path:/home/iva/nix#${cfg.flakeTarget}
     gateway_unit=openclaw-gateway.service
     openclaw_home=/home/iva
     runtime_dir=/run/mainframe-rebuild
@@ -315,43 +316,51 @@ EOF
   '';
 in
 {
-  environment.systemPackages = [ safeRebuild ];
-
-  systemd.services.mainframe-rebuild-switch = {
-    description = "Safe NixOS switch for mainframe";
-    restartIfChanged = false;
-    stopIfChanged = false;
-    serviceConfig = {
-      Type = "oneshot";
-      User = "root";
-      RuntimeDirectory = "mainframe-rebuild";
-      WorkingDirectory = "/home/iva/nix";
-      ExecStart = "${lib.getExe safeRebuild} --run-detached switch";
-    };
+  options.mainframe.rebuild.flakeTarget = lib.mkOption {
+    type = lib.types.str;
+    default = "mainframe";
+    description = "Flake target used by local rebuild helpers.";
   };
 
-  systemd.services.mainframe-rebuild-test = {
-    description = "Safe NixOS test activation for mainframe";
-    restartIfChanged = false;
-    stopIfChanged = false;
-    serviceConfig = {
-      Type = "oneshot";
-      User = "root";
-      RuntimeDirectory = "mainframe-rebuild";
-      WorkingDirectory = "/home/iva/nix";
-      ExecStart = "${lib.getExe safeRebuild} --run-detached test";
-    };
-  };
+  config = {
+    environment.systemPackages = [ safeRebuild ];
 
-  security.sudo.extraRules = [
-    {
-      users = [ "iva" ];
-      commands = [
-        {
-          command = "/run/current-system/sw/bin/mainframe-rebuild";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
+    systemd.services.mainframe-rebuild-switch = {
+      description = "Safe NixOS switch for mainframe";
+      restartIfChanged = false;
+      stopIfChanged = false;
+      serviceConfig = {
+        Type = "oneshot";
+        User = "root";
+        RuntimeDirectory = "mainframe-rebuild";
+        WorkingDirectory = "/home/iva/nix";
+        ExecStart = "${lib.getExe safeRebuild} --run-detached switch";
+      };
+    };
+
+    systemd.services.mainframe-rebuild-test = {
+      description = "Safe NixOS test activation for mainframe";
+      restartIfChanged = false;
+      stopIfChanged = false;
+      serviceConfig = {
+        Type = "oneshot";
+        User = "root";
+        RuntimeDirectory = "mainframe-rebuild";
+        WorkingDirectory = "/home/iva/nix";
+        ExecStart = "${lib.getExe safeRebuild} --run-detached test";
+      };
+    };
+
+    security.sudo.extraRules = [
+      {
+        users = [ "iva" ];
+        commands = [
+          {
+            command = "/run/current-system/sw/bin/mainframe-rebuild";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+      }
+    ];
+  };
 }

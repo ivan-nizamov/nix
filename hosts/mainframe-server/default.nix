@@ -14,6 +14,8 @@
 
   boot.loader.grub.enable = true;
 
+  mainframe.rebuild.flakeTarget = "mainframe-server";
+
   networking.hostName = "mainframe";
   networking.nameservers = [
     "2001:4860:4860::8888"
