@@ -59,6 +59,7 @@
     KbdInteractiveAuthentication = false;
   };
   services.qemuGuest.enable = true;
+  systemd.services.qemu-guest-agent.wantedBy = [ "multi-user.target" ];
   services.udev.extraRules = ''
     ATTR{address}=="00:f9:65:b5:c9:e7", NAME="eth0"
   '';
