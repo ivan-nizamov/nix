@@ -2,6 +2,7 @@
 {
   environment.systemPackages = with pkgs; [
     bat
+    fastfetch
     gh
     git
     micro
