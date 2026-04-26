@@ -2,14 +2,92 @@
 let
   cfg = config.local.rebuild;
   openclawNotifications = lib.boolToString cfg.openclawNotifications.enable;
+  leaseSeconds = toString cfg.lease.maxSeconds;
+  leaseAuthorize = pkgs.writeShellScriptBin "mainframe-rebuild-authorize" ''
+    set -euo pipefail
+
+    self=/run/current-system/sw/bin/mainframe-rebuild-authorize
+    sudo_bin=/run/wrappers/bin/sudo
+    lease_dir=/run/mainframe-rebuild-lease
+    lease_file="$lease_dir/lease-until"
+    max_seconds=${leaseSeconds}
+
+    parse_duration() {
+      local value=''${1:-10m}
+      local number suffix seconds
+
+      case "$value" in
+        *[smh])
+          suffix=''${value#''${value%?}}
+          number=''${value%?}
+          ;;
+        *)
+          suffix=s
+          number=$value
+          ;;
+      esac
+
+      case "$number" in
+        ""|*[!0-9]*)
+          echo "mainframe-rebuild-authorize: invalid duration: $value" >&2
+          exit 64
+          ;;
+      esac
+
+      if [ -z "$number" ]; then
+        echo "mainframe-rebuild-authorize: invalid duration: $value" >&2
+        exit 64
+      fi
+
+      case "$suffix" in
+        ""|s) seconds=$number ;;
+        m) seconds=$((number * 60)) ;;
+        h) seconds=$((number * 3600)) ;;
+        *)
+          echo "mainframe-rebuild-authorize: invalid duration: $value" >&2
+          exit 64
+          ;;
+      esac
+
+      if [ "$seconds" -lt 1 ]; then
+        echo "mainframe-rebuild-authorize: duration must be positive" >&2
+        exit 64
+      fi
+
+      if [ "$seconds" -gt "$max_seconds" ]; then
+        seconds=$max_seconds
+      fi
+
+      printf '%s\n' "$seconds"
+    }
+
+    if [ "$(id -u)" -ne 0 ]; then
+      exec "$sudo_bin" "$self" "$@"
+    fi
+
+    seconds=$(parse_duration "''${1:-10m}")
+    now=$(${pkgs.coreutils}/bin/date +%s)
+    expires=$((now + seconds))
+
+    ${pkgs.coreutils}/bin/install -d -o root -g root -m 0755 "$lease_dir"
+    printf '%s\n' "$expires" > "$lease_file"
+    ${pkgs.coreutils}/bin/chown root:root "$lease_file"
+    ${pkgs.coreutils}/bin/chmod 0644 "$lease_file"
+
+    printf 'mainframe-rebuild lease active for %s seconds, until %s\n' \
+      "$seconds" \
+      "$(${pkgs.coreutils}/bin/date --date="@$expires" --iso-8601=seconds)"
+  '';
   safeRebuild = pkgs.writeShellScriptBin "mainframe-rebuild" ''
     set -euo pipefail
 
     git_bin=${lib.getExe pkgs.git}
+    date_bin=${lib.getExe' pkgs.coreutils "date"}
     env_bin=${lib.getExe' pkgs.coreutils "env"}
     nproc_bin=${lib.getExe' pkgs.coreutils "nproc"}
     openclaw_bin=/run/current-system/sw/bin/openclaw
     perl_bin=${lib.getExe pkgs.perl}
+    rm_bin=${lib.getExe' pkgs.coreutils "rm"}
     runuser_bin=${lib.getExe' pkgs.util-linux "runuser"}
     systemctl=${lib.getExe' pkgs.systemd "systemctl"}
     sudo_bin=/run/wrappers/bin/sudo
@@ -20,6 +98,7 @@ let
     gateway_unit=openclaw-gateway.service
     openclaw_home=/home/iva
     runtime_dir=/run/mainframe-rebuild
+    lease_file=/run/mainframe-rebuild-lease/lease-until
 
     default_cores() {
       local cpu_count target
@@ -33,6 +112,56 @@ let
 
     shell_escape() {
       printf '%q' "$1"
+    }
+
+    lease_remaining() {
+      local now expires
+
+      if [ ! -f "$lease_file" ]; then
+        printf '0\n'
+        return 0
+      fi
+
+      read -r expires < "$lease_file" || {
+        printf '0\n'
+        return 0
+      }
+
+      case "$expires" in
+        ""|*[!0-9]*)
+          printf '0\n'
+          return 0
+          ;;
+      esac
+
+      now=$("$date_bin" +%s)
+      if [ "$expires" -le "$now" ]; then
+        printf '0\n'
+      else
+        printf '%s\n' "$((expires - now))"
+      fi
+    }
+
+    require_lease() {
+      local remaining
+      remaining=$(lease_remaining)
+      if [ "$remaining" -lt 1 ]; then
+        echo "mainframe-rebuild: no active rebuild lease; run 'mainframe-rebuild-authorize 10m' first" >&2
+        exit 77
+      fi
+    }
+
+    show_lease_status() {
+      local remaining expires
+      remaining=$(lease_remaining)
+      if [ "$remaining" -lt 1 ]; then
+        echo "mainframe-rebuild lease inactive"
+        return 1
+      fi
+      read -r expires < "$lease_file"
+      printf 'mainframe-rebuild lease active for %s seconds, until %s\n' \
+        "$remaining" \
+        "$("$date_bin" --date="@$expires" --iso-8601=seconds)"
     }
 
     notify_openclaw=0
@@ -74,14 +203,28 @@ let
 
     mode=''${1:-switch}
     case "$mode" in
-      build|test|switch)
+      build|test|switch|status|revoke)
         shift
         ;;
       *)
-        echo "usage: mainframe-rebuild [--notify-openclaw] [--notify-session-id ID] [--notify-note TEXT] [build|test|switch] [nixos-rebuild args...]" >&2
+        echo "usage: mainframe-rebuild [--notify-openclaw] [--notify-session-id ID] [--notify-note TEXT] [build|test|switch|status|revoke] [nixos-rebuild args...]" >&2
         exit 64
         ;;
     esac
+
+    if [ "$mode" = "status" ]; then
+      show_lease_status
+      exit $?
+    fi
+
+    if [ "$mode" = "revoke" ]; then
+      if [ "$(id -u)" -ne 0 ]; then
+        exec "$sudo_bin" "$self" revoke
+      fi
+      "$rm_bin" -f "$lease_file"
+      echo "mainframe-rebuild lease revoked"
+      exit 0
+    fi
 
     if [ "$mode" = "build" ]; then
       exec "$nixos_rebuild" build --flake "$flake" "$@"
@@ -107,6 +250,8 @@ let
         exec "$sudo_bin" "$self" "''${relay_args[@]}"
       fi
 
+      require_lease
+
       if [ "$#" -ne 0 ]; then
         echo "mainframe-rebuild: switch/test use the declarative service defaults and do not accept extra args" >&2
         exit 64
@@ -126,6 +271,8 @@ let
 
       exec "$systemctl" start "mainframe-rebuild-$mode.service"
     fi
+
+    require_lease
 
     notify_file="$runtime_dir/notify-$mode.env"
     notify_requested=0
@@ -328,8 +475,17 @@ in
 
   options.local.rebuild.openclawNotifications.enable = lib.mkEnableOption "OpenClaw rebuild notifications";
 
+  options.local.rebuild.lease.maxSeconds = lib.mkOption {
+    type = lib.types.ints.positive;
+    default = 1800;
+    description = "Maximum rebuild lease duration, in seconds.";
+  };
+
   config = {
-    environment.systemPackages = [ safeRebuild ];
+    environment.systemPackages = [
+      leaseAuthorize
+      safeRebuild
+    ];
 
     systemd.services.mainframe-rebuild-switch = {
       description = "Safe NixOS switch for mainframe";
