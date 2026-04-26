@@ -67,11 +67,11 @@ in
       }
 
       nrt() {
-        command mainframe-rebuild test
+        command rebuild test
       }
 
       nrs() {
-        command mainframe-rebuild switch
+        command rebuild switch
       }
     '';
   };

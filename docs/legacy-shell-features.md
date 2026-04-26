@@ -20,4 +20,4 @@ These features exist in the legacy Zsh config and can be ported into the NixOS s
   - The current system uses `openclaw`, so this alias looks obsolete unless you still want a compatibility alias.
 - Hostname-derived rebuild aliases:
   - Legacy config used `.#$(hostname -s)`.
-  - Current config already has `nrb`, `nrt`, and `nrs` pinned to `.#mainframe` with CPU-aware defaults, which is safer for this repo.
+  - Current config already has `nrb`, `nrt`, and `nrs` pinned to each host's declarative `local.rebuild.flakeTarget` with CPU-aware defaults, which is safer for this repo.

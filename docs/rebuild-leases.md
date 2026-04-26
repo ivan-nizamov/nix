@@ -1,18 +1,18 @@
 # Rebuild Leases
 
-`mainframe-rebuild build` is unprivileged and can always be used for iteration.
+`rebuild build` is unprivileged and can always be used for iteration.
 
-`mainframe-rebuild test` and `mainframe-rebuild switch` require a short-lived
+`rebuild test` and `rebuild switch` require a short-lived
 lease. This prevents permanent passwordless root-equivalent rebuild access while
 still letting agents fix small build errors quickly.
 
 ## Commands
 
 ```sh
-mainframe-rebuild-authorize 10m
-mainframe-rebuild status
-mainframe-rebuild switch
-mainframe-rebuild revoke
+rebuild-authorize 10m
+rebuild status
+rebuild switch
+rebuild revoke
 ```
 
 The authorize command prompts for the normal `iva` sudo password and creates a
@@ -25,5 +25,5 @@ lease when the agent should lose rebuild access immediately.
 From another trusted device:
 
 ```sh
-ssh mainframe-iva 'mainframe-rebuild-authorize 10m'
+ssh mainframe-iva 'rebuild-authorize 10m'
 ```
