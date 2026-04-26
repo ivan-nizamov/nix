@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -59,7 +59,21 @@
     KbdInteractiveAuthentication = false;
   };
   services.qemuGuest.enable = true;
-  systemd.services.qemu-guest-agent.wantedBy = [ "multi-user.target" ];
+  systemd.services.qemu-guest-agent = {
+    path = [
+      pkgs.shadow
+      pkgs.bashInteractive
+      pkgs.coreutils
+    ];
+    wantedBy = [ "multi-user.target" ];
+  };
+  systemd.tmpfiles.rules = [
+    "d /usr/sbin 0755 root root - -"
+    "L+ /bin/bash - - - - /run/current-system/sw/bin/bash"
+    "L+ /usr/bin/passwd - - - - /run/wrappers/bin/passwd"
+    "L+ /usr/bin/chpasswd - - - - /run/current-system/sw/bin/chpasswd"
+    "L+ /usr/sbin/chpasswd - - - - /run/current-system/sw/bin/chpasswd"
+  ];
   services.udev.extraRules = ''
     ATTR{address}=="00:f9:65:b5:c9:e7", NAME="eth0"
   '';
