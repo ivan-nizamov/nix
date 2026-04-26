@@ -318,7 +318,7 @@ in
 {
   options.mainframe.rebuild.flakeTarget = lib.mkOption {
     type = lib.types.str;
-    default = "mainframe";
+    default = "legion";
     description = "Flake target used by local rebuild helpers.";
   };
 

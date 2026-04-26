@@ -1,25 +1,18 @@
-{ config, lib, modulesPath, ... }:
+{ lib, modulesPath, ... }:
 {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
-
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
+  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
+  boot.initrd.kernelModules = [ "nvme" ];
   boot.extraModulePackages = [ ];
+  boot.loader.grub.device = "/dev/sda";
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/8679ed2a-602f-4909-b624-36bd47bc8224";
-    fsType = "ext4";
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/8438-CB02";
-    fsType = "vfat";
-    options = [ "fmask=0077" "dmask=0077" ];
+    device = "/dev/sda3";
+    fsType = "xfs";
   };
 
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  powerManagement.cpuFreqGovernor = lib.mkDefault "schedutil";
 }

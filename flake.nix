@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for mainframe";
+  description = "NixOS configuration for legion and mainframe";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -32,13 +32,13 @@
           default = happ;
         });
 
-      nixosConfigurations.mainframe = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.legion = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
           inherit inputs self;
         };
         modules = [
-          ./hosts/mainframe
+          ./hosts/legion
           ({ lib, pkgs, ... }: {
             nixpkgs.config.allowUnfreePredicate = pkg:
               builtins.elem (lib.getName pkg) [ "brave" "happ" "yandex-browser" ];
@@ -54,13 +54,13 @@
         ];
       };
 
-      nixosConfigurations.mainframe-server = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.mainframe = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
           inherit inputs self;
         };
         modules = [
-          ./hosts/mainframe-server
+          ./hosts/mainframe
         ];
       };
     };
