@@ -9,6 +9,7 @@
     pkgs."nix-search-cli"
     pay-respects
     ripgrep
+    starship
   ];
 
   programs.starship.enable = true;
