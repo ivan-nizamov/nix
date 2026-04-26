@@ -32,6 +32,7 @@ in
       gcm = "git commit -m";
       glog = "git log --all --decorate --oneline --graph";
       k = "kilocode";
+      m = "ssh mainframe-iva";
       oc = "openclaw";
       oco = "opencode";
     };
