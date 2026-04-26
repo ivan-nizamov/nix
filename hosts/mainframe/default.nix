@@ -58,6 +58,7 @@
     PasswordAuthentication = false;
     KbdInteractiveAuthentication = false;
   };
+  services.qemuGuest.enable = true;
   services.udev.extraRules = ''
     ATTR{address}=="00:f9:65:b5:c9:e7", NAME="eth0"
   '';
