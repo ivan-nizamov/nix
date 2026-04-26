@@ -3,6 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/core/locale.nix
+    ../../modules/core/memory.nix
     ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
@@ -14,7 +15,7 @@
 
   boot.loader.grub.enable = true;
 
-  mainframe.rebuild.flakeTarget = "mainframe";
+  local.rebuild.flakeTarget = "mainframe";
 
   networking.hostName = "mainframe";
   networking.nameservers = [
@@ -48,20 +49,10 @@
     ];
   };
 
-  users.users.iva = {
-    extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKpHMUJk8uBJ1sMaSnj2jT1mSU2r10KS5FtApuVkEvHO"
-    ];
-  };
+  users.users.iva.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKpHMUJk8uBJ1sMaSnj2jT1mSU2r10KS5FtApuVkEvHO"
+  ];
 
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd";
-    memoryPercent = 100;
-  };
-
-  boot.kernel.sysctl."vm.swappiness" = 180;
   services.openssh.enable = true;
   services.openssh.settings = {
     PasswordAuthentication = false;

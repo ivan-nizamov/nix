@@ -4,9 +4,11 @@ Instructions in this file apply to every agent that modifies this repository.
 
 ## Scope
 
-- This repository is a NixOS flake for the `mainframe` host.
-- When a task changes the system configuration, agents must use this host target:
-  `.#mainframe`
+- This repository is a NixOS flake for two hosts:
+  - `.#legion`: the local laptop.
+  - `.#mainframe`: the IPv6-only server.
+- When a task changes the system configuration, agents must switch every affected
+  host target before handing off the work.
 
 ## Required Workflow After Reaching an Objective
 
@@ -19,14 +21,16 @@ Required order:
 
 1. Implement the requested change until the objective is complete.
 2. Create a git commit for that objective.
-3. After the commit is created, activate the latest configuration:
-   `sudo nixos-rebuild switch --flake .#mainframe`
+3. After the commit is created, activate the latest configuration for every
+   affected host. Examples:
+   `sudo nixos-rebuild switch --flake .#legion`
+   `ssh mainframe-iva 'sudo -n /run/current-system/sw/bin/mainframe-rebuild switch'`
 4. Only hand off the work after the switch succeeds.
 
 ## Failure Handling
 
 - If the commit fails, do not switch until the commit is successfully created.
-- If `sudo nixos-rebuild switch --flake .#mainframe` fails after a successful commit, the objective is still incomplete.
+- If any required switch fails after a successful commit, the objective is still incomplete.
 - In that case, keep working until the switch succeeds. Create additional commit(s) as needed for the fix, then retry the switch.
 - Do not treat `nixos-rebuild build`, `nixos-rebuild test`, or any other non-switch step as completion unless the user explicitly asked for that instead.
 

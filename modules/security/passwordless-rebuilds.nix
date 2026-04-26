@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 let
-  cfg = config.mainframe.rebuild;
+  cfg = config.local.rebuild;
+  openclawNotifications = lib.boolToString cfg.openclawNotifications.enable;
   safeRebuild = pkgs.writeShellScriptBin "mainframe-rebuild" ''
     set -euo pipefail
 
@@ -15,6 +16,7 @@ let
     nixos_rebuild=/run/current-system/sw/bin/nixos-rebuild
     self=/run/current-system/sw/bin/mainframe-rebuild
     flake=path:/home/iva/nix#${cfg.flakeTarget}
+    openclaw_notifications=${openclawNotifications}
     gateway_unit=openclaw-gateway.service
     openclaw_home=/home/iva
     runtime_dir=/run/mainframe-rebuild
@@ -298,11 +300,13 @@ EOF
 
     cleanup() {
       status=$?
-      if ! "$systemctl" is-active --quiet "$gateway_unit"; then
-        echo "mainframe-rebuild: starting $gateway_unit" >&2
-        "$systemctl" start "$gateway_unit" || true
+      if [ "$openclaw_notifications" = true ]; then
+        if ! "$systemctl" is-active --quiet "$gateway_unit"; then
+          echo "mainframe-rebuild: starting $gateway_unit" >&2
+          "$systemctl" start "$gateway_unit" || true
+        fi
+        notify_agent "$status"
       fi
-      notify_agent "$status"
       exit "$status"
     }
 
@@ -316,11 +320,13 @@ EOF
   '';
 in
 {
-  options.mainframe.rebuild.flakeTarget = lib.mkOption {
+  options.local.rebuild.flakeTarget = lib.mkOption {
     type = lib.types.str;
     default = "legion";
     description = "Flake target used by local rebuild helpers.";
   };
+
+  options.local.rebuild.openclawNotifications.enable = lib.mkEnableOption "OpenClaw rebuild notifications";
 
   config = {
     environment.systemPackages = [ safeRebuild ];

@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  flakeTarget = config.mainframe.rebuild.flakeTarget;
+  flakeTarget = config.local.rebuild.flakeTarget;
 in
 {
   environment.systemPackages = with pkgs; [
@@ -75,4 +75,8 @@ in
       }
     '';
   };
+
+  systemd.tmpfiles.rules = [
+    "f /home/iva/.zshrc 0644 iva users - -"
+  ];
 }

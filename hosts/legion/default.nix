@@ -5,12 +5,14 @@
     ../../modules/accessibility/dictation.nix
     ../../modules/core/fonts.nix
     ../../modules/core/locale.nix
+    ../../modules/core/memory.nix
     ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
     ../../modules/hardware/espressif-serial.nix
     ../../modules/hardware/hybrid-graphics.nix
     ../../modules/input/wayland-text-injection.nix
+    ../../modules/programs/desktop-apps.nix
     ../../modules/programs/llm-agents.nix
     ../../modules/programs/obs-studio.nix
     ../../modules/programs/obsidian.nix
@@ -27,17 +29,14 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  local.rebuild.openclawNotifications.enable = true;
+
   networking.hostName = "legion";
+  networking.networkmanager.enable = true;
+
+  users.users.iva.extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
 
   hardware.keyboard.qmk.enable = true;
-
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd";
-    memoryPercent = 100;
-  };
-
-  boot.kernel.sysctl."vm.swappiness" = 180;
 
   system.stateVersion = "25.11";
 }

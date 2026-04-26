@@ -1,8 +1,8 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 {
   users.users.iva = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
+    extraGroups = lib.mkDefault [ "wheel" ];
     linger = true;
     shell = pkgs.zsh;
   };
