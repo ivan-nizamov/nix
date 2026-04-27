@@ -22,6 +22,21 @@ EOF
     substituteInPlace $out/lib/openclaw/dist/extensions/telegram/package.json \
       --replace-fail "$telegram_dev_deps" ""
 
+    for file in $out/lib/openclaw/dist/extensions/telegram/fetch-*.js; do
+      substituteInPlace "$file" \
+        --replace-fail 'function resolveTelegramTransport(proxyFetch, options) {' \
+        'function resolveTelegramTransport(proxyFetch, options) {
+	if (isTruthyEnvValue(process$1.env.OPENCLAW_TELEGRAM_USE_GLOBAL_FETCH)) {
+		const globalFetch = globalThis.fetch.bind(globalThis);
+		return {
+			fetch: globalFetch,
+			sourceFetch: globalFetch,
+			dispatcherAttempts: [{ dispatcherPolicy: { mode: "global-fetch" } }],
+			close: async () => {}
+		};
+	}'
+    done
+
     rm $out/bin/openclaw
     cp ${baseOpenclaw}/bin/openclaw $out/bin/openclaw
     chmod u+w $out/bin/openclaw
@@ -214,7 +229,7 @@ EOF
       };
       commands = {
         native = "auto";
-        nativeSkills = "auto";
+        nativeSkills = false;
         restart = true;
         ownerDisplay = "raw";
       };
@@ -248,6 +263,10 @@ EOF
           };
           streaming = {
             mode = "partial";
+          };
+          network = {
+            autoSelectFamily = false;
+            dnsResultOrder = "ipv4first";
           };
           execApprovals = {
             enabled = true;
@@ -351,8 +370,12 @@ in
       Environment = [
         "HOME=${userHome}"
         "TMPDIR=/tmp"
+        "NODE_OPTIONS=--dns-result-order=ipv4first"
         "PATH=${openclawPath}"
         "NODE_PATH=${openclaw}/lib/openclaw/node_modules"
+        "OPENCLAW_TELEGRAM_USE_GLOBAL_FETCH=1"
+        "OPENCLAW_TELEGRAM_DISABLE_AUTO_SELECT_FAMILY=1"
+        "OPENCLAW_TELEGRAM_DNS_RESULT_ORDER=ipv4first"
         "OPENCLAW_STATE_DIR=${stateDir}"
         "OPENCLAW_CONFIG_PATH=${configFile}"
         "OPENCLAW_GATEWAY_PORT=18789"
