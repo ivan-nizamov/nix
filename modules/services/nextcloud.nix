@@ -39,7 +39,6 @@ in
         mail
         notes
         polls
-        spreed
         tasks
         ;
     };
