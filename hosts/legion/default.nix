@@ -16,7 +16,6 @@
     ../../modules/programs/llm-agents.nix
     ../../modules/programs/obs-studio.nix
     ../../modules/programs/obsidian.nix
-    ../../modules/security/passwordless-rebuilds.nix
     ../../modules/services/audio-pipewire.nix
     ../../modules/services/desktop-gnome.nix
     ../../modules/services/failure-reporting.nix
@@ -28,8 +27,6 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  local.rebuild.openclawNotifications.enable = true;
 
   networking.hostName = "legion";
   networking.networkmanager.enable = true;

@@ -8,7 +8,6 @@
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
     ../../modules/programs/llm-agents.nix
-    ../../modules/security/passwordless-rebuilds.nix
     ../../modules/services/failure-reporting.nix
     ../../modules/services/nextcloud.nix
     ../../modules/users/iva.nix

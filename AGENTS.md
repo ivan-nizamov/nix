@@ -24,7 +24,7 @@ Required order:
 3. After the commit is created, activate the latest configuration for every
    affected host. Examples:
    `sudo nixos-rebuild switch --flake .#legion`
-   `ssh mainframe-iva 'rebuild switch'`
+   `ssh -t mainframe-iva 'zsh -ic nrs'`
 4. Only hand off the work after the switch succeeds.
 
 ## Failure Handling
