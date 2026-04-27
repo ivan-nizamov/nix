@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
     tailscale
@@ -7,7 +7,10 @@
   services.tailscale = {
     enable = true;
     openFirewall = true;
-    extraSetFlags = [ "--ssh" ];
+    extraSetFlags = [
+      "--hostname=${config.networking.hostName}"
+      "--ssh=false"
+    ];
   };
 
   systemd.services.tailscaled = {
