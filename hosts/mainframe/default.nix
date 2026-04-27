@@ -54,10 +54,15 @@
   ];
 
   services.openssh.enable = true;
+  services.openssh.openFirewall = false;
   services.openssh.settings = {
     PermitRootLogin = "no";
     PasswordAuthentication = false;
     KbdInteractiveAuthentication = false;
+  };
+  networking.firewall = {
+    allowedTCPPorts = [ ];
+    trustedInterfaces = [ "tailscale0" ];
   };
   services.qemuGuest.enable = true;
   systemd.services.qemu-guest-agent = {
