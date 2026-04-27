@@ -36,7 +36,6 @@ in
         calendar
         contacts
         deck
-        forms
         mail
         notes
         polls
