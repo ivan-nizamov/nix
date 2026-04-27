@@ -171,7 +171,7 @@ EOF
       agents = {
         defaults = {
           model = {
-            primary = "codex/gpt-5.4";
+            primary = "openai-codex/gpt-5.4";
           };
           thinkingDefault = "high";
           workspace = "/home/iva/.openclaw/workspace";
@@ -302,16 +302,6 @@ EOF
                 codex = {
                   command = lib.getExe acpxWrapper;
                 };
-              };
-            };
-          };
-          codex = {
-            enabled = true;
-            config = {
-              appServer = {
-                command = lib.getExe llmAgentsPkgs.codex;
-                approvalPolicy = "never";
-                sandbox = "danger-full-access";
               };
             };
           };
