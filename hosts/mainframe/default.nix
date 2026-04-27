@@ -10,6 +10,7 @@
     ../../modules/programs/llm-agents.nix
     ../../modules/security/passwordless-rebuilds.nix
     ../../modules/services/failure-reporting.nix
+    ../../modules/services/nextcloud.nix
     ../../modules/users/iva.nix
   ];
 
@@ -64,6 +65,7 @@
     allowedTCPPorts = [ ];
     trustedInterfaces = [ "tailscale0" ];
   };
+
   services.qemuGuest.enable = true;
   systemd.services.qemu-guest-agent = {
     path = [
