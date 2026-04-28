@@ -19,7 +19,7 @@ in
 
   services.nextcloud = {
     enable = true;
-    package = pkgs.nextcloud32;
+    package = pkgs.nextcloud33;
     inherit hostName;
     https = true;
     maxUploadSize = "10G";
@@ -40,7 +40,7 @@ in
       nextcloudUrl = "https://${hostName}";
     };
 
-    extraApps = with pkgs.nextcloud32Packages.apps; {
+    extraApps = with pkgs.nextcloud33Packages.apps; {
       inherit
         calendar
         contacts
