@@ -44,13 +44,18 @@ in
     extraApps = with pkgs.nextcloud33Packages.apps; {
       inherit
         calendar
+        collectives
         contacts
+        files_automatedtagging
+        forms
         mail
         notes
         polls
         richdocuments
         spreed
+        tables
         tasks
+        whiteboard
         ;
     };
 
