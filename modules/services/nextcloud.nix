@@ -116,6 +116,7 @@ in
       server_name = hostName;
       ssl.enable = false;
       ssl.termination = true;
+      storage.wopi.host = [ hostName ];
     };
   };
 
