@@ -44,7 +44,6 @@ in
       inherit
         calendar
         contacts
-        deck
         mail
         notes
         polls
