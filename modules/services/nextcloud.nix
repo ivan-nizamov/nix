@@ -2,6 +2,7 @@
 let
   hostName = "mainframe.tail506f5b.ts.net";
   listenPort = 8080;
+  internalNextcloudUrl = "http://127.0.0.1:${toString listenPort}";
   adminPassFile = "/var/lib/nextcloud-secrets/admin-pass";
 in
 {
@@ -75,6 +76,13 @@ in
       }
     ];
   };
+
+  # Keep the public push endpoint in Nextcloud, but make notify_push health
+  # checks bypass Tailscale Funnel because Funnel rewrites forwarded headers.
+  systemd.services.nextcloud-notify_push.environment.NEXTCLOUD_URL =
+    lib.mkForce internalNextcloudUrl;
+  systemd.services.nextcloud-notify_push_setup.environment.NEXTCLOUD_URL =
+    internalNextcloudUrl;
 
   systemd.services.nextcloud-funnel = {
     description = "Public Tailscale Funnel for Nextcloud";
