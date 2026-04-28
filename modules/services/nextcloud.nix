@@ -65,6 +65,7 @@ in
       mail_smtpsecure = "ssl";
       maintenance_window_start = 2;
       overwriteprotocol = "https";
+      serverid = 0;
       trusted_proxies = [
         "127.0.0.1"
         "::1"
