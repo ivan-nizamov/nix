@@ -196,6 +196,7 @@ in
       User = "nextcloud";
       Group = "nextcloud";
       LoadCredential = [
+        "mail_smtppassword:${smtpPassFile}"
         "whiteboard-server.env:${whiteboardSecretFile}"
       ];
     };
