@@ -3,12 +3,14 @@ let
   hostName = "mainframe.tail506f5b.ts.net";
   listenPort = 8080;
   collaboraPort = 9980;
+  whiteboardPort = 3002;
   internalNextcloudUrl = "http://127.0.0.1:${toString listenPort}";
   adminPassFile = "/var/lib/nextcloud-secrets/admin-pass";
   smtpPassFile = "/var/lib/nextcloud-secrets/smtp-pass";
+  whiteboardSecretFile = "/var/lib/nextcloud-secrets/whiteboard-server.env";
 in
 {
-  system.activationScripts.nextcloudAdminPassword = ''
+  system.activationScripts.nextcloudSecrets = ''
     install -d -m 0700 -o root -g root /var/lib/nextcloud-secrets
     if [ ! -s ${adminPassFile} ]; then
       umask 077
@@ -16,6 +18,13 @@ in
     fi
     chown root:root ${adminPassFile}
     chmod 0400 ${adminPassFile}
+
+    if [ ! -s ${whiteboardSecretFile} ]; then
+      umask 077
+      printf 'JWT_SECRET_KEY=%s\n' "$(${lib.getExe pkgs.openssl} rand -hex 32)" > ${whiteboardSecretFile}
+    fi
+    chown root:root ${whiteboardSecretFile}
+    chmod 0400 ${whiteboardSecretFile}
   '';
 
   services.nextcloud = {
@@ -105,8 +114,23 @@ in
           proxyPass = "http://127.0.0.1:${toString collaboraPort}";
           proxyWebsockets = true;
         };
+        "^~ /whiteboard/" = {
+          proxyPass = "http://127.0.0.1:${toString whiteboardPort}/";
+          proxyWebsockets = true;
+        };
       };
     };
+  };
+
+  services.nextcloud-whiteboard-server = {
+    enable = true;
+    settings = {
+      NEXTCLOUD_URL = "https://${hostName}";
+      PORT = toString whiteboardPort;
+      STORAGE_STRATEGY = "lru";
+      TLS = "false";
+    };
+    secrets = [ whiteboardSecretFile ];
   };
 
   services.collabora-online = {
@@ -153,6 +177,35 @@ in
       ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments wopi_url --value "https://${hostName}"
       ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments public_wopi_url --value "https://${hostName}"
       ${lib.getExe config.services.nextcloud.occ} richdocuments:activate-config || true
+    '';
+  };
+
+  systemd.services.nextcloud-whiteboard-config = {
+    description = "Configure Nextcloud Whiteboard";
+    after = [
+      "nextcloud-setup.service"
+      "nextcloud-whiteboard-server.service"
+    ];
+    wants = [
+      "nextcloud-setup.service"
+      "nextcloud-whiteboard-server.service"
+    ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "nextcloud";
+      Group = "nextcloud";
+      LoadCredential = [
+        "whiteboard-server.env:${whiteboardSecretFile}"
+      ];
+    };
+    script = ''
+      set -a
+      . "$CREDENTIALS_DIRECTORY/whiteboard-server.env"
+      set +a
+
+      ${lib.getExe config.services.nextcloud.occ} config:app:set whiteboard collabBackendUrl --value "https://${hostName}/whiteboard"
+      ${lib.getExe config.services.nextcloud.occ} config:app:set whiteboard jwt_secret_key --value "$JWT_SECRET_KEY"
     '';
   };
 
