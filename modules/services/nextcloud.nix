@@ -55,6 +55,7 @@ in
         calendar
         collectives
         contacts
+        deck
         files_automatedtagging
         forms
         mail
