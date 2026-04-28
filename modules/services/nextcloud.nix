@@ -2,6 +2,7 @@
 let
   hostName = "mainframe.tail506f5b.ts.net";
   listenPort = 8080;
+  collaboraPort = 9980;
   internalNextcloudUrl = "http://127.0.0.1:${toString listenPort}";
   adminPassFile = "/var/lib/nextcloud-secrets/admin-pass";
   smtpPassFile = "/var/lib/nextcloud-secrets/smtp-pass";
@@ -47,6 +48,7 @@ in
         mail
         notes
         polls
+        richdocuments
         spreed
         tasks
         ;
@@ -80,12 +82,41 @@ in
     recommendedOptimisation = true;
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
-    virtualHosts.${hostName}.listen = [
+    virtualHosts.${hostName} = {
+      listen = [
+        {
+          addr = "127.0.0.1";
+          port = listenPort;
+        }
+      ];
+      locations = {
+        "^~ /browser/".proxyPass = "http://127.0.0.1:${toString collaboraPort}";
+        "^~ /hosting/".proxyPass = "http://127.0.0.1:${toString collaboraPort}";
+        "^~ /cool/" = {
+          proxyPass = "http://127.0.0.1:${toString collaboraPort}";
+          proxyWebsockets = true;
+        };
+        "^~ /lool/" = {
+          proxyPass = "http://127.0.0.1:${toString collaboraPort}";
+          proxyWebsockets = true;
+        };
+      };
+    };
+  };
+
+  services.collabora-online = {
+    enable = true;
+    port = collaboraPort;
+    aliasGroups = [
       {
-        addr = "127.0.0.1";
-        port = listenPort;
+        host = "https://${hostName}";
       }
     ];
+    settings = {
+      server_name = hostName;
+      ssl.enable = false;
+      ssl.termination = true;
+    };
   };
 
   # Keep the public push endpoint in Nextcloud, but make notify_push health
@@ -94,6 +125,30 @@ in
     lib.mkForce internalNextcloudUrl;
   systemd.services.nextcloud-notify_push_setup.environment.NEXTCLOUD_URL =
     internalNextcloudUrl;
+
+  systemd.services.nextcloud-office-config = {
+    description = "Configure Nextcloud Office";
+    after = [
+      "coolwsd.service"
+      "nextcloud-setup.service"
+    ];
+    wants = [
+      "coolwsd.service"
+      "nextcloud-setup.service"
+    ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "nextcloud";
+      Group = "nextcloud";
+      LoadCredential = config.systemd.services.nextcloud-cron.serviceConfig.LoadCredential;
+    };
+    script = ''
+      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments wopi_url --value "https://${hostName}"
+      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments public_wopi_url --value "https://${hostName}"
+      ${lib.getExe config.services.nextcloud.occ} richdocuments:activate-config || true
+    '';
+  };
 
   systemd.services.nextcloud-funnel = {
     description = "Public Tailscale Funnel for Nextcloud";
