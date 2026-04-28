@@ -58,6 +58,7 @@ in
         files_automatedtagging
         forms
         mail
+        music
         notes
         polls
         richdocuments
