@@ -25,10 +25,17 @@ in
     configureRedis = true;
     database.createLocally = true;
 
+    phpOptions."opcache.interned_strings_buffer" = "16";
+
     config = {
       dbtype = "pgsql";
       adminuser = "iva";
       adminpassFile = adminPassFile;
+    };
+
+    notify_push = {
+      enable = true;
+      nextcloudUrl = "https://${hostName}";
     };
 
     extraApps = with pkgs.nextcloud32Packages.apps; {
@@ -46,7 +53,7 @@ in
 
     settings = {
       default_phone_region = "RO";
-      log_type = "systemd";
+      log_type = "file";
       maintenance_window_start = 2;
       overwriteprotocol = "https";
       trusted_proxies = [
