@@ -4,6 +4,7 @@ let
   listenPort = 8080;
   internalNextcloudUrl = "http://127.0.0.1:${toString listenPort}";
   adminPassFile = "/var/lib/nextcloud-secrets/admin-pass";
+  smtpPassFile = "/var/lib/nextcloud-secrets/smtp-pass";
 in
 {
   system.activationScripts.nextcloudAdminPassword = ''
@@ -55,6 +56,14 @@ in
     settings = {
       default_phone_region = "RO";
       log_type = "file";
+      mail_domain = "gmail.com";
+      mail_from_address = "ivan.nizamov";
+      mail_smtpauth = true;
+      mail_smtphost = "smtp.gmail.com";
+      mail_smtpmode = "smtp";
+      mail_smtpname = "ivan.nizamov@gmail.com";
+      mail_smtpport = 465;
+      mail_smtpsecure = "ssl";
       maintenance_window_start = 2;
       overwriteprotocol = "https";
       trusted_proxies = [
@@ -62,6 +71,8 @@ in
         "::1"
       ];
     };
+
+    secrets.mail_smtppassword = smtpPassFile;
   };
 
   services.nginx = {
