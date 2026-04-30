@@ -68,6 +68,39 @@ EOF
           --replace-fail 'if (!(fs.existsSync(targetCanonicalDistRoot) && safeRealpathOrResolve(targetCanonicalDistRoot) === safeRealpathOrResolve(sourceCanonicalDistRoot))) {' \
           'if (!fs.existsSync(targetCanonicalDistRoot)) {'
       fi
+      if grep -q 'fs.symlinkSync(sourceCanonicalDistRoot, targetCanonicalDistRoot, "junction");' "$file"; then
+        substituteInPlace "$file" \
+          --replace-fail 'fs.symlinkSync(sourceCanonicalDistRoot, targetCanonicalDistRoot, "junction");' \
+          'fs.mkdirSync(targetCanonicalDistRoot, {
+					recursive: true,
+					mode: 493
+				});
+				const sourceCanonicalExtensionsRoot = path.join(sourceCanonicalDistRoot, "extensions");
+				const targetCanonicalExtensionsRoot = path.join(targetCanonicalDistRoot, "extensions");
+				fs.mkdirSync(targetCanonicalExtensionsRoot, {
+					recursive: true,
+					mode: 493
+				});
+				for (const entry of fs.readdirSync(sourceCanonicalDistRoot, { withFileTypes: true })) {
+					if (entry.name === "extensions") continue;
+					const sourceCanonicalPath = path.join(sourceCanonicalDistRoot, entry.name);
+					const targetCanonicalPath = path.join(targetCanonicalDistRoot, entry.name);
+					if (fs.existsSync(targetCanonicalPath)) continue;
+					fs.symlinkSync(sourceCanonicalPath, targetCanonicalPath, entry.isDirectory() ? "junction" : "file");
+				}
+				if (fs.existsSync(sourceCanonicalExtensionsRoot)) {
+					for (const entry of fs.readdirSync(sourceCanonicalExtensionsRoot, { withFileTypes: true })) {
+						const sourceCanonicalExtensionPath = path.join(sourceCanonicalExtensionsRoot, entry.name);
+						const targetCanonicalExtensionPath = path.join(targetCanonicalExtensionsRoot, entry.name);
+						if (fs.existsSync(targetCanonicalExtensionPath)) continue;
+						if (entry.name === "node_modules" && entry.isDirectory()) {
+							copyBundledPluginRuntimeRoot(sourceCanonicalExtensionPath, targetCanonicalExtensionPath);
+							continue;
+						}
+						fs.symlinkSync(sourceCanonicalExtensionPath, targetCanonicalExtensionPath, entry.isDirectory() ? "junction" : "file");
+					}
+				}'
+      fi
 
       # Keep the top-level dist/node_modules symlink and the SDK package under
       # dist/extensions/node_modules, but avoid copying a full dependency tree.
