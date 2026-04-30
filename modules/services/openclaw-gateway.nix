@@ -219,6 +219,14 @@ EOF
             provider = "openai-codex";
             mode = "oauth";
           };
+          "openai-codex:teamzerogravity100@gmail.com" = {
+            provider = "openai-codex";
+            mode = "oauth";
+            email = "teamzerogravity100@gmail.com";
+          };
+        };
+        order = {
+          openai-codex = [ "openai-codex:teamzerogravity100@gmail.com" ];
         };
       };
       agents = {
