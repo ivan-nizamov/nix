@@ -8,6 +8,8 @@
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
     ../../modules/programs/llm-agents.nix
+    ../../modules/services/openclaw-embeddings.nix
+    ../../modules/services/openclaw-gateway.nix
     ../../modules/services/failure-reporting.nix
     ../../modules/services/nextcloud.nix
     ../../modules/users/iva.nix
@@ -66,6 +68,19 @@
   };
 
   services.qemuGuest.enable = true;
+
+  local.openclaw.embeddings = {
+    modelId = "BAAI/bge-small-en-v1.5";
+    modelRevision = "b49342cba6a5914c1760cd4aae1d75a6f2e8fc4c";
+    device = "cpu";
+    batchSize = 2;
+    environment = {
+      INFINITY_BETTERTRANSFORMER = "false";
+      OMP_NUM_THREADS = "2";
+      MKL_NUM_THREADS = "2";
+    };
+  };
+
   systemd.services.qemu-guest-agent = {
     path = [
       pkgs.shadow

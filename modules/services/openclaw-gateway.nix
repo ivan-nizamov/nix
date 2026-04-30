@@ -1,5 +1,6 @@
-{ inputs, lib, pkgs, ... }:
+{ config, inputs, lib, pkgs, ... }:
 let
+  cfg = config.local.openclaw.embeddings;
   user = "iva";
   userHome = "/home/iva";
   stateDir = "${userHome}/.openclaw";
@@ -238,7 +239,7 @@ EOF
             enabled = true;
             provider = "openai";
             fallback = "none";
-            model = "Alibaba-NLP/gte-modernbert-base@e7f32e3c00f91d699e8c43b53106206bcc72bb22";
+            model = "${cfg.modelId}@${cfg.modelRevision}";
             remote = {
               baseUrl = "http://127.0.0.1:7997/";
               apiKey = "openclaw-local-infinity";
