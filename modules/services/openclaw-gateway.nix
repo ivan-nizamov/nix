@@ -8,10 +8,11 @@ let
   openclaw = pkgs.runCommand "openclaw-${baseOpenclaw.version}-metadata-patched" { } ''
     mkdir -p $out
     ${pkgs.xorg.lndir}/bin/lndir -silent ${baseOpenclaw} $out
-    rm -rf $out/lib/openclaw/dist $out/lib/openclaw/dist-runtime
+    rm -rf $out/lib/openclaw/dist $out/lib/openclaw/dist-runtime $out/lib/openclaw/skills
     cp -r ${baseOpenclaw}/lib/openclaw/dist $out/lib/openclaw/dist
     cp -r ${baseOpenclaw}/lib/openclaw/dist-runtime $out/lib/openclaw/dist-runtime
-    chmod -R u+w $out/lib/openclaw/dist $out/lib/openclaw/dist-runtime
+    cp -r ${baseOpenclaw}/lib/openclaw/skills $out/lib/openclaw/skills
+    chmod -R u+w $out/lib/openclaw/dist $out/lib/openclaw/dist-runtime $out/lib/openclaw/skills
     ln -s ${baseOpenclaw}/lib/openclaw/node_modules $out/lib/openclaw/dist/node_modules
     telegram_dev_deps=$(cat <<'EOF'
   "devDependencies": {
