@@ -60,12 +60,6 @@ EOF
     done
 
     for file in $out/lib/openclaw/dist/loader-*.js; do
-      if grep -q 'fs.symlinkSync(sourceCanonicalDistRoot, targetCanonicalDistRoot, "junction");' "$file"; then
-        substituteInPlace "$file" \
-          --replace-fail 'fs.symlinkSync(sourceCanonicalDistRoot, targetCanonicalDistRoot, "junction");' \
-          'copyBundledPluginRuntimeRoot(sourceCanonicalDistRoot, targetCanonicalDistRoot);'
-      fi
-
       # Keep the top-level dist/node_modules symlink and the SDK package under
       # dist/extensions/node_modules, but avoid copying a full dependency tree.
       ${pkgs.perl}/bin/perl -0pi -e '
