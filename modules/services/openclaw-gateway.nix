@@ -60,6 +60,13 @@ EOF
     done
 
     for file in $out/lib/openclaw/dist/loader-*.js; do
+      # dist-runtime plugin loads should not replace an existing writable dist
+      # mirror. The mirror keeps dist/extensions writable for plugins while
+      # symlinking top-level runtime modules back into the immutable package.
+      substituteInPlace "$file" \
+        --replace-fail 'if (!(fs.existsSync(targetCanonicalDistRoot) && safeRealpathOrResolve(targetCanonicalDistRoot) === safeRealpathOrResolve(sourceCanonicalDistRoot))) {' \
+        'if (!fs.existsSync(targetCanonicalDistRoot)) {'
+
       # Keep the top-level dist/node_modules symlink and the SDK package under
       # dist/extensions/node_modules, but avoid copying a full dependency tree.
       ${pkgs.perl}/bin/perl -0pi -e '
