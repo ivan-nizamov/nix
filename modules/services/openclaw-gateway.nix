@@ -1,6 +1,7 @@
 { config, inputs, lib, pkgs, ... }:
 let
   cfg = config.local.openclaw.embeddings;
+  openclawEnabled = config.local.openclaw.enable;
   user = "iva";
   userHome = "/home/iva";
   stateDir = "${userHome}/.openclaw";
@@ -387,7 +388,7 @@ EOF
     }
   );
 in
-{
+lib.mkIf openclawEnabled {
   systemd.tmpfiles.rules = [
     "r ${userHome}/.config/systemd/user/openclaw-gateway.service"
     "r ${userHome}/.config/systemd/user/default.target.wants/openclaw-gateway.service"

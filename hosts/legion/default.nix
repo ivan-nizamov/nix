@@ -31,6 +31,8 @@
   networking.hostName = "legion";
   networking.networkmanager.enable = true;
 
+  local.openclaw.enable = false;
+
   users.users.iva.extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
 
   hardware.keyboard.qmk.enable = true;

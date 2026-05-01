@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.local.openclaw.embeddings;
+  openclawEnabled = config.local.openclaw.enable;
   listenAddress = "127.0.0.1";
   port = 7997;
   apiKey = "openclaw-local-infinity";
@@ -303,7 +304,14 @@ let
   );
 in
 {
-  options.local.openclaw.embeddings = {
+  options.local.openclaw = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to run the local OpenClaw gateway/embeddings stack on this host.";
+    };
+
+    embeddings = {
     modelId = lib.mkOption {
       type = lib.types.str;
       default = "Alibaba-NLP/gte-modernbert-base";
@@ -379,9 +387,10 @@ in
       ];
       description = "Allowed Hugging Face model files for the embeddings download.";
     };
+    };
   };
 
-  config = {
+  config = lib.mkIf openclawEnabled {
     users.groups.openclaw-embeddings = { };
 
     users.users.openclaw-embeddings = {
@@ -408,7 +417,7 @@ in
 
       serviceConfig = {
         Type = "simple";
-        ExecStart = launcher;
+        ExecStart = lib.getExe launcher;
         Restart = "always";
         RestartSec = 2;
         User = "openclaw-embeddings";
