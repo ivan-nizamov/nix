@@ -27,6 +27,7 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelParams = [ "mem_sleep_default=deep" ];
 
   networking.hostName = "legion";
   networking.networkmanager.enable = true;

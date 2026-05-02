@@ -72,14 +72,13 @@ in
 {
   programs.dconf.enable = true;
 
-  # Lid-close suspend has produced GPU resume failures on this hybrid graphics
-  # laptop. Treat the lid like a display cover; use the power key for explicit
-  # suspend instead.
+  # Suspend fully on lid close; the lid-inhibit extension and systemd
+  # inhibitor are the only exceptions that block this behaviour.
   services.logind.settings.Login = {
     HandlePowerKey = "suspend";
-    HandleLidSwitch = "ignore";
-    HandleLidSwitchDocked = "ignore";
-    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchDocked = "suspend";
+    HandleLidSwitchExternalPower = "suspend";
     HoldoffTimeoutSec = 2;
     IdleAction = "ignore";
   };
