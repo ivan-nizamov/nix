@@ -5,7 +5,7 @@ in
 {
   options.local.rebuild.flakeTarget = lib.mkOption {
     type = lib.types.str;
-    default = "legion";
+    default = "thinkpad";
     description = "Flake target used by local rebuild helpers.";
   };
 
