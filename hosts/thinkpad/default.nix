@@ -3,18 +3,14 @@
   imports = [
     ./hardware-configuration.nix
     nixos-hardware.nixosModules.lenovo-thinkpad-t480
-    ../../modules/accessibility/dictation.nix
     ../../modules/core/fonts.nix
     ../../modules/core/locale.nix
     ../../modules/core/memory.nix
     ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
-    ../../modules/hardware/espressif-serial.nix
-    ../../modules/input/wayland-text-injection.nix
     ../../modules/programs/desktop-apps.nix
     ../../modules/programs/llm-agents.nix
-    ../../modules/programs/obs-studio.nix
     ../../modules/programs/obsidian.nix
     ../../modules/services/audio-pipewire.nix
     ../../modules/services/desktop-gnome.nix
