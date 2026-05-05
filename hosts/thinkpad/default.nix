@@ -1,7 +1,8 @@
-{ ... }:
+{ nixos-hardware, ... }:
 {
   imports = [
     ./hardware-configuration.nix
+    nixos-hardware.nixosModules.lenovo-thinkpad-t480
     ../../modules/accessibility/dictation.nix
     ../../modules/core/fonts.nix
     ../../modules/core/locale.nix
@@ -10,7 +11,6 @@
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
     ../../modules/hardware/espressif-serial.nix
-    ../../modules/hardware/hybrid-graphics.nix
     ../../modules/input/wayland-text-injection.nix
     ../../modules/programs/desktop-apps.nix
     ../../modules/programs/llm-agents.nix
@@ -29,14 +29,12 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelParams = [ "mem_sleep_default=deep" ];
 
-  networking.hostName = "legion";
+  networking.hostName = "thinkpad";
   networking.networkmanager.enable = true;
 
   local.openclaw.enable = false;
 
   users.users.iva.extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
-
-  hardware.keyboard.qmk.enable = true;
 
   system.stateVersion = "25.11";
 }

@@ -1,9 +1,10 @@
 {
-  description = "NixOS configuration for legion and mainframe";
+  description = "NixOS configuration for thinkpad and mainframe";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     llm-agents.url = "github:numtide/llm-agents.nix";
     voxtype.url = "github:peteonrails/voxtype?ref=v0.6.3";
     zen-browser = {
@@ -32,13 +33,14 @@
           default = happ;
         });
 
-      nixosConfigurations.legion = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.thinkpad = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
           inherit inputs self;
+          inherit (inputs) nixos-hardware;
         };
         modules = [
-          ./hosts/legion
+          ./hosts/thinkpad
         ];
       };
 
