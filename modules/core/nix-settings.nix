@@ -3,6 +3,7 @@
   nix.daemonCPUSchedPolicy = "idle";
   nix.daemonIOSchedClass = "idle";
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.download-buffer-size = 64 * 1024 * 1024;
   nix.settings.max-jobs = 1;
   nix.settings.trusted-users = [ "root" "iva" ];
   nix.settings.extra-substituters = [

@@ -14,25 +14,7 @@
   };
 
   outputs = inputs@{ self, nixpkgs, ... }:
-    let
-      systems = [ "x86_64-linux" ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
-    in
     {
-      packages = forAllSystems (system:
-        let
-          pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfreePredicate = pkg:
-              builtins.elem (nixpkgs.lib.getName pkg) [ "happ" "yandex-browser" ];
-          };
-          happ = pkgs.callPackage ./pkgs/happ { };
-        in
-        {
-          inherit happ;
-          default = happ;
-        });
-
       nixosConfigurations.thinkpad = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
