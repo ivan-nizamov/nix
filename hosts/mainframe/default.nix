@@ -12,6 +12,7 @@
     ../../modules/services/openclaw-gateway.nix
     ../../modules/services/failure-reporting.nix
     ../../modules/services/nextcloud.nix
+    ../../modules/services/syncthing.nix
     ../../modules/users/iva.nix
   ];
 
