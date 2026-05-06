@@ -70,6 +70,13 @@
 
   services.qemuGuest.enable = true;
 
+  services.syncthing.settings = {
+    devices.thinkpad = {
+      id = "6HKQA6G-7EBXXRK-3WEA6FG-O72ECBN-SZ2SF65-AZXAHPY-TOEC5JJ-XG77LAI";
+    };
+    folders."openclaw-workspace".devices = lib.mkAfter [ "thinkpad" ];
+  };
+
   local.openclaw.embeddings = {
     modelId = "BAAI/bge-small-en-v1.5";
     modelRevision = "b49342cba6a5914c1760cd4aae1d75a6f2e8fc4c";
