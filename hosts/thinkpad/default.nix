@@ -32,6 +32,10 @@
   hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
 
+  services.fprintd.enable = true;
+  security.pam.services.sudo.fprintAuth = true;
+  security.pam.services.polkit-1.fprintAuth = true;
+
   console = {
     packages = [ pkgs.terminus_font ];
     font = "${pkgs.terminus_font}/share/consolefonts/ter-v16n.psf.gz";
