@@ -1,4 +1,4 @@
-{ nixos-hardware, ... }:
+{ nixos-hardware, pkgs, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -25,8 +25,17 @@
 
   networking.hostName = "thinkpad";
   networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.powersave = false;
 
-  local.openclaw.enable = false;
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
+
+  console = {
+    packages = [ pkgs.terminus_font ];
+    font = "${pkgs.terminus_font}/share/consolefonts/ter-v16n.psf.gz";
+    earlySetup = true;
+  };
 
   users.users.iva.extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
 
