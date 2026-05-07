@@ -376,6 +376,7 @@ in
       type = lib.types.listOf lib.types.str;
       default = [
         "*.json"
+        "*.bin"
         "*.safetensors"
         "*.model"
         "*.txt"
