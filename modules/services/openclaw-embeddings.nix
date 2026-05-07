@@ -142,6 +142,7 @@ let
         env = os.environ.copy()
         env["HF_HOME"] = str(hf_home)
         env["HF_HUB_CACHE"] = str(hf_hub_cache)
+        env["HF_HUB_DISABLE_XET"] = "1"
         env["TRANSFORMERS_CACHE"] = str(hf_hub_cache)
         env["SENTENCE_TRANSFORMERS_HOME"] = str(sentence_transformers_home)
         env["TORCH_HOME"] = str(torch_home)
