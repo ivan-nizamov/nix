@@ -134,6 +134,7 @@ let
         cache_root = _mkdir(pathlib.Path(config["cacheRoot"]))
         hf_home = _mkdir(cache_root / "huggingface")
         hf_hub_cache = _mkdir(hf_home / "hub")
+        hf_xet_cache = _mkdir(hf_home / "xet")
         xdg_cache_home = _mkdir(cache_root / "xdg")
         sentence_transformers_home = _mkdir(cache_root / "sentence-transformers")
         torch_home = _mkdir(cache_root / "torch")
@@ -142,6 +143,7 @@ let
         env = os.environ.copy()
         env["HF_HOME"] = str(hf_home)
         env["HF_HUB_CACHE"] = str(hf_hub_cache)
+        env["HF_XET_CACHE"] = str(hf_xet_cache)
         env["HF_HUB_DISABLE_XET"] = "1"
         env["TRANSFORMERS_CACHE"] = str(hf_hub_cache)
         env["SENTENCE_TRANSFORMERS_HOME"] = str(sentence_transformers_home)
@@ -159,7 +161,21 @@ let
         for key, value in config.get("environment", {}).items():
             env[key] = value
 
+        # snapshot_download runs in this Python process before execvpe, so keep
+        # os.environ in sync with the environment that will be used at runtime.
+        os.environ.update(env)
+
         return env, hf_hub_cache
+
+
+    def _force_disable_hf_xet() -> None:
+        # huggingface_hub snapshots config values at import-time. Guard against
+        # any early import that happened before we set env vars above.
+        try:
+            import huggingface_hub.constants as hf_constants
+            hf_constants.HF_HUB_DISABLE_XET = True
+        except Exception:
+            pass
 
 
     def _apply_config_overrides(model, resolved_path: str) -> None:
@@ -239,6 +255,7 @@ let
     def main():
         config = _load_config()
         env, hf_hub_cache = _configure_runtime_env(config)
+        _force_disable_hf_xet()
 
         resolved_models = []
         for model in config["models"]:

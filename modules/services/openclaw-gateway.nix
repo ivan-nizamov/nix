@@ -267,8 +267,7 @@ EOF
         };
         web = {
           search = {
-            enabled = true;
-            provider = "brave";
+            enabled = false;
           };
         };
       };
@@ -353,14 +352,6 @@ EOF
             enabled = true;
           };
         }) // {
-          brave = {
-            enabled = true;
-            config = {
-              webSearch = {
-                apiKey = "BSAzJfMfyzmUXZ53-2pCDdqHdbfJvyw";
-              };
-            };
-          };
           acpx = {
             enabled = true;
             config = {
