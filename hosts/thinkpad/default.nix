@@ -44,6 +44,7 @@
     enable = true;
     backend = "python-validity";
   };
+  security.pam.services.gdm-password.fprintAuth = true;
   security.pam.services.sudo.fprintAuth = true;
   security.pam.services.polkit-1.fprintAuth = true;
 
