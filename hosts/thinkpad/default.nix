@@ -1,4 +1,4 @@
-{ nixos-hardware, pkgs, ... }:
+{ lib, nixos-hardware, pkgs, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -22,7 +22,13 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelParams = [ "mem_sleep_default=deep" ];
+  # Override nixos-hardware Kaby Lake defaults to avoid eDP panel flicker on
+  # monotone content (common with PSR/FBC on Intel i915 panels).
+  boot.kernelParams = lib.mkAfter [
+    "mem_sleep_default=deep"
+    "i915.enable_psr=0"
+    "i915.enable_fbc=0"
+  ];
 
   networking.hostName = "thinkpad";
   networking.networkmanager.enable = true;
