@@ -23,9 +23,11 @@
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.efi.canTouchEfiVariables = true;
   # Override nixos-hardware Kaby Lake defaults to avoid eDP panel flicker on
-  # monotone content (common with PSR/FBC on Intel i915 panels).
+  # monotone content and display timing glitches on Intel i915 panels.
   boot.kernelParams = lib.mkAfter [
     "mem_sleep_default=deep"
+    "i915.enable_guc=0"
+    "i915.enable_dc=0"
     "i915.enable_psr=0"
     "i915.enable_fbc=0"
   ];
