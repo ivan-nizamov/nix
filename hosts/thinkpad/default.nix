@@ -63,6 +63,10 @@
     session    include                     login
   '');
   security.pam.services.sudo.fprintAuth = true;
+  security.pam.services.sudo.rules.auth.fprintd.settings = {
+    max-tries = 6;
+    timeout = 60;
+  };
   security.pam.services.polkit-1.fprintAuth = true;
 
   console = {
