@@ -76,10 +76,34 @@ in
         _nixos_rebuild_sudo() {
           local mode=$1
           local cores
+          local rc
+          local sudo_prompt
           shift
 
+          sudo_prompt=$'\n[sudo] Touch fingerprint reader now for nixos-rebuild.\nPassword for %p: '
+
+          if command -v notify-send >/dev/null 2>&1; then
+            notify-send --urgency=critical "NixOS rebuild needs authentication" "Touch fingerprint reader now to continue."
+          fi
+          printf '\a\n>>> NixOS rebuild needs sudo. Touch fingerprint reader now. <<<\n' >&2
+
+          while true; do
+            command sudo -v -p "$sudo_prompt"
+            rc=$?
+            if [ "$rc" -eq 0 ]; then
+              break
+            fi
+            if [ "$rc" -eq 130 ]; then
+              return 130
+            fi
+            if command -v notify-send >/dev/null 2>&1; then
+              notify-send --urgency=critical "Authentication failed" "Touch fingerprint reader and try again."
+            fi
+            printf '\a\n>>> Authentication failed. Touch fingerprint reader and retry. <<<\n' >&2
+          done
+
           cores=$(_nixos_rebuild_cores)
-          command sudo nixos-rebuild "$mode" --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
+          command sudo -n nixos-rebuild "$mode" --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
         }
 
         nrt() {
