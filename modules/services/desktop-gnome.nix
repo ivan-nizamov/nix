@@ -4,6 +4,8 @@ let
   telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   yandexBrowser = pkgs.callPackage ../../pkgs/yandex-browser { };
+  gnomeBackgroundLight = "file://${pkgs.gnome-backgrounds}/share/backgrounds/gnome/vnc-l.png";
+  gnomeBackgroundDark = "file://${pkgs.gnome-backgrounds}/share/backgrounds/gnome/vnc-d.png";
   batteryConservationPath = "/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode";
   batteryConservationRootToggle = pkgs.writeShellScriptBin "mainframe-battery-conservation-root-toggle" ''
     set -euo pipefail
@@ -136,9 +138,9 @@ in
         };
         "org/gnome/desktop/background" = {
           color-shading-type = "solid";
-          picture-options = "none";
-          picture-uri = "";
-          picture-uri-dark = "";
+          picture-options = "zoom";
+          picture-uri = gnomeBackgroundLight;
+          picture-uri-dark = gnomeBackgroundDark;
           primary-color = "#000000";
           secondary-color = "#000000";
         };
