@@ -64,8 +64,10 @@
   '');
   security.pam.services.sudo.fprintAuth = true;
   security.pam.services.sudo.rules.auth.fprintd.settings = {
-    max-tries = 6;
-    timeout = 60;
+    # Keep sudo/nrs reliable with this sensor: one fingerprint try, then
+    # immediate password fallback instead of wedging retry loops.
+    max-tries = 1;
+    timeout = 10;
   };
   security.pam.services.polkit-1.fprintAuth = true;
 
