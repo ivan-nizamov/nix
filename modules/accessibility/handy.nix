@@ -1,11 +1,11 @@
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
+let
+  handy = pkgs.callPackage ../../pkgs/handy { };
+in
 {
-  imports = [
-    inputs.handy.nixosModules.default
-  ];
-
-  programs.handy.enable = true;
-
   # Wayland text injection path recommended by Handy for GNOME sessions.
-  environment.systemPackages = [ pkgs.wtype ];
+  environment.systemPackages = [
+    handy
+    pkgs.wtype
+  ];
 }
