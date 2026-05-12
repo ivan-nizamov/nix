@@ -9,4 +9,17 @@ in
     handy
     pkgs.dotool
   ];
+
+  systemd.user.services.handy = {
+    description = "Handy speech-to-text app";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "default.target" "graphical-session.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${handy}/bin/handy --start-hidden";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+  };
 }
