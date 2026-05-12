@@ -52,7 +52,7 @@
     auth       required                    pam_shells.so
     auth       requisite                   pam_nologin.so
     auth       requisite                   pam_faillock.so      preauth
-    auth       required                    ${pkgs.fprintd}/lib/security/pam_fprintd.so max-tries=6 timeout=60
+    auth       required                    ${config.services.fprintd.package}/lib/security/pam_fprintd.so max-tries=6 timeout=60
     auth       required                    pam_env.so conffile=/etc/pam/environment readenv=0
     auth       [success=ok default=1]      ${pkgs.gdm}/lib/security/pam_gdm.so
     auth       optional                    ${pkgs.gnome-keyring}/lib/security/pam_gnome_keyring.so
