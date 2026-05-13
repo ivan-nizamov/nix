@@ -39,7 +39,8 @@ in
         gcm = "git commit -m";
         glog = "git log --all --decorate --oneline --graph";
         k = "kilocode";
-        m = "ssh -F /dev/null -i ~/.ssh/server_key iva@mainframe.tail506f5b.ts.net";
+        # `m` is defined as a function below so it can resolve the current
+        # Tailscale address dynamically instead of pinning one DNS/key path.
         oc = "openclaw";
         oco = "opencode";
       };
@@ -95,6 +96,22 @@ in
         nrt() {
           _nixos_rebuild_sudo test "$@"
         }
+
+        m() {
+          local target_ip
+
+          if command -v tailscale >/dev/null 2>&1; then
+            target_ip=$(tailscale ip -4 mainframe 2>/dev/null | head -n1)
+          fi
+
+          if [[ -n "$target_ip" ]]; then
+            command ssh iva@"$target_ip" "$@"
+          else
+            command ssh mainframe-iva "$@"
+          fi
+        }
+
+        unalias m 2>/dev/null || true
 
         nrs() {
           _nixos_rebuild_sudo switch "$@"
