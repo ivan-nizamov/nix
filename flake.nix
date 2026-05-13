@@ -9,6 +9,10 @@
       url = "github:ahbnr/nixos-06cb-009a-fingerprint-sensor?ref=25.05";
     };
     llm-agents.url = "github:numtide/llm-agents.nix";
+    helium = {
+      url = "github:schembriaiden/helium-browser-nix-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, ... }:
@@ -20,6 +24,9 @@
           inherit (inputs) nixos-hardware;
         };
         modules = [
+          ({ ... }: {
+            nixpkgs.overlays = [ inputs.helium.overlays.default ];
+          })
           inputs.nixos-06cb-009a-fingerprint-sensor.nixosModules."06cb-009a-fingerprint-sensor"
           ./hosts/thinkpad
         ];
@@ -31,6 +38,9 @@
           inherit inputs self;
         };
         modules = [
+          ({ ... }: {
+            nixpkgs.overlays = [ inputs.helium.overlays.default ];
+          })
           ./hosts/mainframe
         ];
       };

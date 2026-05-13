@@ -127,7 +127,7 @@ in
   services.nextcloud-whiteboard-server = {
     enable = true;
     settings = {
-      CHROME_EXECUTABLE_PATH = "${lib.getExe pkgs.chromium}";
+      CHROME_EXECUTABLE_PATH = "${lib.getExe pkgs.helium}";
       NEXTCLOUD_URL = "https://${hostName}";
       PORT = toString whiteboardPort;
       STORAGE_STRATEGY = "lru";
