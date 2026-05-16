@@ -97,6 +97,7 @@ in
     gnomeExtensions.paperwm
     mpv
     nil
+    nixd
     orca-slicer
     telegramDesktop
     vial
