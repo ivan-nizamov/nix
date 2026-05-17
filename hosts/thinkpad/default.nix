@@ -64,16 +64,7 @@
 
     session    include                     login
   '');
-  security.pam.services.sudo.fprintAuth = true;
-  security.pam.services.sudo.rules.auth.fprintd.settings = {
-    # Give fingerprint auth multiple chances while still falling back quickly.
-    max-tries = 3;
-    timeout = 5;
-  };
-  # Keep password entry immediately available for sudo; fingerprint stays as a
-  # fallback auth path instead of blocking first.
-  security.pam.services.sudo.rules.auth.fprintd.order =
-    config.security.pam.services.sudo.rules.auth.unix.order + 10;
+  security.pam.services.sudo.fprintAuth = false;
   security.pam.services.polkit-1.fprintAuth = true;
 
   console = {

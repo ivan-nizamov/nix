@@ -80,9 +80,9 @@ in
           local sudo_prompt
           shift
 
-          sudo_prompt=$'\n[sudo] Touch fingerprint reader now for nixos-rebuild.\nPassword for %p: '
+          sudo_prompt=$'\n[sudo] Password for %p: '
 
-          printf '\n>>> NixOS rebuild needs sudo authentication.\n>>> Touch fingerprint reader or enter password when prompted.\n' >&2
+          printf '\n>>> NixOS rebuild needs sudo authentication.\n>>> Enter your password to continue.\n' >&2
 
           command sudo -v -p "$sudo_prompt" || return $?
           printf '>>> Authentication complete. Starting nixos-rebuild %s...\n' "$mode" >&2
