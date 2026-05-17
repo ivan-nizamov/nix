@@ -37,6 +37,15 @@
   networking.hostName = "thinkpad";
   networking.networkmanager.enable = true;
   networking.networkmanager.wifi.powersave = false;
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+
+  services.openssh.enable = true;
+  services.openssh.openFirewall = false;
+  services.openssh.settings = {
+    PermitRootLogin = "no";
+    PasswordAuthentication = false;
+    KbdInteractiveAuthentication = false;
+  };
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
@@ -73,7 +82,12 @@
     earlySetup = true;
   };
 
-  users.users.iva.extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
+  users.users.iva = {
+    extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF1BLhireRUEVRQvaJLXOhjNlwAcR739exqlYelC7AAl A53 -> ThinkPad"
+    ];
+  };
 
   system.stateVersion = "25.11";
 }
