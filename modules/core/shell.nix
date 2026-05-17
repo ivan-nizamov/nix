@@ -108,6 +108,7 @@ in
       pay-respects
       ripgrep
       starship
+      wl-clipboard
     ] ++ lib.optionals isThinkPad [ setupThinkPadMainframeSshKey ];
 
     programs.starship.enable = true;
