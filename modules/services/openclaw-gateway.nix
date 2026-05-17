@@ -5,7 +5,7 @@ let
   user = "iva";
   userHome = "/home/iva";
   stateDir = "${userHome}/.openclaw";
-  enableTelegram = config.networking.hostName == "legion";
+  enableTelegram = config.networking.hostName == "mainframe";
   llmAgentsPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
   baseOpenclaw = llmAgentsPkgs.openclaw;
   openclaw = pkgs.runCommand "openclaw-${baseOpenclaw.version}-metadata-patched" { } ''
