@@ -170,18 +170,10 @@ in
         _nixos_rebuild_sudo() {
           local mode=$1
           local cores
-          local sudo_prompt
           shift
 
-          sudo_prompt=$'\n[sudo] Password for %p: '
-
-          printf '\n>>> NixOS rebuild needs sudo authentication.\n>>> Enter your password to continue.\n' >&2
-
-          command sudo -v -p "$sudo_prompt" || return $?
-          printf '>>> Authentication complete. Starting nixos-rebuild %s...\n' "$mode" >&2
-
           cores=$(_nixos_rebuild_cores)
-          command sudo -n nixos-rebuild "$mode" --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
+          command sudo nixos-rebuild "$mode" --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
         }
 
         nrt() {
