@@ -6,6 +6,9 @@
     "openai-codex/gpt-5.5:medium",
     "openai-codex/gpt-5.5:high"
   ],
+  "packages": [
+    "npm:context-mode"
+  ],
   "autocompleteMaxVisible": 10,
   "lastChangelogVersion": "0.73.0"
 }

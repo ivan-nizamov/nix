@@ -11,5 +11,6 @@
     "d /home/iva/.pi 0755 iva users - -"
     "d /home/iva/.pi/agent 0755 iva users - -"
     "L+ /home/iva/.pi/agent/settings.json - - - - /home/iva/nix/dotfiles/pi/settings.json"
+    "L+ /home/iva/.pi/agent/mcp.json - - - - /home/iva/nix/dotfiles/pi/mcp.json"
   ];
 }
