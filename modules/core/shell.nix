@@ -1,6 +1,88 @@
 { config, lib, pkgs, ... }:
 let
   flakeTarget = config.local.rebuild.flakeTarget;
+  setupMainframeSshKey = pkgs.writeShellScriptBin "setup-mainframe-ssh-key" ''
+    set -euo pipefail
+
+    ssh_dir="$HOME/.ssh"
+    key_file="$ssh_dir/server_key"
+    pub_file="$ssh_dir/server_key.pub"
+    cfg_file="$ssh_dir/config"
+    managed_begin="# >>> mainframe-iva managed by setup-mainframe-ssh-key >>>"
+    managed_end="# <<< mainframe-iva managed by setup-mainframe-ssh-key <<<"
+
+    mkdir -p "$ssh_dir"
+    chmod 700 "$ssh_dir"
+
+    tmp_private=$(mktemp "$ssh_dir/server_key.tmp.XXXXXX")
+    tmp_public=$(mktemp "$ssh_dir/server_key.pub.tmp.XXXXXX")
+    trap 'rm -f "$tmp_private" "$tmp_public"' EXIT
+
+    cat <<'EOF'
+Paste the private key for m (server_key).
+Finish with Ctrl-D on a new line.
+EOF
+    cat > "$tmp_private"
+
+    if ! grep -q "BEGIN OPENSSH PRIVATE KEY" "$tmp_private"; then
+      echo "Invalid private key format: expected OPENSSH private key block." >&2
+      exit 1
+    fi
+
+    cat <<'EOF'
+Paste the public key for m (server_key.pub).
+Finish with Ctrl-D on a new line.
+EOF
+    cat > "$tmp_public"
+
+    pub_type=$(awk 'NR==1 { print $1 }' "$tmp_public")
+    pub_blob=$(awk 'NR==1 { print $2 }' "$tmp_public")
+    if [ -z "$pub_type" ] || [ -z "$pub_blob" ]; then
+      echo "Invalid public key format: expected 'ssh-... BASE64 [comment]'." >&2
+      exit 1
+    fi
+
+    derived_pub=$(${pkgs.openssh}/bin/ssh-keygen -y -f "$tmp_private")
+    derived_blob=$(printf '%s\n' "$derived_pub" | awk '{ print $2 }')
+    if [ "$derived_blob" != "$pub_blob" ]; then
+      echo "Private/public key mismatch. Nothing was written." >&2
+      exit 1
+    fi
+
+    install -m 600 "$tmp_private" "$key_file"
+    install -m 644 "$tmp_public" "$pub_file"
+
+    if [ -f "$cfg_file" ]; then
+      awk -v begin="$managed_begin" -v end="$managed_end" '
+        $0 == begin { skip = 1; next }
+        $0 == end   { skip = 0; next }
+        skip != 1 { print }
+      ' "$cfg_file" > "$cfg_file.tmp"
+      mv "$cfg_file.tmp" "$cfg_file"
+    fi
+
+    cat >> "$cfg_file" <<EOF
+$managed_begin
+Host mainframe-iva
+  HostName mainframe.tail506f5b.ts.net
+  User iva
+  IdentityFile ~/.ssh/server_key
+  IdentitiesOnly yes
+$managed_end
+EOF
+    chmod 600 "$cfg_file"
+
+    rm -f "$tmp_private" "$tmp_public"
+    trap - EXIT
+
+    echo "Saved:"
+    echo "  $key_file"
+    echo "  $pub_file"
+    echo "Updated:"
+    echo "  $cfg_file (Host mainframe-iva)"
+    echo
+    echo "Test with: m 'hostname; whoami'"
+  '';
 in
 {
   options.local.rebuild.flakeTarget = lib.mkOption {
@@ -19,6 +101,7 @@ in
       pkgs."nix-search-cli"
       pay-respects
       ripgrep
+      setupMainframeSshKey
       starship
     ];
 
@@ -39,6 +122,7 @@ in
         gcm = "git commit -m";
         glog = "git log --all --decorate --oneline --graph";
         k = "kilocode";
+        mkey = "setup-mainframe-ssh-key";
         # `m` is defined as a function below so it can resolve the current
         # Tailscale address dynamically instead of pinning one DNS/key path.
         oc = "openclaw";
