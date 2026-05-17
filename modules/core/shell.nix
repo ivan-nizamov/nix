@@ -82,12 +82,10 @@ in
 
           sudo_prompt=$'\n[sudo] Touch fingerprint reader now for nixos-rebuild.\nPassword for %p: '
 
-          if command -v notify-send >/dev/null 2>&1; then
-            notify-send --urgency=critical "NixOS rebuild needs authentication" "Touch fingerprint reader now to continue."
-          fi
-          printf '\a\n>>> NixOS rebuild needs sudo. Touch fingerprint reader now. <<<\n' >&2
+          printf '\n>>> NixOS rebuild needs sudo authentication.\n>>> Touch fingerprint reader or enter password when prompted.\n' >&2
 
           command sudo -v -p "$sudo_prompt" || return $?
+          printf '>>> Authentication complete. Starting nixos-rebuild %s...\n' "$mode" >&2
 
           cores=$(_nixos_rebuild_cores)
           command sudo -n nixos-rebuild "$mode" --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
