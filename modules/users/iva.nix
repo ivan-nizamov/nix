@@ -10,6 +10,6 @@
   systemd.tmpfiles.rules = [
     "d /home/iva/.pi 0755 iva users - -"
     "d /home/iva/.pi/agent 0755 iva users - -"
-    "L+ /home/iva/.pi/agent/settings.json - - - - /home/iva/nix/pi/global-settings.json"
+    "L+ /home/iva/.pi/agent/settings.json - - - - /home/iva/nix/dotfiles/pi/settings.json"
   ];
 }
