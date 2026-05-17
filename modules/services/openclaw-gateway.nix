@@ -329,8 +329,8 @@ EOF
             mode = "partial";
           };
           network = {
-            autoSelectFamily = false;
-            dnsResultOrder = "ipv4first";
+            autoSelectFamily = true;
+            dnsResultOrder = "verbatim";
           };
           execApprovals = {
             enabled = true;
@@ -435,12 +435,12 @@ lib.mkIf openclawEnabled {
       Environment = [
         "HOME=${userHome}"
         "TMPDIR=/tmp"
-        "NODE_OPTIONS=--dns-result-order=ipv4first"
+        "NODE_OPTIONS=--dns-result-order=verbatim"
         "PATH=${openclawPath}"
         "NODE_PATH=${openclaw}/lib/openclaw/node_modules"
         "OPENCLAW_TELEGRAM_USE_GLOBAL_FETCH=1"
-        "OPENCLAW_TELEGRAM_DISABLE_AUTO_SELECT_FAMILY=1"
-        "OPENCLAW_TELEGRAM_DNS_RESULT_ORDER=ipv4first"
+        "OPENCLAW_TELEGRAM_ENABLE_AUTO_SELECT_FAMILY=1"
+        "OPENCLAW_TELEGRAM_DNS_RESULT_ORDER=verbatim"
         "OPENCLAW_STATE_DIR=${stateDir}"
         "OPENCLAW_CONFIG_PATH=${configFile}"
         "OPENCLAW_GATEWAY_PORT=18789"
