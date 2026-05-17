@@ -26,10 +26,13 @@ EOF
     substituteInPlace $out/lib/openclaw/dist/extensions/telegram/package.json \
       --replace-fail "$telegram_dev_deps" ""
 
-    for file in $out/lib/openclaw/dist/extensions/telegram/fetch-*.js; do
-      substituteInPlace "$file" \
-        --replace-fail 'function resolveTelegramTransport(proxyFetch, options) {' \
-        'function resolveTelegramTransport(proxyFetch, options) {
+    telegram_fetch_patch_count=0
+    for file in $out/lib/openclaw/dist/fetch-*.js $out/lib/openclaw/dist/extensions/telegram/fetch-*.js; do
+      [ -e "$file" ] || continue
+      if grep -q 'function resolveTelegramTransport(proxyFetch, options) {' "$file"; then
+        substituteInPlace "$file" \
+          --replace-fail 'function resolveTelegramTransport(proxyFetch, options) {' \
+          'function resolveTelegramTransport(proxyFetch, options) {
 	if (isTruthyEnvValue(process$1.env.OPENCLAW_TELEGRAM_USE_GLOBAL_FETCH)) {
 		const globalFetch = globalThis.fetch.bind(globalThis);
 		return {
@@ -39,7 +42,13 @@ EOF
 			close: async () => {}
 		};
 	}'
+        telegram_fetch_patch_count=$((telegram_fetch_patch_count + 1))
+      fi
     done
+    if [ "$telegram_fetch_patch_count" -eq 0 ]; then
+      echo "failed to patch Telegram fetch transport" >&2
+      exit 1
+    fi
 
     rm $out/bin/openclaw
     cp ${baseOpenclaw}/bin/openclaw $out/bin/openclaw
