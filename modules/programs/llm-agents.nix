@@ -10,5 +10,6 @@ in
     llmAgentsPkgs.kilocode-cli
     llmAgentsPkgs.openclaw
     llmAgentsPkgs.opencode
+    llmAgentsPkgs.pi
   ];
 }
