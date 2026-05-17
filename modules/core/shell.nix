@@ -167,17 +167,10 @@ in
           command nixos-rebuild build --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
         }
 
-        _nixos_rebuild_sudo() {
-          local mode=$1
-          local cores
-          shift
-
-          cores=$(_nixos_rebuild_cores)
-          command sudo nixos-rebuild "$mode" --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
-        }
-
         nrt() {
-          _nixos_rebuild_sudo test "$@"
+          local cores
+          cores=$(_nixos_rebuild_cores)
+          command sudo nixos-rebuild test --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
         }
 
         m() {
@@ -212,7 +205,9 @@ in
         unalias a53 2>/dev/null || true
 
         nrs() {
-          _nixos_rebuild_sudo switch "$@"
+          local cores
+          cores=$(_nixos_rebuild_cores)
+          command sudo nixos-rebuild switch --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
         }
       '';
     };
