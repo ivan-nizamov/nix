@@ -194,7 +194,22 @@ in
           fi
         }
 
+        a53() {
+          local target_ip
+
+          if command -v tailscale >/dev/null 2>&1; then
+            target_ip=$(tailscale ip -4 a53 2>/dev/null | head -n1)
+          fi
+
+          if [[ -z "$target_ip" ]]; then
+            target_ip=100.95.99.98
+          fi
+
+          command ssh -p 8022 -F /dev/null -i ~/.ssh/thinkpad_to_a53 u0_a424@"$target_ip" "$@"
+        }
+
         unalias m 2>/dev/null || true
+        unalias a53 2>/dev/null || true
 
         nrs() {
           _nixos_rebuild_sudo switch "$@"
