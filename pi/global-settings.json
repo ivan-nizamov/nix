@@ -1,0 +1,10 @@
+{
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "medium",
+  "enabledModels": [
+    "openai-codex/gpt-5.5:medium",
+    "openai-codex/gpt-5.5:high"
+  ],
+  "autocompleteMaxVisible": 10
+}
