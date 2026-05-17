@@ -198,7 +198,14 @@ in
             target_ip=100.95.99.98
           fi
 
-          command ssh -p 8022 -F /dev/null -i ~/.ssh/thinkpad_to_a53 u0_a424@"$target_ip" "$@"
+          command ssh \
+            -p 8022 \
+            -F /dev/null \
+            -i ~/.ssh/thinkpad_to_a53 \
+            -o IdentitiesOnly=yes \
+            -o ConnectTimeout=8 \
+            -o ConnectionAttempts=1 \
+            u0_a424@"$target_ip" "$@"
         }
 
         unalias m 2>/dev/null || true
