@@ -53,7 +53,7 @@
   };
 
   users.users.iva.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKpHMUJk8uBJ1sMaSnj2jT1mSU2r10KS5FtApuVkEvHO"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDoWmG5X2/Fd6aP4J0DhGBrc1okvWE9p/34HYY7+DBg1G5ozSbBVTC0AHf/Vj0ZCWGNiz7ba2m0bKkjdsmlHfeGGukiVyMy/2fK711PNKDxMhzpqvmcz9VQcgIZNuCITJu/VAYAPcr9btb1Ru7EkXt9GOv+EMnY/hJn7/NX6pH73ALotlviAPh9qYGVh3AgMpxiGudeOJoslFi5rcxhLXNxJllHeaq5XWot14iWC7eURC8HyPsxstDjY7ECdyncofFvBnPyEretfz9r1PTDFOj0ab2TgTU4acD8In8LqnQHp2H2ezKJew8DKGYO8OoeeJzZC8BENE0J13lKMcHJyFrt"
   ];
 
   services.openssh.enable = true;

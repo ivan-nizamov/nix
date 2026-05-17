@@ -1,15 +1,16 @@
 { config, lib, pkgs, ... }:
 let
   flakeTarget = config.local.rebuild.flakeTarget;
-  setupMainframeSshKey = pkgs.writeShellScriptBin "setup-mainframe-ssh-key" ''
+  isThinkPad = config.networking.hostName == "thinkpad";
+  setupThinkPadMainframeSshKey = pkgs.writeShellScriptBin "setup-thinkpad-mainframe-ssh-key" ''
     set -euo pipefail
 
     ssh_dir="$HOME/.ssh"
-    key_file="$ssh_dir/server_key"
-    pub_file="$ssh_dir/server_key.pub"
+    key_file="$ssh_dir/thinkpad_to_mainframe"
+    pub_file="$ssh_dir/thinkpad_to_mainframe.pub"
     cfg_file="$ssh_dir/config"
-    managed_begin="# >>> mainframe-iva managed by setup-mainframe-ssh-key >>>"
-    managed_end="# <<< mainframe-iva managed by setup-mainframe-ssh-key <<<"
+    managed_begin="# >>> ThinkPad -> Mainframe managed by setup-thinkpad-mainframe-ssh-key >>>"
+    managed_end="# <<< ThinkPad -> Mainframe managed by setup-thinkpad-mainframe-ssh-key <<<"
 
     mkdir -p "$ssh_dir"
     chmod 700 "$ssh_dir"
@@ -19,7 +20,7 @@ let
     trap 'rm -f "$tmp_private" "$tmp_public"' EXIT
 
     cat <<'EOF'
-Paste the private key for m (server_key).
+Paste the private key for ThinkPad -> Mainframe.
 Finish with Ctrl-D on a new line.
 EOF
     cat > "$tmp_private"
@@ -30,7 +31,7 @@ EOF
     fi
 
     cat <<'EOF'
-Paste the public key for m (server_key.pub).
+Paste the public key for ThinkPad -> Mainframe.
 Finish with Ctrl-D on a new line.
 EOF
     cat > "$tmp_public"
@@ -63,10 +64,15 @@ EOF
 
     cat >> "$cfg_file" <<EOF
 $managed_begin
+Host Mainframe
+  HostName mainframe.tail506f5b.ts.net
+  User iva
+  IdentityFile ~/.ssh/thinkpad_to_mainframe
+  IdentitiesOnly yes
 Host mainframe-iva
   HostName mainframe.tail506f5b.ts.net
   User iva
-  IdentityFile ~/.ssh/server_key
+  IdentityFile ~/.ssh/thinkpad_to_mainframe
   IdentitiesOnly yes
 $managed_end
 EOF
@@ -79,7 +85,7 @@ EOF
     echo "  $key_file"
     echo "  $pub_file"
     echo "Updated:"
-    echo "  $cfg_file (Host mainframe-iva)"
+    echo "  $cfg_file (Host Mainframe + mainframe-iva)"
     echo
     echo "Test with: m 'hostname; whoami'"
   '';
@@ -101,9 +107,8 @@ in
       pkgs."nix-search-cli"
       pay-respects
       ripgrep
-      setupMainframeSshKey
       starship
-    ];
+    ] ++ lib.optionals isThinkPad [ setupThinkPadMainframeSshKey ];
 
     programs.starship.enable = true;
 
@@ -122,7 +127,10 @@ in
         gcm = "git commit -m";
         glog = "git log --all --decorate --oneline --graph";
         k = "kilocode";
-        mkey = "setup-mainframe-ssh-key";
+      } // lib.optionalAttrs isThinkPad {
+        tmkey = "setup-thinkpad-mainframe-ssh-key";
+        mkey = "setup-thinkpad-mainframe-ssh-key";
+      } // {
         # `m` is defined as a function below so it can resolve the current
         # Tailscale address dynamically instead of pinning one DNS/key path.
         oc = "openclaw";
@@ -187,9 +195,9 @@ in
           fi
 
           if [[ -n "$target_ip" ]]; then
-            command ssh iva@"$target_ip" "$@"
+            command ssh -F /dev/null -i ~/.ssh/thinkpad_to_mainframe iva@"$target_ip" "$@"
           else
-            command ssh mainframe-iva "$@"
+            command ssh Mainframe "$@"
           fi
         }
 
