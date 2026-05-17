@@ -207,6 +207,23 @@ EOF
     "/usr/bin"
     "/bin"
   ];
+  waitForEmbeddings = pkgs.writeShellScript "openclaw-wait-for-embeddings" ''
+    set -eu
+
+    deadline=$((SECONDS + 300))
+
+    while [ "$SECONDS" -lt "$deadline" ]; do
+      if ${pkgs.systemd}/bin/systemctl is-active --quiet openclaw-embeddings.service \
+        && ${pkgs.coreutils}/bin/timeout 2 ${pkgs.bash}/bin/bash -c '</dev/tcp/127.0.0.1/7997' 2>/dev/null; then
+        exit 0
+      fi
+
+      ${pkgs.coreutils}/bin/sleep 2
+    done
+
+    ${pkgs.systemd}/bin/systemctl --no-pager --full status openclaw-embeddings.service || true
+    exit 1
+  '';
   configFile = pkgs.writeText "openclaw-gateway.json" (
     builtins.toJSON {
       wizard = {
@@ -387,24 +404,32 @@ lib.mkIf openclawEnabled {
 
   systemd.services.openclaw-gateway = {
     description = "OpenClaw Gateway";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
+    after = [
+      "network-online.target"
+      "openclaw-embeddings.service"
+    ];
+    wants = [
+      "network-online.target"
+      "openclaw-embeddings.service"
+    ];
+    requires = [ "openclaw-embeddings.service" ];
+    bindsTo = [ "openclaw-embeddings.service" ];
     wantedBy = [ "multi-user.target" ];
 
     unitConfig = {
-      StartLimitIntervalSec = "10min";
-      StartLimitBurst = 5;
+      StartLimitIntervalSec = "0";
       OnFailure = [ "service-failure-report@%n.service" ];
     };
 
     serviceConfig = {
       User = user;
       WorkingDirectory = userHome;
+      ExecStartPre = waitForEmbeddings;
       ExecStart = "${openclawBin} gateway run --port 18789";
       Restart = "always";
-      RestartSec = "15s";
+      RestartSec = "30s";
       TimeoutStopSec = 30;
-      TimeoutStartSec = 30;
+      TimeoutStartSec = "6min";
       SuccessExitStatus = [ "0" "143" ];
       KillMode = "control-group";
       Environment = [

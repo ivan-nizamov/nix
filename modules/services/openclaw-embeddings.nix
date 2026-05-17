@@ -430,6 +430,11 @@ in
       wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
 
+      unitConfig = {
+        StartLimitIntervalSec = "0";
+        OnFailure = [ "service-failure-report@%n.service" ];
+      };
+
       environment = {
         OPENCLAW_EMBEDDINGS_CONFIG_PATH = configFile;
       };
