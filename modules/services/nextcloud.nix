@@ -193,18 +193,22 @@ in
       LoadCredential = config.systemd.services.nextcloud-cron.serviceConfig.LoadCredential;
     };
     script = ''
-      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments wopi_url --value "https://${hostName}"
-      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments public_wopi_url --value "https://${hostName}"
-      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments canonical_webroot --value "https://${hostName}"
-      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments doc_format --type string --value ooxml
-      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments theme --type string --value collabora
-      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments uiDefaults-UIMode --type string --value notebookbar
-      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments preview_generation --type boolean --value true
-      ${lib.getExe config.services.nextcloud.occ} config:app:set richdocuments open_local_editor --type string --value yes
-      ${lib.getExe config.services.nextcloud.occ} richdocuments:activate-config || true
+      occ() {
+        ${lib.getExe config.services.nextcloud.occ} --no-interaction "$@"
+      }
+
+      occ config:app:set richdocuments wopi_url --value "https://${hostName}"
+      occ config:app:set richdocuments public_wopi_url --value "https://${hostName}"
+      occ config:app:set richdocuments canonical_webroot --value "https://${hostName}"
+      occ config:app:set richdocuments doc_format --type string --value ooxml
+      occ config:app:set richdocuments theme --type string --value collabora
+      occ config:app:set richdocuments uiDefaults-UIMode --type string --value notebookbar
+      occ config:app:set richdocuments preview_generation --type boolean --value true
+      occ config:app:set richdocuments open_local_editor --type string --value yes
+      occ richdocuments:activate-config || true
 
       if [ ! -e ${officeTemplateMarker} ]; then
-        ${lib.getExe config.services.nextcloud.occ} richdocuments:update-empty-templates
+        occ richdocuments:update-empty-templates
         touch ${officeTemplateMarker}
       fi
     '';
