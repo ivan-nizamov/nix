@@ -299,6 +299,9 @@ EOF
       };
       messages = {
         ackReactionScope = "group-mentions";
+        groupChat = {
+          visibleReplies = "automatic";
+        };
       };
       commands = {
         native = "auto";
