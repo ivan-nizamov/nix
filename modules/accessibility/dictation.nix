@@ -3,8 +3,8 @@ let
   unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
   voxtypePackage = unstablePkgs.voxtype;
   voxtypeModel = pkgs.fetchurl {
-    url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin";
-    hash = "sha256-H8cPd0046xaZk6w5Huo1fvR8iHV+9y7llDh5t+jivGk=";
+    url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin";
+    hash = "sha256-G+OpsgY4Z7k35k4ux0gzZKeZF+FX+pjF2UtcH//qmHs=";
   };
   voxtypePath = lib.makeBinPath [
     pkgs.dotool
@@ -42,9 +42,10 @@ in
     on_transcription = false
 
     [whisper]
-    language = "en,ru,fr,ro"
+    language = "auto"
     model = "${voxtypeModel}"
     mode = "local"
+    threads = 4
     translate = false
   '';
 
