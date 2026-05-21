@@ -9,7 +9,7 @@
     ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
     ../../modules/core/shell.nix
-    ../../modules/accessibility/handy.nix
+    ../../modules/accessibility/dictation.nix
     ../../modules/input/wayland-text-injection.nix
     ../../modules/programs/desktop-apps.nix
     ../../modules/programs/llm-agents.nix

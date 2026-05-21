@@ -156,24 +156,12 @@ in
         "org/gnome/settings-daemon/plugins/media-keys" = {
           custom-keybindings = [
             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/battery-conservation/"
-            "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/handy-transcribe/"
-            "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/handy-post-process/"
           ];
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/battery-conservation" = {
           name = "Toggle battery conservation";
           command = "/run/current-system/sw/bin/battery-conservation-toggle";
           binding = "<Super>b";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/handy-transcribe" = {
-          name = "Handy transcribe";
-          command = "${pkgs.procps}/bin/pkill -USR2 -x handy";
-          binding = "<Super>o";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/handy-post-process" = {
-          name = "Handy post-process";
-          command = "${pkgs.procps}/bin/pkill -USR1 -x handy";
-          binding = "<Super><Shift>o";
         };
         "org/gnome/desktop/wm/preferences" = {
           focus-mode = "sloppy";

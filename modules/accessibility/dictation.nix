@@ -1,10 +1,7 @@
 { config, inputs, lib, pkgs, ... }:
 let
-  voxtypePackage = inputs.voxtype.packages.${pkgs.stdenv.hostPlatform.system}.vulkan.overrideAttrs (old: {
-    patches = (old.patches or []) ++ [
-      ./patches/voxtype-clipboard-restore-no-newline.patch
-    ];
-  });
+  unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  voxtypePackage = unstablePkgs.voxtype;
   voxtypeModel = pkgs.fetchurl {
     url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin";
     hash = "sha256-H8cPd0046xaZk6w5Huo1fvR8iHV+9y7llDh5t+jivGk=";
@@ -18,20 +15,14 @@ let
   userHome = config.users.users.iva.home;
 in
 {
-  imports = [
-    inputs.voxtype.nixosModules.default
-  ];
-
-  programs.voxtype = {
-    enable = true;
-    package = voxtypePackage;
-  };
+  environment.systemPackages = [ voxtypePackage ];
 
   environment.etc."voxtype/iva.toml".text = ''
     engine = "whisper"
+    state_file = "auto"
 
     [audio]
-    device = "pipewire"
+    device = "default"
     max_duration_secs = 60
     sample_rate = 16000
 
@@ -51,8 +42,9 @@ in
     on_transcription = false
 
     [whisper]
-    language = ["en", "ru", "fr", "ro"]
+    language = "en,ru,fr,ro"
     model = "${voxtypeModel}"
+    mode = "local"
     translate = false
   '';
 
