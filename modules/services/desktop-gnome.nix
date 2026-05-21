@@ -89,6 +89,7 @@ in
 
   environment.systemPackages = with pkgs; [
     anki-bin
+    apple-cursor
     audacity
     batteryConservationRootToggle
     batteryConservationToggle
@@ -111,6 +112,8 @@ in
     {
       locks = [
         "/org/gnome/shell/enabled-extensions"
+        "/org/gnome/desktop/interface/cursor-size"
+        "/org/gnome/desktop/interface/cursor-theme"
         "/org/gnome/desktop/input-sources/sources"
         "/org/gnome/desktop/wm/preferences/focus-mode"
       ];
@@ -142,6 +145,8 @@ in
         "org/gnome/desktop/interface" = {
           accent-color = "orange";
           color-scheme = "prefer-dark";
+          cursor-size = gv.mkUint32 24;
+          cursor-theme = "macOS";
           gtk-theme = "Adwaita-dark";
         };
         "org/gnome/desktop/input-sources" = {
@@ -212,4 +217,9 @@ in
   services.xserver.xkb.layout = "us,ro";
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
+
+  environment.variables = {
+    XCURSOR_SIZE = "24";
+    XCURSOR_THEME = "macOS";
+  };
 }
