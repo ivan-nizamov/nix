@@ -3,8 +3,8 @@ let
   unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
   voxtypePackage = unstablePkgs.voxtype;
   voxtypeModel = pkgs.fetchurl {
-    url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin";
-    hash = "sha256-G+OpsgY4Z7k35k4ux0gzZKeZF+FX+pjF2UtcH//qmHs=";
+    url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin";
+    hash = "sha256-YO1bw90U7qhWST0zQ0m0BXgt3K8AKNS130CINF+6Lv4=";
   };
   voxtypePath = lib.makeBinPath [
     pkgs.dotool
@@ -23,7 +23,7 @@ in
 
     [audio]
     device = "default"
-    max_duration_secs = 60
+    max_duration_secs = 20
     sample_rate = 16000
 
     [hotkey]
