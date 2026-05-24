@@ -84,6 +84,7 @@
     extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF1BLhireRUEVRQvaJLXOhjNlwAcR739exqlYelC7AAl A53 -> ThinkPad"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDaagT2Kwf7W24WrKQLmLCZKn80MCTALm82Zw80DGlhW Mainframe -> ThinkPad"
     ];
   };
 

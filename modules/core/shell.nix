@@ -2,6 +2,7 @@
 let
   flakeTarget = config.local.rebuild.flakeTarget;
   isThinkPad = config.networking.hostName == "thinkpad";
+  isMainframe = config.networking.hostName == "mainframe";
   setupThinkPadMainframeSshKey = pkgs.writeShellScriptBin "setup-thinkpad-mainframe-ssh-key" ''
     set -euo pipefail
 
@@ -208,8 +209,36 @@ in
             u0_a424@"$target_ip" "$@"
         }
 
+        ${lib.optionalString isMainframe ''
+          t() {
+            local target_ip
+
+            if command -v tailscale >/dev/null 2>&1; then
+              target_ip=$(tailscale ip -4 thinkpad 2>/dev/null | head -n1)
+            fi
+
+            if [[ -z "$target_ip" ]]; then
+              target_ip=100.125.220.114
+            fi
+
+            command ssh \
+              -F /dev/null \
+              -i ~/.ssh/mainframe_to_thinkpad \
+              -o IdentitiesOnly=yes \
+              -o ConnectTimeout=8 \
+              -o ConnectionAttempts=1 \
+              iva@"$target_ip" "$@"
+          }
+
+          tp() {
+            t "$@"
+          }
+        ''}
+
         unalias m 2>/dev/null || true
         unalias a53 2>/dev/null || true
+        unalias t 2>/dev/null || true
+        unalias tp 2>/dev/null || true
 
         nrs() {
           local cores
