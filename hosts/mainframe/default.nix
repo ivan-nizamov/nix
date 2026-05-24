@@ -22,8 +22,9 @@
 
   networking.hostName = "mainframe";
   networking.nameservers = [
-    "2001:4860:4860::8888"
-    "2001:4860:4860::8844"
+    "2a01:4f9:c010:3f02::1"
+    "2a01:4f8:c2c:123f::1"
+    "2a00:1098:2c::1"
   ];
   networking.defaultGateway6 = {
     address = "2a0c:4ac1:4::1";
@@ -55,6 +56,8 @@
   users.users.iva.openssh.authorizedKeys.keys = [
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDoWmG5X2/Fd6aP4J0DhGBrc1okvWE9p/34HYY7+DBg1G5ozSbBVTC0AHf/Vj0ZCWGNiz7ba2m0bKkjdsmlHfeGGukiVyMy/2fK711PNKDxMhzpqvmcz9VQcgIZNuCITJu/VAYAPcr9btb1Ru7EkXt9GOv+EMnY/hJn7/NX6pH73ALotlviAPh9qYGVh3AgMpxiGudeOJoslFi5rcxhLXNxJllHeaq5XWot14iWC7eURC8HyPsxstDjY7ECdyncofFvBnPyEretfz9r1PTDFOj0ab2TgTU4acD8In8LqnQHp2H2ezKJew8DKGYO8OoeeJzZC8BENE0J13lKMcHJyFrt"
   ];
+
+  services.tailscale.extraSetFlags = lib.mkAfter [ "--accept-dns=false" ];
 
   services.openssh.enable = true;
   services.openssh.openFirewall = false;
