@@ -14,6 +14,7 @@
 , ncurses
 , openssl
 , opusTools
+, pipewire
 , qrencode
 , snowflake
 , socat
@@ -35,6 +36,7 @@ let
     ncurses
     openssl
     opusTools
+    pipewire
     qrencode
     socat
     sox
@@ -58,6 +60,10 @@ stdenvNoCC.mkDerivation rec {
   postPatch = ''
     substituteInPlace terminalphone.sh \
       --replace-fail 'DATA_DIR="$BASE_DIR/.terminalphone"' 'DATA_DIR="''${TERMINALPHONE_DATA_DIR:-''${XDG_DATA_HOME:-$HOME/.local/share}/terminalphone}"'
+
+    substituteInPlace terminalphone.sh \
+      --replace-fail 'aplay -f S16_LE -r "$rate" -c 1 -q "$infile" 2>/dev/null' 'pw-play --raw --rate "$rate" --channels 1 --format s16 "$infile" 2>/dev/null || true' \
+      --replace-fail 'aplay -f S16_LE -r 48000 -c 1 -q 2>/dev/null || true' 'pw-play --raw --rate 48000 --channels 1 --format s16 - 2>/dev/null || true'
 
     patchShebangs terminalphone.sh
   '';
