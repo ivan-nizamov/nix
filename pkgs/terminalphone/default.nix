@@ -65,6 +65,35 @@ stdenvNoCC.mkDerivation rec {
       --replace-fail 'aplay -f S16_LE -r "$rate" -c 1 -q "$infile" 2>/dev/null' 'pw-play --raw --rate "$rate" --channels 1 --format s16 "$infile" 2>/dev/null || true' \
       --replace-fail 'aplay -f S16_LE -r 48000 -c 1 -q 2>/dev/null || true' 'pw-play --raw --rate 48000 --channels 1 --format s16 - 2>/dev/null || true'
 
+    substituteInPlace terminalphone.sh \
+      --replace-fail 'audio_deps+=(arecord aplay)' 'audio_deps+=(arecord pw-play)' \
+      --replace-fail 'all_deps=(tor opusenc opusdec sox socat openssl arecord aplay)' 'all_deps=(tor opusenc opusdec sox socat openssl arecord pw-play)'
+
+    substituteInPlace terminalphone.sh \
+      --replace-fail '    # Encode → encrypt → send' '    # Normalize quiet microphone input before encoding.
+    if [ -s "$raw_file" ]; then
+        local norm_file="$AUDIO_DIR/tx_norm_''${_id}.tmp"
+        if sox -t raw -r "$SAMPLE_RATE" -e signed -b 16 -c 1 "$raw_file" \
+            -t raw -r "$SAMPLE_RATE" -e signed -b 16 -c 1 "$norm_file" gain -n -3 2>/dev/null; then
+            mv "$norm_file" "$raw_file"
+        else
+            rm -f "$norm_file" 2>/dev/null
+        fi
+    fi
+
+    # Encode → encrypt → send' \
+      --replace-fail '    echo -e "  ''${DIM}Recorded $raw_size bytes of raw audio''${NC}"
+' '    echo -e "  ''${DIM}Recorded $raw_size bytes of raw audio''${NC}"
+
+    local norm_file="$AUDIO_DIR/test_norm_''${_tid}.tmp"
+    if sox -t raw -r "$SAMPLE_RATE" -e signed -b 16 -c 1 "$raw_file" \
+        -t raw -r "$SAMPLE_RATE" -e signed -b 16 -c 1 "$norm_file" gain -n -3 2>/dev/null; then
+        mv "$norm_file" "$raw_file"
+    else
+        rm -f "$norm_file" 2>/dev/null
+    fi
+'
+
     patchShebangs terminalphone.sh
   '';
 
