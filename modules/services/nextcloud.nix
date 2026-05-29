@@ -257,7 +257,7 @@ in
       occ config:app:set richdocuments preview_generation --type boolean --value true
       occ config:app:set richdocuments open_local_editor --type string --value yes
       ${lib.optionalString (!publicHost) ''
-        occ config:app:set richdocuments wopi_allowlist --value "127.0.0.1,::1"
+        occ config:app:delete richdocuments wopi_allowlist || true
       ''}
       occ richdocuments:activate-config || true
 
