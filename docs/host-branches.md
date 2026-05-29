@@ -1,0 +1,29 @@
+# Host Branches
+
+This repository keeps deployable NixOS configurations in one branch per host:
+
+- `mainframe` deploys `.#mainframe`.
+- `thinkpad` deploys `.#thinkpad`.
+- `legion` deploys `.#legion`.
+
+Use the host branch as the source of truth for that machine:
+
+```bash
+git switch mainframe
+ssh -t mainframe-iva 'zsh -ic nrs'
+
+git switch thinkpad
+sudo nixos-rebuild switch --flake .#thinkpad
+
+git switch legion
+sudo nixos-rebuild switch --flake .#legion
+```
+
+Shared modules still live in the same tree. When a shared change should apply to
+more than one machine, commit it on the first affected host branch, switch that
+host, then merge or cherry-pick the same commit to the other affected host
+branches and switch those hosts too.
+
+`main` is no longer the deployment branch for every machine. Treat it as legacy
+history or an integration branch, not as the branch a host should blindly pull
+before rebuilding.
