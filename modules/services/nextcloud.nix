@@ -1,9 +1,19 @@
 { config, lib, pkgs, ... }:
 let
-  hostName = "mainframe.tail506f5b.ts.net";
+  publicHost = config.networking.hostName == "mainframe";
+  hostName =
+    if publicHost then
+      "mainframe.tail506f5b.ts.net"
+    else
+      "localhost";
   listenPort = 8080;
   collaboraPort = 9980;
   whiteboardPort = 3002;
+  externalUrl =
+    if publicHost then
+      "https://${hostName}"
+    else
+      "http://${hostName}:${toString listenPort}";
   internalNextcloudUrl = "http://127.0.0.1:${toString listenPort}";
   officeFonts = with pkgs; [
     caladea
@@ -43,7 +53,7 @@ in
     enable = true;
     package = pkgs.nextcloud33;
     inherit hostName;
-    https = true;
+    https = publicHost;
     maxUploadSize = "10G";
     autoUpdateApps.enable = true;
     configureRedis = true;
@@ -59,7 +69,7 @@ in
 
     notify_push = {
       enable = true;
-      nextcloudUrl = "https://${hostName}";
+      nextcloudUrl = externalUrl;
     };
 
     extraApps = with pkgs.nextcloud33Packages.apps; {
@@ -85,6 +95,18 @@ in
     settings = {
       default_phone_region = "RO";
       log_type = "file";
+      maintenance_window_start = 2;
+      "overwrite.cli.url" = externalUrl;
+      overwriteprotocol = if publicHost then "https" else "http";
+      serverid = 0;
+      trusted_domains = lib.optionals (!publicHost) [ "127.0.0.1" ];
+      trusted_proxies = [
+        "127.0.0.1"
+        "::1"
+      ];
+    } // lib.optionalAttrs (!publicHost) {
+      overwritehost = "${hostName}:${toString listenPort}";
+    } // lib.optionalAttrs publicHost {
       mail_domain = "gmail.com";
       mail_from_address = "ivan.nizamov";
       mail_smtpauth = true;
@@ -93,16 +115,11 @@ in
       mail_smtpname = "ivan.nizamov@gmail.com";
       mail_smtpport = 465;
       mail_smtpsecure = "ssl";
-      maintenance_window_start = 2;
-      overwriteprotocol = "https";
-      serverid = 0;
-      trusted_proxies = [
-        "127.0.0.1"
-        "::1"
-      ];
     };
 
-    secrets.mail_smtppassword = smtpPassFile;
+    secrets = lib.optionalAttrs publicHost {
+      mail_smtppassword = smtpPassFile;
+    };
   };
 
   services.nginx = {
@@ -140,7 +157,7 @@ in
     enable = true;
     settings = {
       CHROME_EXECUTABLE_PATH = "${lib.getExe pkgs.helium}";
-      NEXTCLOUD_URL = "https://${hostName}";
+      NEXTCLOUD_URL = externalUrl;
       PORT = toString whiteboardPort;
       STORAGE_STRATEGY = "lru";
       TLS = "false";
@@ -153,7 +170,7 @@ in
     port = collaboraPort;
     aliasGroups = [
       {
-        host = "https://${hostName}";
+        host = externalUrl;
       }
     ];
     settings = {
@@ -163,7 +180,7 @@ in
         "::1"
       ];
       ssl.enable = false;
-      ssl.termination = true;
+      ssl.termination = publicHost;
       storage.wopi.host = [ hostName ];
     };
   };
@@ -197,9 +214,9 @@ in
         ${lib.getExe config.services.nextcloud.occ} --no-interaction "$@"
       }
 
-      occ config:app:set richdocuments wopi_url --value "https://${hostName}"
-      occ config:app:set richdocuments public_wopi_url --value "https://${hostName}"
-      occ config:app:set richdocuments canonical_webroot --value "https://${hostName}"
+      occ config:app:set richdocuments wopi_url --value "${externalUrl}"
+      occ config:app:set richdocuments public_wopi_url --value "${externalUrl}"
+      occ config:app:set richdocuments canonical_webroot --value "${externalUrl}"
       occ config:app:set richdocuments doc_format --type string --value ooxml
       occ config:app:set richdocuments theme --type string --value collabora
       occ config:app:set richdocuments uiDefaults-UIMode --type string --value notebookbar
@@ -239,12 +256,12 @@ in
       . "$CREDENTIALS_DIRECTORY/whiteboard-server.env"
       set +a
 
-      ${lib.getExe config.services.nextcloud.occ} config:app:set whiteboard collabBackendUrl --value "https://${hostName}/whiteboard"
+      ${lib.getExe config.services.nextcloud.occ} config:app:set whiteboard collabBackendUrl --value "${externalUrl}/whiteboard"
       ${lib.getExe config.services.nextcloud.occ} config:app:set whiteboard jwt_secret_key --value "$JWT_SECRET_KEY"
     '';
   };
 
-  systemd.services.nextcloud-funnel = {
+  systemd.services.nextcloud-funnel = lib.mkIf publicHost {
     description = "Public Tailscale Funnel for Nextcloud";
     after = [
       "network-online.target"

@@ -15,6 +15,7 @@
     ../../modules/services/audio-pipewire.nix
     ../../modules/services/desktop-gnome.nix
     ../../modules/services/failure-reporting.nix
+    ../../modules/services/nextcloud.nix
     ../../modules/services/syncthing.nix
     ../../modules/users/iva.nix
   ];
