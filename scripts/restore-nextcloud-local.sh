@@ -196,6 +196,8 @@ fi
 
 restore_database_dump() {
   local dump_path="$1"
+  local dump_stage
+  local staged_dump
 
   need pg_restore
   need psql
@@ -203,6 +205,11 @@ restore_database_dump() {
 
   log "Restoring PostgreSQL database from $dump_path"
   systemctl start postgresql.service
+  dump_stage="$(mktemp -d)"
+  staged_dump="$dump_stage/nextcloud-db.dump"
+  cp "$dump_path" "$staged_dump"
+  chown postgres:postgres "$staged_dump"
+  chmod 0400 "$staged_dump"
 
   if ! runuser -u postgres -- psql -tAc "SELECT 1 FROM pg_roles WHERE rolname = 'nextcloud'" | grep -qx 1; then
     runuser -u postgres -- createuser nextcloud
@@ -210,7 +217,11 @@ restore_database_dump() {
 
   runuser -u postgres -- dropdb --if-exists nextcloud
   runuser -u postgres -- createdb -O nextcloud nextcloud
-  runuser -u postgres -- pg_restore --no-owner --role=nextcloud -d nextcloud "$dump_path"
+  if ! runuser -u postgres -- pg_restore --no-owner --role=nextcloud -d nextcloud "$staged_dump"; then
+    rm -rf "$dump_stage"
+    return 1
+  fi
+  rm -rf "$dump_stage"
 }
 
 extract_tar_state() {
