@@ -208,6 +208,8 @@ restore_database_dump() {
   dump_stage="$(mktemp -d)"
   staged_dump="$dump_stage/nextcloud-db.dump"
   cp "$dump_path" "$staged_dump"
+  chown postgres:postgres "$dump_stage"
+  chmod 0700 "$dump_stage"
   chown postgres:postgres "$staged_dump"
   chmod 0400 "$staged_dump"
 
