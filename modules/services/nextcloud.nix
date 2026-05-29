@@ -20,6 +20,11 @@ let
     else
       "http://${externalHost}";
   internalNextcloudUrl = "http://127.0.0.1:${toString listenPort}";
+  collaboraWopiUrl =
+    if publicHost then
+      externalUrl
+    else
+      internalNextcloudUrl;
   officeFonts = with pkgs; [
     caladea
     carlito
@@ -215,6 +220,7 @@ in
       storage.wopi.host = [
         hostName
         externalHost
+        "127\\.0\\.0\\.1"
       ];
     };
   };
@@ -248,7 +254,7 @@ in
         ${lib.getExe config.services.nextcloud.occ} --no-interaction "$@"
       }
 
-      occ config:app:set richdocuments wopi_url --value "${externalUrl}"
+      occ config:app:set richdocuments wopi_url --value "${collaboraWopiUrl}"
       occ config:app:set richdocuments public_wopi_url --value "${externalUrl}"
       occ config:app:set richdocuments canonical_webroot --value "${externalUrl}"
       occ config:app:set richdocuments doc_format --type string --value ooxml
