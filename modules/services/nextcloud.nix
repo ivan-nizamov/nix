@@ -9,11 +9,16 @@ let
   listenPort = 8080;
   collaboraPort = 9980;
   whiteboardPort = 3002;
+  externalHost =
+    if publicHost then
+      hostName
+    else
+      "${hostName}:${toString listenPort}";
   externalUrl =
     if publicHost then
       "https://${hostName}"
     else
-      "http://${hostName}:${toString listenPort}";
+      "http://${externalHost}";
   internalNextcloudUrl = "http://127.0.0.1:${toString listenPort}";
   officeFonts = with pkgs; [
     caladea
@@ -174,14 +179,17 @@ in
       }
     ];
     settings = {
-      server_name = hostName;
+      server_name = externalHost;
       net.post_allow.host = [
         "127\\.0\\.0\\.1"
         "::1"
       ];
       ssl.enable = false;
       ssl.termination = publicHost;
-      storage.wopi.host = [ hostName ];
+      storage.wopi.host = [
+        hostName
+        externalHost
+      ];
     };
   };
 
