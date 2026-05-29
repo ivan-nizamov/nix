@@ -127,6 +127,7 @@ need du
 need find
 need rsync
 need systemctl
+need systemd-tmpfiles
 need tar
 
 [ -d "$SOURCE_ROOT" ] || die "Source root does not exist: $SOURCE_ROOT"
@@ -242,6 +243,18 @@ extract_tar_state() {
   trap - RETURN
 }
 
+refresh_nextcloud_override() {
+  local override="$TARGET_NEXTCLOUD/config/override.config.php"
+
+  log "Refreshing NixOS-generated Nextcloud override config"
+  rm -f "$override"
+  systemd-tmpfiles --create
+
+  if [ ! -e "$override" ]; then
+    die "NixOS tmpfiles did not recreate $override"
+  fi
+}
+
 timestamp="$(date +%Y%m%d-%H%M%S)"
 backup_root="/var/lib/nextcloud-local-restore-backups/$timestamp"
 
@@ -318,6 +331,8 @@ if [ -d "$TARGET_SECRETS" ]; then
   chmod 0700 "$TARGET_SECRETS"
   find "$TARGET_SECRETS" -type f -exec chmod 0400 {} +
 fi
+
+refresh_nextcloud_override
 
 if [ "$SKIP_SWITCH" -eq 0 ]; then
   log "Switching NixOS configuration .#$TARGET_HOST"
