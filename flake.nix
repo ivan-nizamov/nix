@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for thinkpad and mainframe";
+  description = "NixOS configuration for thinkpad";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -32,17 +32,5 @@
         ];
       };
 
-      nixosConfigurations.mainframe = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = {
-          inherit inputs self;
-        };
-        modules = [
-          ({ ... }: {
-            nixpkgs.overlays = [ inputs.helium.overlays.default ];
-          })
-          ./hosts/mainframe
-        ];
-      };
     };
 }
