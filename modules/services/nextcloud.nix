@@ -265,7 +265,9 @@ in
       ${lib.optionalString (!publicHost) ''
         occ config:app:delete richdocuments wopi_allowlist || true
       ''}
-      occ richdocuments:activate-config || true
+      occ richdocuments:activate-config ${
+        lib.optionalString (!publicHost) "--callback-url \"${internalNextcloudUrl}\""
+      } || true
 
       if [ ! -e ${officeTemplateMarker} ]; then
         occ richdocuments:update-empty-templates
