@@ -13,6 +13,8 @@ usage() {
 Usage: restore-nextcloud-local.sh [options]
 
 Restore a Nextcloud instance from an attached NixOS root filesystem to this host.
+If SOURCE_ROOT contains mainframe-backup-*/nextcloud-critical, the script restores
+that tar/dump backup. Otherwise it falls back to a live /var/lib copy.
 
 Options:
   --source-root PATH     Mounted backup root. Default: /run/media/iva/nixos
@@ -114,6 +116,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE_NEXTCLOUD="$SOURCE_ROOT/var/lib/nextcloud"
 SOURCE_POSTGRES="$SOURCE_ROOT/var/lib/postgresql"
 SOURCE_REDIS="$SOURCE_ROOT/var/lib/redis-nextcloud"
+TARGET_SECRETS="/var/lib/nextcloud-secrets"
 TARGET_NEXTCLOUD="/var/lib/nextcloud"
 TARGET_POSTGRES="/var/lib/postgresql"
 TARGET_REDIS="/var/lib/redis-nextcloud"
@@ -124,41 +127,107 @@ need du
 need find
 need rsync
 need systemctl
+need tar
 
 [ -d "$SOURCE_ROOT" ] || die "Source root does not exist: $SOURCE_ROOT"
-[ -d "$SOURCE_NEXTCLOUD" ] || die "No Nextcloud state at $SOURCE_NEXTCLOUD"
-[ -d "$SOURCE_POSTGRES" ] || die "No PostgreSQL state at $SOURCE_POSTGRES"
 [ -d "$REPO_ROOT/.git" ] || die "Could not find repo root from script path: $REPO_ROOT"
 
-log "Searching for a real Nextcloud files payload on $SOURCE_ROOT"
-if [ -n "$FILES_DIR" ]; then
-  [ -d "$FILES_DIR" ] || die "Explicit --files-dir does not exist: $FILES_DIR"
-  best_files_dir="$FILES_DIR"
-  best_files_size="$(dir_size_bytes "$best_files_dir")"
+critical_backup=""
+while IFS= read -r candidate; do
+  critical_backup="$candidate"
+done < <(
+  find "$SOURCE_ROOT" -xdev -path '*/nextcloud-critical' -type d -print 2>/dev/null | sort | tail -1
+)
+
+restore_mode="live"
+if [ -n "$critical_backup" ] \
+  && [ -f "$critical_backup/data/var-lib-nextcloud.tar" ] \
+  && [ -f "$critical_backup/db/nextcloud-db.dump" ]; then
+  restore_mode="critical"
+fi
+
+if [ "$restore_mode" = "critical" ]; then
+  log "Using critical backup: $critical_backup"
+  if [ -f "$critical_backup/SHA256SUMS" ]; then
+    log "Verifying critical backup checksums"
+    (cd "$critical_backup" && sha256sum -c SHA256SUMS)
+  fi
+  tar -tf "$critical_backup/data/var-lib-nextcloud.tar" "var/lib/nextcloud/data/${NEXTCLOUD_USER}/files/" >/dev/null \
+    || die "Critical backup does not contain var/lib/nextcloud/data/${NEXTCLOUD_USER}/files/"
+  best_files_size="$(tar -tvf "$critical_backup/data/var-lib-nextcloud.tar" "var/lib/nextcloud/data/${NEXTCLOUD_USER}/files/" 2>/dev/null | awk '{ sum += $3 } END { print sum + 0 }')"
 else
-  mapfile -d '' file_candidates < <(
-    find "$SOURCE_ROOT" -xdev -type d -path "*/${NEXTCLOUD_USER}/files" -print0 2>/dev/null
-  )
+  [ -d "$SOURCE_NEXTCLOUD" ] || die "No Nextcloud state at $SOURCE_NEXTCLOUD"
+  [ -d "$SOURCE_POSTGRES" ] || die "No PostgreSQL state at $SOURCE_POSTGRES"
 
-  best_files_dir=""
-  best_files_size=0
-  for candidate in "${file_candidates[@]}"; do
-    size="$(dir_size_bytes "$candidate")"
-    if [ -n "$size" ] && [ "$size" -gt "$best_files_size" ]; then
-      best_files_size="$size"
-      best_files_dir="$candidate"
-    fi
-  done
+  log "Searching for a real Nextcloud files payload on $SOURCE_ROOT"
+  if [ -n "$FILES_DIR" ]; then
+    [ -d "$FILES_DIR" ] || die "Explicit --files-dir does not exist: $FILES_DIR"
+    best_files_dir="$FILES_DIR"
+    best_files_size="$(dir_size_bytes "$best_files_dir")"
+  else
+    mapfile -d '' file_candidates < <(
+      find "$SOURCE_ROOT" -xdev -type d -path "*/${NEXTCLOUD_USER}/files" -print0 2>/dev/null
+    )
+
+    best_files_dir=""
+    best_files_size=0
+    for candidate in "${file_candidates[@]}"; do
+      size="$(dir_size_bytes "$candidate")"
+      if [ -n "$size" ] && [ "$size" -gt "$best_files_size" ]; then
+        best_files_size="$size"
+        best_files_dir="$candidate"
+      fi
+    done
+  fi
+
+  if [ -z "$best_files_dir" ] || { [ -z "$FILES_DIR" ] && [ "$best_files_size" -lt "$MIN_FILE_BYTES" ]; }; then
+    log "Could not find a plausible ${NEXTCLOUD_USER}/files directory of at least ${MIN_FILE_BYTES} bytes."
+    echo "Largest directories on the backup root:"
+    du -xhd2 "$SOURCE_ROOT" 2>/dev/null | sort -h | tail -80
+    die "Refusing to continue, because restoring without the file payload would keep files missing."
+  fi
+
+  log "Using file payload: $best_files_dir ($(du -sh "$best_files_dir" | awk '{ print $1 }'))"
 fi
 
-if [ -z "$best_files_dir" ] || { [ -z "$FILES_DIR" ] && [ "$best_files_size" -lt "$MIN_FILE_BYTES" ]; }; then
-  log "Could not find a plausible ${NEXTCLOUD_USER}/files directory of at least ${MIN_FILE_BYTES} bytes."
-  echo "Largest directories on the backup root:"
-  du -xhd2 "$SOURCE_ROOT" 2>/dev/null | sort -h | tail -80
-  die "Refusing to continue, because restoring without the file payload would keep files missing."
+if [ "$best_files_size" -lt "$MIN_FILE_BYTES" ]; then
+  die "Detected file payload is only ${best_files_size} bytes; refusing to restore an apparently empty file set."
 fi
 
-log "Using file payload: $best_files_dir ($(du -sh "$best_files_dir" | awk '{ print $1 }'))"
+restore_database_dump() {
+  local dump_path="$1"
+
+  need pg_restore
+  need psql
+  need runuser
+
+  log "Restoring PostgreSQL database from $dump_path"
+  systemctl start postgresql.service
+
+  if ! runuser -u postgres -- psql -tAc "SELECT 1 FROM pg_roles WHERE rolname = 'nextcloud'" | grep -qx 1; then
+    runuser -u postgres -- createuser nextcloud
+  fi
+
+  runuser -u postgres -- dropdb --if-exists nextcloud
+  runuser -u postgres -- createdb -O nextcloud nextcloud
+  runuser -u postgres -- pg_restore --no-owner --role=nextcloud -d nextcloud "$dump_path"
+}
+
+extract_tar_state() {
+  local archive="$1"
+  local target="$2"
+  local member="$3"
+  local stage
+
+  stage="$(mktemp -d)"
+  trap 'rm -rf "$stage"' RETURN
+
+  tar --acls --xattrs --numeric-owner -C "$stage" -xf "$archive" "$member"
+  mkdir -p "$target"
+  rsync -aAXH --numeric-ids --delete "$stage/$member/" "$target/"
+  rm -rf "$stage"
+  trap - RETURN
+}
 
 timestamp="$(date +%Y%m%d-%H%M%S)"
 backup_root="/var/lib/nextcloud-local-restore-backups/$timestamp"
@@ -182,7 +251,7 @@ systemctl stop \
 
 log "Saving current local state under $backup_root"
 mkdir -p "$backup_root"
-for state_dir in "$TARGET_NEXTCLOUD" "$TARGET_POSTGRES" "$TARGET_REDIS"; do
+for state_dir in "$TARGET_NEXTCLOUD" "$TARGET_POSTGRES" "$TARGET_REDIS" "$TARGET_SECRETS"; do
   if [ -e "$state_dir" ]; then
     backup_dest="$backup_root$state_dir"
     mkdir -p "$(dirname "$backup_dest")"
@@ -190,23 +259,40 @@ for state_dir in "$TARGET_NEXTCLOUD" "$TARGET_POSTGRES" "$TARGET_REDIS"; do
   fi
 done
 
-log "Copying Nextcloud app/config state"
-mkdir -p "$TARGET_NEXTCLOUD"
-rsync -aAXH --numeric-ids --delete "$SOURCE_NEXTCLOUD/" "$TARGET_NEXTCLOUD/"
+if [ "$restore_mode" = "critical" ]; then
+  log "Extracting Nextcloud state from critical backup"
+  extract_tar_state "$critical_backup/data/var-lib-nextcloud.tar" "$TARGET_NEXTCLOUD" "var/lib/nextcloud"
 
-log "Copying PostgreSQL state"
-mkdir -p "$TARGET_POSTGRES"
-rsync -aAXH --numeric-ids --delete "$SOURCE_POSTGRES/" "$TARGET_POSTGRES/"
+  if [ -f "$critical_backup/secrets/var-lib-nextcloud-secrets.tar" ]; then
+    log "Extracting Nextcloud secrets"
+    extract_tar_state "$critical_backup/secrets/var-lib-nextcloud-secrets.tar" "$TARGET_SECRETS" "var/lib/nextcloud-secrets"
+  fi
 
-if [ -d "$SOURCE_REDIS" ]; then
-  log "Copying Redis state"
-  mkdir -p "$TARGET_REDIS"
-  rsync -aAXH --numeric-ids --delete "$SOURCE_REDIS/" "$TARGET_REDIS/"
+  if [ -f "$critical_backup/state/var-lib-redis-nextcloud.tar" ]; then
+    log "Extracting Redis state"
+    extract_tar_state "$critical_backup/state/var-lib-redis-nextcloud.tar" "$TARGET_REDIS" "var/lib/redis-nextcloud"
+  fi
+
+  restore_database_dump "$critical_backup/db/nextcloud-db.dump"
+else
+  log "Copying Nextcloud app/config state"
+  mkdir -p "$TARGET_NEXTCLOUD"
+  rsync -aAXH --numeric-ids --delete "$SOURCE_NEXTCLOUD/" "$TARGET_NEXTCLOUD/"
+
+  log "Copying PostgreSQL state"
+  mkdir -p "$TARGET_POSTGRES"
+  rsync -aAXH --numeric-ids --delete "$SOURCE_POSTGRES/" "$TARGET_POSTGRES/"
+
+  if [ -d "$SOURCE_REDIS" ]; then
+    log "Copying Redis state"
+    mkdir -p "$TARGET_REDIS"
+    rsync -aAXH --numeric-ids --delete "$SOURCE_REDIS/" "$TARGET_REDIS/"
+  fi
+
+  log "Copying user file payload into $TARGET_NEXTCLOUD/data/$NEXTCLOUD_USER/files"
+  mkdir -p "$TARGET_NEXTCLOUD/data/$NEXTCLOUD_USER/files"
+  rsync -aAXH --numeric-ids --delete "$best_files_dir/" "$TARGET_NEXTCLOUD/data/$NEXTCLOUD_USER/files/"
 fi
-
-log "Copying user file payload into $TARGET_NEXTCLOUD/data/$NEXTCLOUD_USER/files"
-mkdir -p "$TARGET_NEXTCLOUD/data/$NEXTCLOUD_USER/files"
-rsync -aAXH --numeric-ids --delete "$best_files_dir/" "$TARGET_NEXTCLOUD/data/$NEXTCLOUD_USER/files/"
 
 log "Normalizing local ownership"
 chown -R nextcloud:nextcloud "$TARGET_NEXTCLOUD"
@@ -214,6 +300,11 @@ if [ -d "$TARGET_REDIS" ]; then
   chown -R nextcloud:nextcloud "$TARGET_REDIS"
 fi
 chown -R postgres:postgres "$TARGET_POSTGRES"
+if [ -d "$TARGET_SECRETS" ]; then
+  chown -R root:root "$TARGET_SECRETS"
+  chmod 0700 "$TARGET_SECRETS"
+  find "$TARGET_SECRETS" -type f -exec chmod 0400 {} +
+fi
 
 if [ "$SKIP_SWITCH" -eq 0 ]; then
   log "Switching NixOS configuration .#$TARGET_HOST"
