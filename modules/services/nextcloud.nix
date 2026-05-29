@@ -54,6 +54,32 @@ in
     chmod 0400 ${whiteboardSecretFile}
   '';
 
+  system.activationScripts.nextcloudLocalConfig = lib.mkIf (!publicHost) ''
+    config=/var/lib/nextcloud/config/config.php
+    if [ -s "$config" ]; then
+      ${lib.getExe pkgs.php} -r '
+        $configFile = "/var/lib/nextcloud/config/config.php";
+        include $configFile;
+        foreach ([
+          "mail_domain",
+          "mail_from_address",
+          "mail_smtpauth",
+          "mail_smtphost",
+          "mail_smtpmode",
+          "mail_smtpname",
+          "mail_smtppassword",
+          "mail_smtpport",
+          "mail_smtpsecure",
+        ] as $key) {
+          unset($CONFIG[$key]);
+        }
+        file_put_contents($configFile, "<?php\n\$CONFIG = " . var_export($CONFIG, true) . ";\n");
+      '
+      chown nextcloud:nextcloud "$config"
+      chmod 0640 "$config"
+    fi
+  '';
+
   services.nextcloud = {
     enable = true;
     package = pkgs.nextcloud33;
@@ -230,6 +256,9 @@ in
       occ config:app:set richdocuments uiDefaults-UIMode --type string --value notebookbar
       occ config:app:set richdocuments preview_generation --type boolean --value true
       occ config:app:set richdocuments open_local_editor --type string --value yes
+      ${lib.optionalString (!publicHost) ''
+        occ config:app:set richdocuments wopi_allowlist --value "127.0.0.1,::1"
+      ''}
       occ richdocuments:activate-config || true
 
       if [ ! -e ${officeTemplateMarker} ]; then
