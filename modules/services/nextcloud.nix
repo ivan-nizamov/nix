@@ -246,10 +246,7 @@ in
       Type = "oneshot";
       User = "nextcloud";
       Group = "nextcloud";
-      LoadCredential = [
-        "mail_smtppassword:${smtpPassFile}"
-        "whiteboard-server.env:${whiteboardSecretFile}"
-      ];
+      LoadCredential = [ "whiteboard-server.env:${whiteboardSecretFile}" ];
     };
     script = ''
       set -a
