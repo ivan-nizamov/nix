@@ -169,6 +169,11 @@ in
           addr = "127.0.0.1";
           port = listenPort;
         }
+      ] ++ lib.optionals (!publicHost) [
+        {
+          addr = "[::1]";
+          port = listenPort;
+        }
       ];
       locations = {
         "^~ /browser/".proxyPass = "http://127.0.0.1:${toString collaboraPort}";
