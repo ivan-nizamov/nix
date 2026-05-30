@@ -265,7 +265,7 @@ in
       occ config:app:set richdocuments doc_format --type string --value ooxml
       occ config:app:set richdocuments theme --type string --value collabora
       occ config:app:set richdocuments uiDefaults-UIMode --type string --value notebookbar
-      occ config:app:set richdocuments preview_generation --type boolean --value true
+      occ config:app:set richdocuments preview_generation --type boolean --value false
       occ config:app:set richdocuments open_local_editor --type string --value yes
       ${lib.optionalString (!publicHost) ''
         occ config:app:delete richdocuments wopi_allowlist || true
