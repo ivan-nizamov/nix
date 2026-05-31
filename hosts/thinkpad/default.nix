@@ -1,4 +1,4 @@
-{ config, lib, nixos-hardware, pkgs, ... }:
+{ lib, nixos-hardware, pkgs, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -13,7 +13,7 @@
     ../../modules/programs/llm-agents.nix
     ../../modules/programs/obsidian.nix
     ../../modules/services/audio-pipewire.nix
-    ../../modules/services/desktop-gnome.nix
+    ../../modules/services/desktop-driftwm.nix
     ../../modules/services/failure-reporting.nix
     ../../modules/services/nextcloud.nix
     ../../modules/services/syncthing.nix
@@ -51,35 +51,6 @@
   services.blueman.enable = true;
 
   environment.systemPackages = [ pkgs.usbutils ];
-
-  services."06cb-009a-fingerprint-sensor" = {
-    enable = true;
-    backend = "libfprint-tod";
-    calib-data-file = ./calib-data.bin;
-  };
-  security.pam.services.gdm-fingerprint.text = lib.mkIf config.services.fprintd.enable (lib.mkOverride 0 ''
-    auth       required                    pam_shells.so
-    auth       requisite                   pam_nologin.so
-    auth       requisite                   pam_faillock.so      preauth
-    auth       required                    ${config.services.fprintd.package}/lib/security/pam_fprintd.so max-tries=6 timeout=60
-    auth       required                    pam_env.so conffile=/etc/pam/environment readenv=0
-    auth       [success=ok default=1]      ${pkgs.gdm}/lib/security/pam_gdm.so
-    auth       optional                    ${pkgs.gnome-keyring}/lib/security/pam_gnome_keyring.so
-
-    account    include                     login
-
-    password   required                    pam_deny.so
-
-    session    include                     login
-  '');
-  security.pam.services.sudo.fprintAuth = false;
-  security.pam.services.polkit-1.fprintAuth = true;
-
-  console = {
-    packages = [ pkgs.terminus_font ];
-    font = "${pkgs.terminus_font}/share/consolefonts/ter-v16n.psf.gz";
-    earlySetup = true;
-  };
 
   users.users.iva = {
     extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
