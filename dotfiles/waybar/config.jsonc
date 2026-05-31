@@ -1,20 +1,19 @@
 [
   {
-    "layer": "overlay",
-    "position": "bottom",
+    "layer": "top",
+    "position": "left",
     "mode": "dock",
-    "exclusive": false,
+    "exclusive": true,
     "spacing": 8,
-    "height": 56,
-    "margin-left": 0,
-    "margin-right": 0,
-    "margin-bottom": 14,
+    "width": 56,
+    "margin-top": 0,
+    "margin-bottom": 0,
     "modules-center": [
       "wlr/taskbar"
     ],
     "wlr/taskbar": {
       "format": "{icon}",
-      "icon-size": 24,
+      "icon-size": 28,
       "tooltip-format": "{name}: {title}",
       "on-click": "activate",
       "on-click-middle": "close",
