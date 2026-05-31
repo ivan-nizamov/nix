@@ -1,0 +1,28 @@
+[
+  {
+    "layer": "overlay",
+    "position": "bottom",
+    "mode": "dock",
+    "exclusive": false,
+    "spacing": 8,
+    "height": 56,
+    "margin-left": 0,
+    "margin-right": 0,
+    "margin-bottom": 14,
+    "modules-center": [
+      "wlr/taskbar"
+    ],
+    "wlr/taskbar": {
+      "format": "{icon}",
+      "icon-size": 24,
+      "tooltip-format": "{name}: {title}",
+      "on-click": "activate",
+      "on-click-middle": "close",
+      "all-outputs": false,
+      "ignore-list": [
+        "waybar",
+        "fuzzel"
+      ]
+    }
+  }
+]
