@@ -55,9 +55,7 @@
     usbutils
   ];
 
-  systemd.tmpfiles.rules = [
-    "L+ /home/iva/.config/swaylock - - - - /home/iva/nix/dotfiles/swaylock"
-  ];
+  security.pam.services.swaylock = { };
 
   users.users.iva = {
     extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
