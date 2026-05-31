@@ -4,6 +4,7 @@ let
 in
 {
   environment.systemPackages = [
+    pkgs.ghostty
     pkgs.helium
     terminalphone
   ];
