@@ -13,6 +13,7 @@
     ../../modules/programs/llm-agents.nix
     ../../modules/programs/obsidian.nix
     ../../modules/services/audio-pipewire.nix
+    ../../modules/services/desktop-controls.nix
     ../../modules/services/desktop-driftwm.nix
     ../../modules/services/failure-reporting.nix
     ../../modules/services/nextcloud.nix
