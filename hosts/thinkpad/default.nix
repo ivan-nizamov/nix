@@ -16,6 +16,7 @@
     ../../modules/services/audio-pipewire.nix
     ../../modules/services/desktop-controls.nix
     ../../modules/services/desktop-driftwm.nix
+    ../../modules/services/driftwm-layer-shell-front.nix
     ../../modules/services/failure-reporting.nix
     ../../modules/services/nextcloud.nix
     ../../modules/services/syncthing.nix
