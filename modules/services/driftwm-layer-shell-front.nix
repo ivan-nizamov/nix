@@ -29,5 +29,28 @@ let
   };
 in
 {
+  environment.systemPackages = [ driftwm ];
+
   services.displayManager.sessionPackages = lib.mkForce [ driftwm ];
+
+  systemd.user.services.driftwm = {
+    description = "driftwm, a trackpad-first infinite canvas Wayland compositor";
+    bindsTo = [ "graphical-session.target" ];
+    before = [
+      "graphical-session.target"
+      "xdg-desktop-autostart.target"
+    ];
+    wants = [
+      "graphical-session-pre.target"
+      "xdg-desktop-autostart.target"
+    ];
+    after = [ "graphical-session-pre.target" ];
+
+    serviceConfig = {
+      Slice = "session.slice";
+      Type = "notify";
+      NotifyAccess = "main";
+      ExecStart = "${driftwm}/bin/driftwm";
+    };
+  };
 }
