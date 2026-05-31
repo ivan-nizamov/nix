@@ -50,7 +50,14 @@
   hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
 
-  environment.systemPackages = [ pkgs.usbutils ];
+  environment.systemPackages = with pkgs; [
+    swaylock
+    usbutils
+  ];
+
+  systemd.tmpfiles.rules = [
+    "L+ /home/iva/.config/swaylock - - - - /home/iva/nix/dotfiles/swaylock"
+  ];
 
   users.users.iva = {
     extraGroups = [ "wheel" "networkmanager" "input" "ydotool" "plugdev" "dialout" ];
