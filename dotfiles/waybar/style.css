@@ -1,0 +1,84 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "Adwaita Sans";
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 0;
+}
+
+window#waybar {
+  background: #120507;
+  border-bottom: 2px solid #ff2a1a;
+  color: #f6d8d0;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  margin: 0 8px;
+}
+
+#custom-launcher,
+#custom-screenshot,
+#custom-lock,
+#network,
+#bluetooth,
+#tray,
+#idle_inhibitor,
+#backlight,
+#pulseaudio,
+#battery,
+#clock {
+  background: #24080b;
+  border: 1px solid #7a1512;
+  border-left: 3px solid #ff2a1a;
+  color: #f6d8d0;
+  margin: 4px 0;
+  padding: 4px 10px;
+}
+
+#custom-launcher,
+#custom-lock {
+  background: #3a090b;
+  color: #fff1e8;
+}
+
+#clock {
+  background: #4a090b;
+  border-color: #ff2a1a;
+  color: #fff1e8;
+  padding: 4px 18px;
+}
+
+#pulseaudio.muted,
+#network.disconnected,
+#bluetooth.disabled,
+#battery.warning {
+  color: #ffb000;
+}
+
+#battery.critical {
+  background: #ff2a1a;
+  border-color: #fff1e8;
+  color: #120507;
+}
+
+#custom-launcher:hover,
+#custom-screenshot:hover,
+#custom-lock:hover,
+#network:hover,
+#bluetooth:hover,
+#idle_inhibitor:hover,
+#backlight:hover,
+#pulseaudio:hover,
+#battery:hover {
+  background: #5a0d0f;
+  border-color: #ff2a1a;
+}
+
+tooltip {
+  background: #120507;
+  border: 1px solid #ff2a1a;
+  color: #f6d8d0;
+}

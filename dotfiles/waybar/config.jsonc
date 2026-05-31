@@ -1,0 +1,115 @@
+{
+  "layer": "top",
+  "position": "top",
+  "mode": "dock",
+  "exclusive": true,
+  "height": 34,
+  "spacing": 8,
+  "margin-top": 0,
+  "margin-left": 0,
+  "margin-right": 0,
+
+  "modules-left": [
+    "custom/launcher",
+    "network",
+    "bluetooth",
+    "tray"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "idle_inhibitor",
+    "custom/screenshot",
+    "backlight",
+    "pulseaudio",
+    "battery",
+    "custom/lock"
+  ],
+
+  "custom/launcher": {
+    "format": "APPS",
+    "tooltip": false,
+    "on-click": "fuzzel"
+  },
+
+  "custom/screenshot": {
+    "format": "SHOT",
+    "tooltip": "Select a region and copy it to clipboard",
+    "on-click": "screenshot-region"
+  },
+
+  "custom/lock": {
+    "format": "LOCK",
+    "tooltip": false,
+    "on-click": "sh ~/.config/driftwm/scripts/lock.sh"
+  },
+
+  "clock": {
+    "format": "{:%a %d %b  %H:%M}",
+    "tooltip-format": "{:%A, %d %B %Y\n%H:%M:%S}",
+    "interval": 1
+  },
+
+  "network": {
+    "format-wifi": "NET {essid} {signalStrength}%",
+    "format-ethernet": "NET wired",
+    "format-disconnected": "NET offline",
+    "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
+    "on-click": "nm-connection-editor"
+  },
+
+  "bluetooth": {
+    "format": "BT {status}",
+    "format-disabled": "BT off",
+    "format-off": "BT off",
+    "format-connected": "BT {device_alias}",
+    "tooltip-format": "{controller_alias}\t{controller_address}",
+    "tooltip-format-connected": "{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "on-click": "blueman-manager"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "AWAKE",
+      "deactivated": "IDLE"
+    }
+  },
+
+  "backlight": {
+    "format": "BRI {percent}%",
+    "tooltip": false,
+    "on-scroll-up": "brightness-up",
+    "on-scroll-down": "brightness-down"
+  },
+
+  "pulseaudio": {
+    "format": "VOL {volume}%",
+    "format-muted": "VOL muted",
+    "format-bluetooth": "VOL {volume}% BT",
+    "format-bluetooth-muted": "VOL muted BT",
+    "scroll-step": 5,
+    "on-click": "volume-toggle",
+    "on-click-right": "pavucontrol",
+    "on-scroll-up": "volume-up",
+    "on-scroll-down": "volume-down"
+  },
+
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "BAT {capacity}%",
+    "format-charging": "BAT {capacity}%+",
+    "format-plugged": "AC {capacity}%",
+    "tooltip-format": "{timeTo} remaining"
+  }
+}
