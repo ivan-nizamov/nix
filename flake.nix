@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for thinkpad";
+  description = "NixOS configuration for thinkpad-driftwm";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -15,7 +15,7 @@
 
   outputs = inputs@{ self, nixpkgs, ... }:
     {
-      nixosConfigurations.thinkpad = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.thinkpad-driftwm = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
           inherit inputs self;
@@ -25,7 +25,7 @@
           ({ ... }: {
             nixpkgs.overlays = [ inputs.helium.overlays.default ];
           })
-          ./hosts/thinkpad
+          ./default.nix
         ];
       };
 

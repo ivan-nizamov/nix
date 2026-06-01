@@ -2,18 +2,15 @@
 
 This repository keeps deployable NixOS configurations in one branch per host:
 
-- `mainframe` deploys `.#mainframe`.
-- `thinkpad` deploys `.#thinkpad`.
+- `mainframe` is an archival backup branch, not a deploy target.
+- `thinkpad-driftwm` deploys `.#thinkpad-driftwm`.
 - `legion` deploys `.#legion`.
 
 Use the host branch as the source of truth for that machine:
 
 ```bash
-git switch mainframe
-ssh -t mainframe-iva 'zsh -ic nrs'
-
-git switch thinkpad
-sudo nixos-rebuild switch --flake .#thinkpad
+git switch thinkpad-driftwm
+sudo nixos-rebuild switch --flake .#thinkpad-driftwm
 
 git switch legion
 sudo nixos-rebuild switch --flake .#legion

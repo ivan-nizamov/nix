@@ -22,7 +22,7 @@ let
   telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   batteryConservationPath = "/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode";
-  batteryConservationRootToggle = pkgs.writeShellScriptBin "mainframe-battery-conservation-root-toggle" ''
+  batteryConservationRootToggle = pkgs.writeShellScriptBin "thinkpad-battery-conservation-root-toggle" ''
     set -euo pipefail
 
     mode_path=${lib.escapeShellArg batteryConservationPath}
@@ -51,10 +51,10 @@ let
     printf '%s\n' "$next" > "$mode_path"
     printf '%s\n' "$message"
   '';
-  batteryConservationToggle = pkgs.writeShellScriptBin "battery-conservation-toggle" ''
+  batteryConservationToggle = pkgs.writeShellScriptBin "thinkpad-battery-conservation-toggle" ''
     set -euo pipefail
 
-    message=$(/run/wrappers/bin/sudo /run/current-system/sw/bin/mainframe-battery-conservation-root-toggle)
+    message=$(/run/wrappers/bin/sudo /run/current-system/sw/bin/thinkpad-battery-conservation-root-toggle)
     printf '%s\n' "$message"
 
     if command -v notify-send >/dev/null 2>&1; then
@@ -97,6 +97,7 @@ in
     helium
     zedEditor
     fuzzel
+    wlrctl
     waybar
     swaylock
     swayidle
@@ -108,7 +109,6 @@ in
   ];
 
   environment.etc."zed/keymap.json".text = zedKeymap;
-  environment.etc."driftwm/config.toml".source = ./driftwm-config/config.toml;
 
   environment.variables = {
     XCURSOR_SIZE = "24";
@@ -129,8 +129,6 @@ in
   systemd.tmpfiles.rules = [
     "d /home/iva/.config/zed 0755 iva users - -"
     "L+ /home/iva/.config/zed/keymap.json - - - - /etc/zed/keymap.json"
-    "d /home/iva/.config/driftwm 0755 iva users - -"
-    "L+ /home/iva/.config/driftwm/config.toml - - - - /etc/driftwm/config.toml"
   ];
 
   security.sudo.extraRules = [
@@ -138,7 +136,7 @@ in
       users = [ "iva" ];
       commands = [
         {
-          command = "/run/current-system/sw/bin/mainframe-battery-conservation-root-toggle";
+          command = "/run/current-system/sw/bin/thinkpad-battery-conservation-root-toggle";
           options = [ "NOPASSWD" ];
         }
       ];

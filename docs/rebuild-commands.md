@@ -1,17 +1,13 @@
 # NixOS Rebuild Commands
 
-## Thinkpad
+## Thinkpad Driftwm
 
-Expected branch: `thinkpad`.
+Expected branch: `thinkpad-driftwm`.
 
 ```bash
-cd /home/iva/nix && sudo NIX_CONFIG="experimental-features = nix-command flakes" nixos-rebuild switch --flake .#thinkpad
+cd /home/iva/nix && sudo NIX_CONFIG="experimental-features = nix-command flakes" nixos-rebuild switch --flake .#thinkpad-driftwm
 ```
 
 ## Mainframe
 
-Expected branch: `mainframe`.
-
-```bash
-ssh -t mainframe-iva 'zsh -ic "cd /home/iva/nix && sudo NIX_CONFIG=\"experimental-features = nix-command flakes\" nixos-rebuild switch --flake .#mainframe"'
-```
+Archival backup branch only. Not a deploy target.

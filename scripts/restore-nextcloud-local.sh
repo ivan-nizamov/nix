@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 SOURCE_ROOT="/run/media/iva/nixos"
 NEXTCLOUD_USER="iva"
-TARGET_HOST="thinkpad"
+TARGET_HOST="thinkpad-driftwm"
 FILES_DIR=""
 SKIP_SWITCH=0
 SKIP_SCAN=0
@@ -21,7 +21,7 @@ Options:
   --user USER            Nextcloud user id to restore/scan. Default: iva
   --files-dir PATH       Explicit source directory containing this user's files.
                          If omitted, the script searches for */USER/files.
-  --host HOST            NixOS flake target to switch. Default: thinkpad
+  --host HOST            NixOS flake target to switch. Default: thinkpad-driftwm
   --skip-switch          Copy data and fix ownership, but do not run nixos-rebuild.
   --skip-scan            Do not run nextcloud-occ files:scan after restore.
   -h, --help             Show this help.

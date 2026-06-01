@@ -3,31 +3,30 @@
   imports = [
     ./hardware-configuration.nix
     nixos-hardware.nixosModules.lenovo-thinkpad-t480
-    ../../modules/core/fonts.nix
-    ../../modules/core/locale.nix
-    ../../modules/core/memory.nix
-    ../../modules/core/networking.nix
-    ../../modules/core/nix-settings.nix
-    ../../modules/core/shell.nix
-    ../../modules/programs/desktop-apps.nix
-    ../../modules/programs/file-manager.nix
-    ../../modules/programs/llm-agents.nix
-    ../../modules/programs/obsidian.nix
-    ../../modules/services/audio-pipewire.nix
-    ../../modules/services/desktop-controls.nix
-    ../../modules/services/desktop-driftwm.nix
-    ../../modules/services/failure-reporting.nix
-    ../../modules/services/nextcloud.nix
-    ../../modules/services/syncthing.nix
-    ../../modules/services/top-bar.nix
-    ../../modules/users/iva.nix
+    ./modules/core/fonts.nix
+    ./modules/core/locale.nix
+    ./modules/core/memory.nix
+    ./modules/core/networking.nix
+    ./modules/core/nix-settings.nix
+    ./modules/core/shell.nix
+    ./modules/programs/desktop-apps.nix
+    ./modules/programs/file-manager.nix
+    ./modules/programs/llm-agents.nix
+    ./modules/programs/obsidian.nix
+    ./modules/services/audio-pipewire.nix
+    ./modules/services/desktop-controls.nix
+    ./modules/services/desktop-driftwm.nix
+    ./modules/services/failure-reporting.nix
+    ./modules/services/nextcloud.nix
+    ./modules/services/syncthing.nix
+    ./modules/services/top-bar.nix
+    ./modules/users/iva.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.efi.canTouchEfiVariables = true;
-  # Override nixos-hardware Kaby Lake defaults to avoid eDP panel flicker on
-  # monotone content and display timing glitches on Intel i915 panels.
+  # Keep the Kaby Lake display workarounds that avoid panel flicker.
   boot.kernelParams = lib.mkAfter [
     "mem_sleep_default=deep"
     "i915.enable_guc=0"
@@ -36,10 +35,20 @@
     "i915.enable_fbc=0"
   ];
 
-  networking.hostName = "thinkpad";
+  networking.hostName = "thinkpad-driftwm";
   networking.networkmanager.enable = true;
   networking.networkmanager.wifi.powersave = false;
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
+
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+    };
+  };
 
   services.openssh.enable = true;
   services.openssh.openFirewall = false;

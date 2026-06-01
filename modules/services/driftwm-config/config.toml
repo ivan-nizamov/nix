@@ -1,6 +1,8 @@
-# driftwm configuration for thinkpad
+# driftwm configuration for thinkpad-driftwm
 
-autostart = ["waybar"]
+autostart = [
+  "swayidle -w timeout 600 'sh ~/.config/driftwm/scripts/lock.sh' before-sleep 'sh ~/.config/driftwm/scripts/lock.sh'",
+]
 
 # ── Input ─────────────────────────────────────────────────────
 
@@ -19,10 +21,15 @@ accel_speed = -0.176
 # ── Keybindings ───────────────────────────────────────────────
 
 [keybindings]
-"mod+return" = "exec alacritty"
+"mod+return" = "exec kitty"
+"mod+space" = "spawn sh ~/.config/driftwm/scripts/window-search.sh"
 "mod+d" = "exec fuzzel"
+"mod+s" = "none"
+"mod+l" = "spawn sh ~/.config/driftwm/scripts/lock.sh"
+"mod+u" = "spawn mic-unmute"
+"XF86AudioMicMute" = "spawn mic-toggle"
+"mod+shift+c" = "reload-config"
 "mod+q" = "close-window"
-"mod+l" = "spawn swaylock -f -c 000000 -kl"
 "mod+f" = "toggle-fullscreen"
 "mod+m" = "fit-window"
 "mod+shift+m" = "fit-window-snapped"
@@ -32,17 +39,13 @@ accel_speed = -0.176
 "mod+c" = "focus-center"
 "mod+z" = "zoom-reset"
 "mod+0" = "zoom-reset"
-"mod+=" = "zoom-in"
-"mod+-" = "zoom-out"
+"mod+equal" = "zoom-in"
+"mod+minus" = "zoom-out"
 "mod+ctrl+shift+q" = "quit"
-"mod+1" = "go-to -1750 1750"
-"mod+2" = "go-to 1750 1750"
-"mod+3" = "go-to 1750 -1750"
-"mod+4" = "go-to -1750 -1750"
 
 # ── Focus ─────────────────────────────────────────────────────
 
-focus_follows_mouse = false
+focus_follows_mouse = true
 
 # ── Background ────────────────────────────────────────────────
 
@@ -63,7 +66,12 @@ size = 24
 
 # ── Window placement ──────────────────────────────────────────
 
-window_placement = "center"
+window_placement = "auto"
+
+# ── Navigation ────────────────────────────────────────────────
+
+[navigation]
+anchors = []
 
 # ── Window rules ──────────────────────────────────────────────
 
