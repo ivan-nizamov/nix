@@ -6,7 +6,7 @@
 }:
 let
   driftwmPackage = inputs.driftwm.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  heliumPackage = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.helium;
+  heliumPackage = pkgs.helium;
   driftwm = pkgs.symlinkJoin {
     name = "${driftwmPackage.name}-nixos-session";
     paths = [ driftwmPackage ];
