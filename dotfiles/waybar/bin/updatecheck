@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+set -eu
+
+LOCKFILE="/tmp/waybar-updatecheck.lock"
+if command -v flock >/dev/null 2>&1; then
+    exec 200>"$LOCKFILE"
+    flock -n 200 || exit 0
+fi
+
+if ! command -v checkupdates-with-aur >/dev/null 2>&1; then
+    printf '{"text":"󰮯 0","tooltip":"<b>󰮯  Update checker unavailable</b>","class":"updated"}\n'
+    exit 0
+fi
+
+updates=$(checkupdates-with-aur 2>/dev/null || true)
+count=$(printf '%s\n' "$updates" | sed '/^$/d' | wc -l | tr -d '[:space:]')
+
+if [ "$count" = "0" ]; then
+    printf '{"text":"󰮯 0","tooltip":"<b>󰮯  System is up to date</b>","class":"updated"}\n'
+    exit 0
+fi
+
+printf '{"text":"󰮯 %s","tooltip":"<b>󰮯  %s update(s) available</b>","class":"outdated"}\n' "$count" "$count"

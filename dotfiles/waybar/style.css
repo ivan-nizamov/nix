@@ -1,82 +1,495 @@
+@import "colors.css";
+
 * {
-  border: none;
-  border-radius: 0;
-  font-family: "Adwaita Sans";
-  font-size: 12px;
-  font-weight: 700;
-  min-height: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    min-height: 0;
+    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
 }
 
-window#waybar {
-  background: #120507;
-  border-bottom: 2px solid #ff2a1a;
-  color: #f6d8d0;
+window#waybar,
+window#waybar > box {
+    background: transparent;
 }
 
-.modules-left,
-.modules-center,
-.modules-right {
-  margin: 0 8px;
+window#waybar.hidden {
+    opacity: 0.1;
 }
 
-#custom-screenshot,
-#custom-lock,
+@keyframes idle-breathe {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.88;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes gradient-sweep {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes active-pulse {
+    0% {
+        box-shadow:
+            inset 0 1px 0 rgba(0, 255, 200, 0.18),
+            0 0 8px rgba(0, 220, 180, 0.25),
+            0 0 16px rgba(0, 200, 160, 0.1);
+    }
+    50% {
+        box-shadow:
+            inset 0 1px 0 rgba(0, 255, 200, 0.28),
+            0 0 12px rgba(0, 220, 180, 0.4),
+            0 0 24px rgba(0, 200, 160, 0.18);
+    }
+    100% {
+        box-shadow:
+            inset 0 1px 0 rgba(0, 255, 200, 0.18),
+            0 0 8px rgba(0, 220, 180, 0.25),
+            0 0 16px rgba(0, 200, 160, 0.1);
+    }
+}
+
+@keyframes urgent-pulse {
+    0% {
+        box-shadow:
+            0 0 8px rgba(255, 80, 60, 0.3),
+            0 0 16px rgba(255, 60, 40, 0.15);
+    }
+    50% {
+        box-shadow:
+            0 0 14px rgba(255, 80, 60, 0.55),
+            0 0 28px rgba(255, 60, 40, 0.3);
+    }
+    100% {
+        box-shadow:
+            0 0 8px rgba(255, 80, 60, 0.3),
+            0 0 16px rgba(255, 60, 40, 0.15);
+    }
+}
+
+@keyframes critical-glow {
+    0% {
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+            0 0 14px rgba(255, 80, 60, 0.35),
+            0 0 28px rgba(255, 60, 40, 0.18);
+    }
+    50% {
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+            0 0 20px rgba(255, 80, 60, 0.55),
+            0 0 40px rgba(255, 60, 40, 0.3);
+    }
+    100% {
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+            0 0 14px rgba(255, 80, 60, 0.35),
+            0 0 28px rgba(255, 60, 40, 0.18);
+    }
+}
+
+#workspaces,
+#clock,
+#memory,
 #network,
 #bluetooth,
-#tray,
-#idle_inhibitor,
-#backlight,
 #pulseaudio,
+#pulseaudio\#microphone,
 #battery,
-#clock {
-  background: #24080b;
-  border: 1px solid #7a1512;
-  border-left: 3px solid #ff2a1a;
-  color: #f6d8d0;
-  margin: 4px 0;
-  padding: 4px 10px;
+#backlight,
+#custom-updates,
+#idle_inhibitor,
+#mpris,
+#tray {
+    margin: 6px 3px;
+    padding: 4px 16px;
+    border-radius: 999px;
+    background: rgba(2, 16, 14, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.28);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    color: @surface_tint;
+    animation: idle-breathe 6s ease-in-out infinite;
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease,
+        opacity 0.18s ease;
 }
 
-#custom-lock {
-  background: #3a090b;
-  color: #fff1e8;
-}
-
-#clock {
-  background: #4a090b;
-  border-color: #ff2a1a;
-  color: #fff1e8;
-  padding: 4px 18px;
-}
-
-#pulseaudio.muted,
-#network.disconnected,
-#bluetooth.disabled,
-#battery.warning {
-  color: #ffb000;
-}
-
-#battery.critical {
-  background: #ff2a1a;
-  border-color: #fff1e8;
-  color: #120507;
-}
-
-#custom-launcher:hover,
-#custom-screenshot:hover,
-#custom-lock:hover,
+#clock:hover,
+#memory:hover,
 #network:hover,
 #bluetooth:hover,
-#idle_inhibitor:hover,
-#backlight:hover,
 #pulseaudio:hover,
-#battery:hover {
-  background: #5a0d0f;
-  border-color: #ff2a1a;
+#pulseaudio\#microphone:hover,
+#battery:hover,
+#backlight:hover,
+#custom-updates:hover,
+#idle_inhibitor:hover,
+#mpris:hover,
+#tray:hover {
+    background: linear-gradient(
+        120deg,
+        rgba(4, 28, 22, 0.68) 0%,
+        rgba(8, 40, 32, 0.78) 40%,
+        rgba(4, 28, 22, 0.68) 100%
+    );
+    background-size: 200% 100%;
+    animation: gradient-sweep 2.5s ease infinite;
+    border-top: 1px solid rgba(255, 255, 255, 0.44);
+    border-left: 1px solid rgba(255, 255, 255, 0.22);
+    border-right: 1px solid rgba(255, 255, 255, 0.09);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    color: @on_surface;
+}
+
+#workspaces {
+    padding: 3px 6px;
+}
+
+#workspaces button {
+    min-width: 0;
+    margin: 0 2px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: alpha(@on_surface_variant, 0.18);
+    font-size: 10px;
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease,
+        color 0.12s ease,
+        box-shadow 0.18s ease;
+}
+
+#workspaces button label {
+    font-weight: 800;
+    font-size: 10px;
+}
+
+#workspaces button:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: @on_surface;
+}
+
+#workspaces button.active {
+    background: rgba(0, 200, 160, 0.18);
+    border-top: 1px solid rgba(0, 220, 180, 0.5);
+    border-left: 1px solid rgba(0, 200, 160, 0.25);
+    border-right: 1px solid rgba(0, 200, 160, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.22);
+    box-shadow:
+        inset 0 1px 0 rgba(0, 255, 200, 0.18),
+        0 0 8px rgba(0, 220, 180, 0.25),
+        0 0 16px rgba(0, 200, 160, 0.1);
+    color: @primary_container;
+    animation: active-pulse 2.5s ease-in-out infinite;
+}
+
+#workspaces button.visible {
+    color: alpha(@on_surface_variant, 0.42);
+}
+
+#workspaces button.empty {
+    color: alpha(@on_surface_variant, 0.08);
+    font-size: 8px;
+}
+
+#workspaces button.urgent {
+    background: rgba(255, 80, 60, 0.14);
+    color: @error;
+    border: 1px solid rgba(255, 100, 80, 0.38);
+    box-shadow:
+        0 0 8px rgba(255, 80, 60, 0.3),
+        0 0 16px rgba(255, 60, 40, 0.15);
+    animation: urgent-pulse 0.8s ease infinite;
+}
+
+#workspaces button.special {
+    color: alpha(@tertiary_container, 0.5);
+    border-color: rgba(130, 180, 255, 0.12);
+}
+
+#clock {
+    color: @error_container;
+    letter-spacing: 0.04em;
+    border-top-color: rgba(255, 180, 160, 0.38);
+}
+
+#clock:hover {
+    text-shadow: 0 0 8px rgba(255, 180, 160, 0.4);
+}
+
+#memory {
+    color: @tertiary_container;
+    border-top-color: rgba(130, 180, 255, 0.32);
+}
+
+#memory.warning {
+    color: @tertiary;
+    border-top-color: rgba(200, 160, 80, 0.38);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 0 10px rgba(200, 160, 80, 0.2);
+}
+
+#memory.critical {
+    color: @error_container;
+    border-top-color: rgba(255, 120, 100, 0.52);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 0 14px rgba(255, 80, 60, 0.35),
+        0 0 28px rgba(255, 60, 40, 0.18);
+    animation: critical-glow 0.7s ease infinite;
+}
+
+#network {
+    color: alpha(@surface_tint, 0.38);
+}
+
+#network.wifi {
+    color: @surface_tint;
+}
+
+#network.ethernet {
+    color: @primary;
+    border-top-color: rgba(0, 200, 170, 0.28);
+}
+
+#network.linked {
+    color: alpha(@surface_tint, 0.58);
+}
+
+#network.disconnected {
+    color: alpha(@tertiary_fixed, 0.18);
+}
+
+#bluetooth {
+    color: alpha(@error_container, 0.45);
+    border-top-color: rgba(255, 160, 140, 0.16);
+}
+
+#bluetooth.connected {
+    color: @error_container;
+    border-top-color: rgba(255, 180, 160, 0.38);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 0 8px rgba(255, 180, 160, 0.15);
+}
+
+#bluetooth.pairable {
+    color: alpha(@error_container, 0.68);
+    border-top-color: rgba(255, 160, 140, 0.26);
+}
+
+#bluetooth.discoverable {
+    color: alpha(@tertiary_container, 0.68);
+}
+
+#bluetooth.off,
+#bluetooth.disabled {
+    color: alpha(@error_container, 0.22);
+}
+
+#pulseaudio {
+    color: @tertiary_container;
+    border-top-color: rgba(130, 180, 255, 0.28);
+}
+
+#pulseaudio.muted {
+    color: alpha(@tertiary_container, 0.4);
+    border-top-color: rgba(130, 180, 255, 0.12);
+}
+
+#pulseaudio\#microphone {
+    color: @tertiary_fixed;
+    border-top-color: rgba(180, 240, 210, 0.28);
+}
+
+#pulseaudio\#microphone.muted {
+    color: alpha(@tertiary_fixed, 0.4);
+    border-top-color: rgba(180, 240, 210, 0.12);
+}
+
+#backlight {
+    color: @primary_fixed;
+    border-top-color: rgba(255, 220, 196, 0.28);
+}
+
+#backlight:hover {
+    border-top-color: rgba(255, 240, 210, 0.44);
+}
+
+#battery {
+    color: @surface_tint;
+    border-top-color: rgba(255, 180, 160, 0.28);
+}
+
+#battery.good,
+#battery.full {
+    color: @primary;
+    border-top-color: rgba(0, 200, 170, 0.26);
+}
+
+#battery.discharging {
+    color: @surface_tint;
+}
+
+#battery.not-charging {
+    color: @tertiary;
+}
+
+#battery.warning {
+    color: @tertiary;
+    border-top-color: rgba(200, 160, 80, 0.38);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 0 10px rgba(200, 160, 80, 0.18);
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @primary;
+    border-top-color: rgba(0, 200, 170, 0.38);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 0 8px rgba(0, 200, 170, 0.15);
+}
+
+#battery.critical:not(.charging) {
+    color: @error_container;
+    border-top-color: rgba(255, 120, 100, 0.52);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 0 14px rgba(255, 80, 60, 0.4),
+        0 0 28px rgba(255, 60, 40, 0.2);
+    animation: critical-glow 0.7s ease infinite;
+}
+
+#idle_inhibitor {
+    color: @surface_tint;
+    border-top-color: rgba(255, 180, 160, 0.28);
+}
+
+#idle_inhibitor.activated {
+    color: @primary;
+    border-top-color: rgba(0, 200, 170, 0.38);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 0 8px rgba(0, 200, 170, 0.15);
+}
+
+#custom-updates {
+    color: @primary;
+    border-top-color: rgba(0, 200, 170, 0.32);
+}
+
+#custom-updates.outdated {
+    color: @tertiary;
+    border-top-color: rgba(200, 160, 80, 0.38);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 0 8px rgba(200, 160, 80, 0.15);
+}
+
+#mpris {
+    color: @secondary;
+    border-top-color: rgba(255, 237, 220, 0.28);
+}
+
+#mpris.paused {
+    opacity: 0.75;
+}
+
+#tray {
+    padding: 4px 10px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    color: @error_container;
 }
 
 tooltip {
-  background: #120507;
-  border: 1px solid #ff2a1a;
-  color: #f6d8d0;
+    background: rgba(2, 16, 14, 0.92);
+    border-radius: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
+    border-left: 3px solid @surface_tint;
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.22),
+        0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+tooltip > box {
+    padding: 0;
+}
+
+tooltip label {
+    padding: 10px 18px;
+    color: @on_surface;
+    letter-spacing: 0.02em;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+tooltip label:first-child {
+    padding-bottom: 4px;
+    color: @primary_container;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+tooltip calendar {
+    padding: 8px;
+    background: transparent;
+}
+
+tooltip calendar:selected {
+    background: rgba(255, 180, 160, 0.2);
+    border-radius: 8px;
+    color: @error_container;
+}
+
+tooltip calendar.header {
+    color: @surface_tint;
+    font-weight: 800;
 }
