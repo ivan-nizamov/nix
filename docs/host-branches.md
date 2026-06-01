@@ -4,17 +4,16 @@ This repository keeps deployable NixOS configurations in one branch per host:
 
 - `mainframe` is an archival backup branch, not a deploy target.
 - `thinkpad-driftwm` deploys `.#thinkpad-driftwm`.
-- `legion` deploys `.#legion`.
+- `legion` is an archival backup branch, not a deploy target.
 
 Use the host branch as the source of truth for that machine:
 
 ```bash
 git switch thinkpad-driftwm
 sudo nixos-rebuild switch --flake .#thinkpad-driftwm
-
-git switch legion
-sudo nixos-rebuild switch --flake .#legion
 ```
+
+`legion` is kept only as an archival snapshot.
 
 Shared modules still live in the same tree. When a shared change should apply to
 more than one machine, commit it on the first affected host branch, switch that
