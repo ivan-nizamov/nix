@@ -59,8 +59,8 @@ let
       level=$(${pkgs.brillo}/bin/brillo -G)
       percent=$(${pkgs.coreutils}/bin/printf '%.0f' "$level")
       ${pkgs.libnotify}/bin/notify-send \
-        -a ${name} \
-        -h string:x-canonical-private-synchronous:${name} \
+        -a brightness \
+        -h string:x-canonical-private-synchronous:brightness \
         -h int:value:"$percent" \
         'Brightness' "Brightness: $percent%" || true
       printf 'Brightness: %s%%\n' "$percent"
@@ -91,6 +91,7 @@ in
     brightnessDown
     brightnessUp
     pkgs.brillo
+    pkgs.brightnessctl
     screenshotRegion
     volumeDown
     volumeToggle
