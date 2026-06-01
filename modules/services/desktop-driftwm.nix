@@ -6,6 +6,7 @@
 }:
 let
   driftwmPackage = inputs.driftwm.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  heliumPackage = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.helium;
   driftwm = pkgs.symlinkJoin {
     name = "${driftwmPackage.name}-nixos-session";
     paths = [ driftwmPackage ];
@@ -24,8 +25,17 @@ let
         --replace-fail 'Exec=driftwm-session' "Exec=$out/bin/driftwm-session"
     '';
   };
-  telegramDesktop =
-    inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
+  heliumLauncher = pkgs.writeShellScriptBin "helium" ''
+    set -euo pipefail
+
+    profile_dir="$HOME/.config/net.imput.helium"
+    if ! pgrep -x helium >/dev/null 2>&1; then
+      rm -f "$profile_dir/SingletonLock" "$profile_dir/SingletonSocket" "$profile_dir/SingletonCookie"
+    fi
+
+    exec ${lib.getExe heliumPackage} "$@"
+  '';
+  telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   batteryConservationPath = "/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode";
   batteryConservationRootToggle = pkgs.writeShellScriptBin "thinkpad-battery-conservation-root-toggle" ''
@@ -93,6 +103,8 @@ in
     batteryConservationRootToggle
     batteryConservationToggle
     driftwm
+    heliumLauncher
+    heliumPackage
     libnotify
     mpv
     nil
@@ -100,7 +112,6 @@ in
     orca-slicer
     telegramDesktop
     vial
-    helium
     zedEditor
     fuzzel
     gtk3
@@ -131,6 +142,14 @@ in
   };
 
   systemd.services.systemd-logind.reloadIfChanged = true;
+
+  system.activationScripts.heliumSingletonCleanup.text = ''
+    if ! pgrep -x helium >/dev/null 2>&1; then
+      rm -f /home/iva/.config/net.imput.helium/SingletonLock
+      rm -f /home/iva/.config/net.imput.helium/SingletonSocket
+      rm -f /home/iva/.config/net.imput.helium/SingletonCookie
+    fi
+  '';
 
   systemd.tmpfiles.rules = [
     "d /home/iva/.config/zed 0755 iva users - -"
