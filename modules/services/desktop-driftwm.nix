@@ -97,6 +97,7 @@ in
     helium
     zedEditor
     fuzzel
+    gtk3
     wlrctl
     waybar
     swaylock
