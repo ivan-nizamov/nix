@@ -10,6 +10,7 @@
     ./modules/core/nix-settings.nix
     ./modules/core/shell.nix
     ./modules/programs/desktop-apps.nix
+    ./modules/programs/telegram.nix
     ./modules/programs/file-manager.nix
     ./modules/programs/llm-agents.nix
     ./modules/programs/obsidian.nix
