@@ -53,8 +53,13 @@ let
 
       ${pkgs.brillo}/bin/brillo ${action}
       level=$(${pkgs.brillo}/bin/brillo -G)
-      ${notify name "'Brightness'" "\"Brightness: $level%\""}
-      printf 'Brightness: %s%%\n' "$level"
+      percent=$(${pkgs.coreutils}/bin/printf '%.0f' "$level")
+      ${pkgs.libnotify}/bin/notify-send \
+        -a ${name} \
+        -h string:x-canonical-private-synchronous:${name} \
+        -h int:value:"$percent" \
+        'Brightness' "Brightness: $percent%" || true
+      printf 'Brightness: %s%%\n' "$percent"
     '';
 
   brightnessUp = brightnessCommand "brightness-up" "-A 5";
