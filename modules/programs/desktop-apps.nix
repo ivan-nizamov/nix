@@ -3,9 +3,10 @@ let
   terminalphone = pkgs.callPackage ../../pkgs/terminalphone { };
 in
 {
-  environment.systemPackages = [
-    pkgs.ghostty
-    pkgs.helium
+  environment.systemPackages = with pkgs; [
+    ghostty
+    kitty
+    helium
     terminalphone
   ];
 }
