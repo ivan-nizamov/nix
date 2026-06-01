@@ -2,12 +2,21 @@
 
 set -eu
 
-XDG_DATA_DIRS="${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+XDG_DATA_DIRS="${XDG_DATA_DIRS:-/run/current-system/sw/share:/usr/local/share:/usr/share}"
+
+desktop_dir() {
+    case "$1" in
+        */applications) printf '%s\n' "$1" ;;
+        *) printf '%s/applications\n' "$1" ;;
+    esac
+}
 
 lookup_desktop() {
     id="$1"
 
     for dir in "$HOME/.local/share/applications" $(printf '%s' "$XDG_DATA_DIRS" | tr ':' ' '); do
+        dir=$(desktop_dir "$dir")
+        [ -d "$dir" ] || continue
         for f in "$dir/$id.desktop" "$dir"/*"$id"*.desktop; do
             [ -f "$f" ] || continue
             name=$(grep -m1 '^Name=' "$f" | cut -d= -f2-)
@@ -19,6 +28,7 @@ lookup_desktop() {
     done
 
     for dir in "$HOME/.local/share/applications" $(printf '%s' "$XDG_DATA_DIRS" | tr ':' ' '); do
+        dir=$(desktop_dir "$dir")
         [ -d "$dir" ] || continue
         f=$(grep -rl "^StartupWMClass=$id$" "$dir"/*.desktop 2>/dev/null | head -1)
         if [ -n "$f" ]; then
@@ -55,6 +65,7 @@ append_launcher() {
 }
 
 for dir in "$HOME/.local/share/applications" $(printf '%s' "$XDG_DATA_DIRS" | tr ':' ' '); do
+    dir=$(desktop_dir "$dir")
     [ -d "$dir" ] || continue
     for f in "$dir"/*.desktop; do
         [ -f "$f" ] || continue
