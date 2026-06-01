@@ -1,4 +1,9 @@
-{ inputs, lib, pkgs, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 let
   driftwmPackage = inputs.driftwm.packages.${pkgs.stdenv.hostPlatform.system}.default;
   driftwm = pkgs.symlinkJoin {
@@ -19,7 +24,8 @@ let
         --replace-fail 'Exec=driftwm-session' "Exec=$out/bin/driftwm-session"
     '';
   };
-  telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
+  telegramDesktop =
+    inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   batteryConservationPath = "/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode";
   batteryConservationRootToggle = pkgs.writeShellScriptBin "thinkpad-battery-conservation-root-toggle" ''
@@ -99,7 +105,6 @@ in
     fuzzel
     gtk3
     wlrctl
-    waybar
     swaylock
     swayidle
     grim

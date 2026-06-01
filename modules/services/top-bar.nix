@@ -3,7 +3,6 @@
   environment.systemPackages = with pkgs; [
     networkmanagerapplet
     pavucontrol
-    waybar
   ];
 
   programs.waybar = {
