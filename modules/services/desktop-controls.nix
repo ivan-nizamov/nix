@@ -1,9 +1,13 @@
 { pkgs, ... }:
 let
   sessionEnv = ''
+    export HOME="''${HOME:-/home/iva}"
+    export XDG_CACHE_HOME="''${XDG_CACHE_HOME:-$HOME/.cache}"
     user_id=$(${pkgs.coreutils}/bin/id -u)
     export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$user_id}"
     export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+
+    ${pkgs.coreutils}/bin/mkdir -p "$XDG_CACHE_HOME"
 
     if [ -z "''${WAYLAND_DISPLAY:-}" ]; then
       for socket in "$XDG_RUNTIME_DIR"/wayland-*; do
