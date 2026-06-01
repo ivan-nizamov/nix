@@ -35,8 +35,32 @@ lookup_desktop() {
 
 display=$(mktemp)
 lookup=$(mktemp)
-seen_apps=$(mktemp)
-trap 'rm -f "$display" "$lookup" "$seen_apps"' EXIT
+seen_desktops=$(mktemp)
+trap 'rm -f "$display" "$lookup" "$seen_desktops"' EXIT
+
+append_launcher() {
+    f="$1"
+    desktop_id=${f##*/}
+    desktop_id=${desktop_id%.desktop}
+
+    grep -Fxq "$desktop_id" "$seen_desktops" 2>/dev/null && return
+
+    name=$(grep -m1 '^Name=' "$f" | cut -d= -f2-)
+    icon=$(grep -m1 '^Icon=' "$f" | cut -d= -f2-)
+    [ -n "$name" ] || return
+
+    printf '%s  [new]\0icon\x1f%s\n' "$name" "${icon:-$desktop_id}" >> "$display"
+    printf 'launch\t%s\n' "$desktop_id" >> "$lookup"
+    printf '%s\n' "$desktop_id" >> "$seen_desktops"
+}
+
+for dir in "$HOME/.local/share/applications" $(printf '%s' "$XDG_DATA_DIRS" | tr ':' ' '); do
+    [ -d "$dir" ] || continue
+    for f in "$dir"/*.desktop; do
+        [ -f "$f" ] || continue
+        append_launcher "$f"
+    done
+done
 
 wlrctl toplevel list | while IFS= read -r line; do
     app_id="${line%%: *}"
@@ -45,18 +69,9 @@ wlrctl toplevel list | while IFS= read -r line; do
     app_name="${desktop%%	*}"
     rest="${desktop#*	}"
     icon="${rest%%	*}"
-    desktop_id="${rest#*	}"
-
-    if ! grep -Fxq "$app_id" "$seen_apps"; then
-        if [ "$desktop_id" != "$app_id" ]; then
-            printf '%s  [new]\0icon\x1f%s\n' "$app_name" "$icon" >> "$display"
-            printf 'launch\t%s\t%s\n' "$desktop_id" "$app_name" >> "$lookup"
-        fi
-        printf '%s\n' "$app_id" >> "$seen_apps"
-    fi
 
     printf '%s  %s\0icon\x1f%s\n' "$title" "$app_name" "$icon" >> "$display"
-    printf '%s\t%s\n' "$app_id" "$title" >> "$lookup"
+    printf 'window\t%s\t%s\n' "$app_id" "$title" >> "$lookup"
 done
 
 [ -s "$display" ] || exit 0
@@ -78,9 +93,12 @@ case "$sel_kind" in
         sel_desktop_id=$(printf '%s' "$match" | cut -f2)
         exec gtk-launch "$sel_desktop_id"
         ;;
-    *)
-        sel_app_id=$(printf '%s' "$match" | cut -f1)
-        sel_title=$(printf '%s' "$match" | cut -f2)
+    window)
+        sel_app_id=$(printf '%s' "$match" | cut -f2)
+        sel_title=$(printf '%s' "$match" | cut -f3)
         exec wlrctl toplevel focus "app_id:$sel_app_id" "title:$sel_title"
+        ;;
+    *)
+        exit 0
         ;;
 esac

@@ -25,7 +25,7 @@ accel_speed = -0.176
 [keybindings]
 "mod+return" = "exec kitty"
 "mod+space" = "spawn sh ~/.config/driftwm/scripts/window-search.sh"
-"mod+d" = "exec fuzzel"
+"mod+d" = "none"
 "mod+s" = "none"
 "mod+l" = "spawn sh ~/.config/driftwm/scripts/lock.sh"
 "mod+u" = "spawn mic-unmute"

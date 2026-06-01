@@ -19,7 +19,6 @@ window#waybar {
   margin: 0 8px;
 }
 
-#custom-launcher,
 #custom-screenshot,
 #custom-lock,
 #network,
@@ -38,7 +37,6 @@ window#waybar {
   padding: 4px 10px;
 }
 
-#custom-launcher,
 #custom-lock {
   background: #3a090b;
   color: #fff1e8;

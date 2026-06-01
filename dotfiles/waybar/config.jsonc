@@ -10,7 +10,6 @@
   "margin-right": 0,
 
   "modules-left": [
-    "custom/launcher",
     "network",
     "bluetooth",
     "tray"
@@ -26,12 +25,6 @@
     "battery",
     "custom/lock"
   ],
-
-  "custom/launcher": {
-    "format": "APPS",
-    "tooltip": false,
-    "on-click": "fuzzel"
-  },
 
   "custom/screenshot": {
     "format": "SHOT",
