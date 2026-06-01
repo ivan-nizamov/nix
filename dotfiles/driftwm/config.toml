@@ -1,0 +1,108 @@
+# driftwm configuration for thinkpad
+
+autostart = [
+  "swayidle -w timeout 600 'sh ~/.config/driftwm/scripts/lock.sh' before-sleep 'sh ~/.config/driftwm/scripts/lock.sh'",
+]
+focus_follows_mouse = true
+window_placement = "auto"
+
+# ── Input ─────────────────────────────────────────────────────
+
+[input.keyboard]
+layout = "us,ro"
+
+[input.trackpad]
+tap_to_click = true
+natural_scroll = true
+
+[input.mouse]
+accel_profile = "flat"
+natural_scroll = true
+accel_speed = -0.176
+
+# ── Keybindings ───────────────────────────────────────────────
+
+[keybindings]
+"mod+return" = "exec kitty"
+"mod+space" = "exec fuzzel"
+"mod+s" = "spawn sh ~/.config/driftwm/scripts/window-search.sh"
+"mod+l" = "spawn sh ~/.config/driftwm/scripts/lock.sh"
+"mod+u" = "spawn mic-unmute"
+"XF86AudioMicMute" = "spawn mic-toggle"
+"mod+shift+c" = "reload-config"
+"mod+q" = "close-window"
+"mod+f" = "toggle-fullscreen"
+"mod+m" = "fit-window"
+"mod+shift+m" = "fit-window-snapped"
+"mod+w" = "zoom-to-fit"
+"mod+shift+w" = "zoom-to-fit-snapped"
+"mod+a" = "home-toggle"
+"mod+c" = "focus-center"
+"mod+z" = "zoom-reset"
+"mod+0" = "zoom-reset"
+"mod+=" = "zoom-in"
+"mod+-" = "zoom-out"
+"mod+ctrl+shift+q" = "quit"
+"mod+1" = "go-to -1750 1750"
+"mod+2" = "go-to 1750 1750"
+"mod+3" = "go-to 1750 -1750"
+"mod+4" = "go-to -1750 -1750"
+
+# ── Focus ─────────────────────────────────────────────────────
+
+# focus_follows_mouse and window_placement are set at top-level above.
+
+# ── Snap ──────────────────────────────────────────────────────
+
+[snap]
+enabled = true
+
+# ── Background ────────────────────────────────────────────────
+
+[background]
+type = "shader"
+# path = "~/.config/driftwm/shaders/animated/nge.glsl"
+# Quick picks (wallpaper shaders):
+path = "~/.config/driftwm/shaders/dot_grid.glsl"
+# path = "~/.config/driftwm/shaders/static/blue_drift.glsl"
+# path = "~/.config/driftwm/shaders/static/compass_grid.glsl"
+# path = "~/.config/driftwm/shaders/static/dark_sea.glsl"
+# path = "~/.config/driftwm/shaders/static/pink_cloud.glsl"
+# path = "~/.config/driftwm/shaders/animated/acid_lava.glsl"
+# path = "~/.config/driftwm/shaders/animated/dense_clouds.glsl"
+# path = "~/.config/driftwm/shaders/animated/fast_smoke.glsl"
+# Internal shaders (some are not background wallpapers and may fail):
+# path = "~/.config/driftwm/shaders/internal/blur_down.glsl"
+# path = "~/.config/driftwm/shaders/internal/blur_mask.glsl"
+# path = "~/.config/driftwm/shaders/internal/blur_up.glsl"
+# path = "~/.config/driftwm/shaders/internal/border.glsl"
+# path = "~/.config/driftwm/shaders/internal/corner_clip.glsl"
+# path = "~/.config/driftwm/shaders/internal/dot_grid.glsl"
+# path = "~/.config/driftwm/shaders/internal/shadow.glsl"
+# path = "~/.config/driftwm/shaders/internal/tile_bg.glsl"
+# path = "~/.config/driftwm/shaders/internal/wallpaper_bg.glsl"
+# Or: type = "tile",      path = "~/Pictures/tile.png"
+# Or: type = "wallpaper", path = "~/Pictures/wallpaper.jpg"
+
+# ── Decorations ───────────────────────────────────────────────
+
+[decorations]
+font = "Adwaita Sans"
+font_size = 11
+
+# ── Cursor ────────────────────────────────────────────────────
+
+[cursor]
+theme = "macOS"
+size = 30
+
+# ── Window placement ──────────────────────────────────────────
+
+# window_placement = "center"
+
+# ── Window rules ──────────────────────────────────────────────
+
+[[window_rules]]
+app_id = "Alacritty"
+opacity = 0.50
+blur = true
