@@ -17,8 +17,13 @@ in
   boot.loader.grub.enable = true;
 
   networking.hostName = "mainframe";
-  networking.useDHCP = true;
+  networking.useDHCP = false;
   networking.networkmanager.enable = lib.mkForce false;
+
+  services.cloud-init = {
+    enable = true;
+    network.enable = true;
+  };
 
   users.users.root.openssh.authorizedKeys.keys = authorizedKeys;
   users.users.iva.openssh.authorizedKeys.keys = authorizedKeys;
