@@ -12,6 +12,12 @@ in
     ../../modules/core/locale.nix
     ../../modules/core/memory.nix
     ../../modules/core/nix-settings.nix
+    ../../modules/core/shell.nix
+    ../../modules/programs/llm-agents.nix
+    ../../modules/services/failure-reporting.nix
+    ../../modules/services/openclaw-embeddings.nix
+    ../../modules/services/openclaw-gateway.nix
+    ../../modules/services/syncthing.nix
     ../../modules/users/iva.nix
   ];
 
@@ -44,7 +50,7 @@ in
   services.openssh.enable = true;
   services.openssh.openFirewall = false;
   services.openssh.settings = {
-    PermitRootLogin = "prohibit-password";
+    PermitRootLogin = "no";
     PasswordAuthentication = false;
     KbdInteractiveAuthentication = false;
   };
@@ -56,27 +62,43 @@ in
 
   services.qemuGuest.enable = true;
 
+  local.rebuild.flakeTarget = "mainframe";
+  local.openclaw.embeddings = {
+    device = "cpu";
+    environment = {
+      INFINITY_BETTERTRANSFORMER = "false";
+      OMP_NUM_THREADS = "4";
+    };
+  };
+
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
   environment.systemPackages = with pkgs; [
     curl
+    fd
     git
     htop
+    jq
+    lsof
     tmux
+    tree
+    unzip
     vim
     wget
   ];
 
+  users.mutableUsers = false;
+
   users.users.iva = {
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = authorizedKeys;
-    initialPassword = "nixos";
+    hashedPassword = "!";
   };
 
   users.users.root = {
     openssh.authorizedKeys.keys = authorizedKeys;
-    initialPassword = "nixos";
+    hashedPassword = "!";
   };
 
   security.sudo.wheelNeedsPassword = false;
