@@ -46,6 +46,10 @@ in
       interactiveShellInit = ''
         mkdir -p "$HOME/.gemini"
 
+        if [ -d /home/iva/nix ]; then
+          ${pkgs.zoxide}/bin/zoxide add /home/iva/nix >/dev/null 2>&1 || true
+        fi
+
         eval "$(${pkgs.pay-respects}/bin/pay-respects zsh --alias f)"
 
         zstyle ':completion:*' menu select
@@ -104,6 +108,7 @@ in
 
     systemd.tmpfiles.rules = [
       "f /home/iva/.zshrc 0644 iva users - -"
+      "d /home/iva/nix 0755 iva users - -"
     ];
   };
 }

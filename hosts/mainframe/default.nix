@@ -73,6 +73,7 @@ in
 
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
+  environment.enableAllTerminfo = true;
 
   environment.systemPackages = with pkgs; [
     curl
