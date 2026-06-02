@@ -2,13 +2,13 @@
 {
   fonts.packages = [
     pkgs.inter
-    pkgs.inter-nerdfont
+    pkgs.nerd-fonts.fira-code
     pkgs.nerd-fonts.symbols-only
   ];
 
   fonts.fontconfig.defaultFonts = {
-    sansSerif = [ "Inter Nerd Font" ];
-    serif = [ "Inter Nerd Font" ];
-    monospace = [ "Inter Nerd Font" ];
+    sansSerif = [ "Inter" ];
+    serif = [ "Inter" ];
+    monospace = [ "FiraCode Nerd Font" ];
   };
 }
