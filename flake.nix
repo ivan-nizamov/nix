@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for thinkpad-driftwm";
+  description = "NixOS configurations";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -11,9 +11,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     driftwm.url = "github:malbiruk/driftwm";
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, ... }:
+  outputs = inputs@{ self, nixpkgs, disko, ... }:
     {
       nixosConfigurations.thinkpad-driftwm = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -29,5 +33,15 @@
         ];
       };
 
+      nixosConfigurations.mainframe = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit inputs self;
+        };
+        modules = [
+          disko.nixosModules.disko
+          ./hosts/mainframe
+        ];
+      };
     };
 }
