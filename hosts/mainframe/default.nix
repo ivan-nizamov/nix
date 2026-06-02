@@ -19,10 +19,25 @@ in
   networking.hostName = "mainframe";
   networking.useDHCP = false;
   networking.networkmanager.enable = lib.mkForce false;
+  networking.useNetworkd = true;
 
-  services.cloud-init = {
-    enable = true;
-    network.enable = true;
+  systemd.network.enable = true;
+  systemd.network.networks."10-mainframe" = {
+    matchConfig.MACAddress = "16:cb:8c:2a:9f:a7";
+    networkConfig = {
+      DHCP = "yes";
+      IPv6AcceptRA = true;
+      LLDP = true;
+      MulticastDNS = true;
+    };
+    address = [
+      "193.24.210.153/24"
+      "2a00:1911:1:5218:893c:cd0e:47b1:c0c5/48"
+    ];
+    routes = [
+      { Gateway = "193.24.210.1"; }
+      { Gateway = "2a00:1911:1::1"; }
+    ];
   };
 
   services.openssh.enable = true;
