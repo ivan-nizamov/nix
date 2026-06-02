@@ -55,9 +55,13 @@ in
   users.users.iva = {
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = authorizedKeys;
+    initialPassword = "nixos";
   };
 
-  users.users.root.openssh.authorizedKeys.keys = authorizedKeys;
+  users.users.root = {
+    openssh.authorizedKeys.keys = authorizedKeys;
+    initialPassword = "nixos";
+  };
 
   security.sudo.wheelNeedsPassword = false;
 
