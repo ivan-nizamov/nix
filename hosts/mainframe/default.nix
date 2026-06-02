@@ -1,115 +1,59 @@
 { lib, pkgs, ... }:
+let
+  authorizedKeys = [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC6c02OUO91PVjekgVQwrdthUCJAo4ARfH1Nr5ktRcoG9j4dNEw6NUJiwbPr6VpMDNgAn4MVdVnR6U+lV25nM25Dd2tV/fnb0NXhMexp/pAEsGgY+4LEVOgL+DFWPD5mtjRtFrDtlLlUYnZyByLVh9h/ISH+neNN53X1qSa7W6yt++g3CUg7wjrWVuGIUiN5lYj+5VdEdJT31Vmyu6avzmQmjK04zmHACo7sUPsgVh6KXC9nE14Kx0cVJ0zzxeBG6YJZrXXjTwHGKpxu6IK5tdkImM+qnq+yCFFVfRgwt7IcxRDxfXs1sMaCGOi/4doP5zB109Scf6Ax9n8zGROc7MwJe7Ab29Yih1OOvgkb40G7WjoR3gfO6pIL01ZxkfEGsrdkD6RntD5P3XYfE4nvHOq9P3phI7mUvpT/xieo/6oF7b1qAbXw1zobr9+c7w0j8/CXiDYrEKbOGv4ASzffk72i/4VyAC5rlZ8Ay0yrudt0uZ7O4q6OPJyv3uKHXXX6i39EmTwd+rk32f5/kDCwcwn+tpp2n9e+um+q496Sc4BA5Eo7ndlSN4smVQUn/uRL3JdfTVKua83U3X9503dOhOHhlSja5eJr/qrDiApLH20cK84JcnZSaizXrdHAFFL45vbBtrG52BELB5Cp/kkdD0H3c8fpqQlWXW8AMZFfdl5zQ=="
+  ];
+in
 {
   imports = [
+    ./disko.nix
     ./hardware-configuration.nix
     ../../modules/core/locale.nix
     ../../modules/core/memory.nix
-    ../../modules/core/networking.nix
     ../../modules/core/nix-settings.nix
-    ../../modules/core/shell.nix
-    ../../modules/programs/llm-agents.nix
-    ../../modules/services/openclaw-embeddings.nix
-    ../../modules/services/openclaw-gateway.nix
-    ../../modules/services/failure-reporting.nix
-    ../../modules/services/nextcloud.nix
-    ../../modules/services/syncthing.nix
     ../../modules/users/iva.nix
   ];
 
   boot.loader.grub.enable = true;
 
-  local.rebuild.flakeTarget = "mainframe";
-
   networking.hostName = "mainframe";
-  networking.nameservers = [
-    "2a01:4f9:c010:3f02::1"
-    "2a01:4f8:c2c:123f::1"
-    "2a00:1098:2c::1"
-  ];
-  networking.defaultGateway6 = {
-    address = "2a0c:4ac1:4::1";
-    interface = "eth0";
-  };
-  networking.dhcpcd.enable = false;
+  networking.useDHCP = true;
   networking.networkmanager.enable = lib.mkForce false;
-  networking.usePredictableInterfaceNames = lib.mkForce false;
-  networking.interfaces.eth0 = {
-    ipv4.addresses = [ ];
-    ipv6.addresses = [
-      {
-        address = "2a0c:4ac1:4:1f3::a";
-        prefixLength = 64;
-      }
-      {
-        address = "fe80::2f9:65ff:feb5:c9e7";
-        prefixLength = 64;
-      }
-    ];
-    ipv6.routes = [
-      {
-        address = "2a0c:4ac1:4::1";
-        prefixLength = 128;
-      }
-    ];
-  };
 
-  users.users.iva.openssh.authorizedKeys.keys = [
-    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDoWmG5X2/Fd6aP4J0DhGBrc1okvWE9p/34HYY7+DBg1G5ozSbBVTC0AHf/Vj0ZCWGNiz7ba2m0bKkjdsmlHfeGGukiVyMy/2fK711PNKDxMhzpqvmcz9VQcgIZNuCITJu/VAYAPcr9btb1Ru7EkXt9GOv+EMnY/hJn7/NX6pH73ALotlviAPh9qYGVh3AgMpxiGudeOJoslFi5rcxhLXNxJllHeaq5XWot14iWC7eURC8HyPsxstDjY7ECdyncofFvBnPyEretfz9r1PTDFOj0ab2TgTU4acD8In8LqnQHp2H2ezKJew8DKGYO8OoeeJzZC8BENE0J13lKMcHJyFrt"
-  ];
-
-  services.tailscale.extraSetFlags = lib.mkAfter [ "--accept-dns=false" ];
+  users.users.root.openssh.authorizedKeys.keys = authorizedKeys;
+  users.users.iva.openssh.authorizedKeys.keys = authorizedKeys;
 
   services.openssh.enable = true;
   services.openssh.openFirewall = false;
   services.openssh.settings = {
-    PermitRootLogin = "no";
+    PermitRootLogin = "prohibit-password";
     PasswordAuthentication = false;
     KbdInteractiveAuthentication = false;
   };
+
   networking.firewall = {
-    allowedTCPPorts = [ ];
-    trustedInterfaces = [ "tailscale0" ];
+    enable = true;
+    allowedTCPPorts = [
+      22
+      80
+      443
+    ];
+    allowedUDPPorts = [ ];
   };
 
   services.qemuGuest.enable = true;
 
-  services.syncthing.settings = {
-    devices.thinkpad = {
-      id = "6HKQA6G-7EBXXRK-3WEA6FG-O72ECBN-SZ2SF65-AZXAHPY-TOEC5JJ-XG77LAI";
-    };
-    folders."openclaw-workspace".devices = lib.mkAfter [ "thinkpad" ];
-  };
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
 
-  local.openclaw.embeddings = {
-    modelId = "BAAI/bge-small-en-v1.5";
-    modelRevision = "b49342cba6a5914c1760cd4aae1d75a6f2e8fc4c";
-    device = "cpu";
-    batchSize = 2;
-    environment = {
-      INFINITY_BETTERTRANSFORMER = "false";
-      OMP_NUM_THREADS = "2";
-      MKL_NUM_THREADS = "2";
-    };
-  };
-
-  systemd.services.qemu-guest-agent = {
-    path = [
-      pkgs.shadow
-      pkgs.bashInteractive
-      pkgs.coreutils
-    ];
-    wantedBy = [ "multi-user.target" ];
-  };
-  systemd.tmpfiles.rules = [
-    "d /usr/sbin 0755 root root - -"
-    "L+ /bin/bash - - - - /run/current-system/sw/bin/bash"
-    "L+ /usr/bin/passwd - - - - /run/wrappers/bin/passwd"
-    "L+ /usr/bin/chpasswd - - - - /run/current-system/sw/bin/chpasswd"
-    "L+ /usr/sbin/chpasswd - - - - /run/current-system/sw/bin/chpasswd"
+  environment.systemPackages = with pkgs; [
+    curl
+    git
+    htop
+    tmux
+    vim
+    wget
   ];
-  services.udev.extraRules = ''
-    ATTR{address}=="00:f9:65:b5:c9:e7", NAME="eth0"
-  '';
 
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 }

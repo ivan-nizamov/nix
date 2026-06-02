@@ -1,15 +1,16 @@
 { lib, modulesPath, ... }:
 {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
-  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
-  boot.initrd.kernelModules = [ "nvme" ];
+  boot.initrd.availableKernelModules = [
+    "ata_piix"
+    "uhci_hcd"
+    "virtio_pci"
+    "virtio_scsi"
+    "virtio_blk"
+    "sd_mod"
+  ];
+  boot.initrd.kernelModules = [ ];
   boot.extraModulePackages = [ ];
-  boot.loader.grub.device = "/dev/sda";
-
-  fileSystems."/" = {
-    device = "/dev/sda3";
-    fsType = "xfs";
-  };
 
   swapDevices = [ ];
 
