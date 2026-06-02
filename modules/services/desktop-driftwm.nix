@@ -35,7 +35,25 @@ let
 
     exec ${lib.getExe heliumPackage} "$@"
   '';
-  telegramDesktop = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
+  telegramDesktopUnwrapped = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.telegram-desktop;
+  telegramDesktop = pkgs.symlinkJoin {
+    name = "${telegramDesktopUnwrapped.name}-xwayland";
+    paths = [ telegramDesktopUnwrapped ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram "$out/bin/Telegram" \
+        --set QT_QPA_PLATFORM xcb
+
+      desktop_file="$out/share/applications/org.telegram.desktop.desktop"
+      rm "$desktop_file"
+      install -Dm0644 ${telegramDesktopUnwrapped}/share/applications/org.telegram.desktop.desktop "$desktop_file"
+      substituteInPlace "$desktop_file" \
+        --replace-fail 'TryExec=Telegram' "TryExec=$out/bin/Telegram" \
+        --replace-fail 'Exec=Telegram -- %U' "Exec=$out/bin/Telegram -- %U" \
+        --replace-fail 'Exec=Telegram -quit' "Exec=$out/bin/Telegram -quit" \
+        --replace-fail 'DBusActivatable=true' 'DBusActivatable=false'
+    '';
+  };
   zedEditor = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zed-editor;
   batteryConservationPath = "/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode";
   batteryConservationRootToggle = pkgs.writeShellScriptBin "thinkpad-battery-conservation-root-toggle" ''
@@ -170,10 +188,23 @@ in
 
   xdg.portal = {
     enable = true;
+    wlr.enable = true;
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-wlr
     ];
-    config.common.default = "*";
+    config.common.default = "wlr";
   };
+
+  nixpkgs.overlays = [
+    (final: prev: {
+      xdg-desktop-portal-wlr = prev.xdg-desktop-portal-wlr.overrideAttrs (old: {
+        nativeBuildInputs = old.nativeBuildInputs ++ [ prev.makeWrapper ];
+        postInstall = ''
+          ${old.postInstall or ""}
+          wrapProgram $out/libexec/xdg-desktop-portal-wlr \
+            --prefix PATH : ${prev.lib.makeBinPath [ prev.slurp ]}
+        '';
+      });
+    })
+  ];
 }
