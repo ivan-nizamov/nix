@@ -5,6 +5,7 @@ let
   user = "iva";
   userHome = "/home/iva";
   stateDir = "${userHome}/.openclaw";
+  configPath = "${stateDir}/gateway.json";
   enableTelegram = false;
   llmAgentsPkgs = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
   baseOpenclaw = llmAgentsPkgs.openclaw;
@@ -386,6 +387,7 @@ lib.mkIf openclawEnabled {
   system.activationScripts.openclawGatewayStateDir = ''
     ${pkgs.coreutils}/bin/install -d -o ${user} -g users -m 0755 ${stateDir}
     ${pkgs.coreutils}/bin/install -d -o ${user} -g users -m 0755 ${stateDir}/agents
+    ${pkgs.coreutils}/bin/install -o ${user} -g users -m 0644 ${configFile} ${configPath}
     ${pkgs.coreutils}/bin/chown -R ${user}:users ${stateDir}
   '';
 
@@ -429,7 +431,7 @@ lib.mkIf openclawEnabled {
         "OPENCLAW_TELEGRAM_ENABLE_AUTO_SELECT_FAMILY=1"
         "OPENCLAW_TELEGRAM_DNS_RESULT_ORDER=verbatim"
         "OPENCLAW_STATE_DIR=${stateDir}"
-        "OPENCLAW_CONFIG_PATH=${configFile}"
+        "OPENCLAW_CONFIG_PATH=${configPath}"
         "OPENCLAW_GATEWAY_PORT=18789"
         "OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service"
         "OPENCLAW_SERVICE_MARKER=openclaw"
