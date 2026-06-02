@@ -18,7 +18,12 @@ in
 
   networking.hostName = "mainframe";
   networking.useDHCP = false;
-  networking.networkmanager.enable = true;
+  networking.networkmanager.enable = lib.mkForce false;
+
+  services.cloud-init = {
+    enable = true;
+    network.enable = true;
+  };
 
   services.openssh.enable = true;
   services.openssh.openFirewall = false;
