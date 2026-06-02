@@ -16,6 +16,10 @@
               content = {
                 type = "filesystem";
                 format = "ext4";
+                extraArgs = [
+                  "-E"
+                  "nodiscard"
+                ];
                 mountpoint = "/";
               };
             };
@@ -34,6 +38,10 @@
               content = {
                 type = "filesystem";
                 format = "ext4";
+                extraArgs = [
+                  "-E"
+                  "nodiscard"
+                ];
                 mountpoint = "/var/lib/nextcloud";
                 mountOptions = [
                   "defaults"
