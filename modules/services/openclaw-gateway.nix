@@ -383,6 +383,12 @@ lib.mkIf openclawEnabled {
     "r ${userHome}/.config/systemd/user/default.target.wants/openclaw-gateway.service"
   ];
 
+  system.activationScripts.openclawGatewayStateDir = ''
+    ${pkgs.coreutils}/bin/install -d -o ${user} -g users -m 0755 ${stateDir}
+    ${pkgs.coreutils}/bin/install -d -o ${user} -g users -m 0755 ${stateDir}/agents
+    ${pkgs.coreutils}/bin/chown -R ${user}:users ${stateDir}
+  '';
+
   systemd.services.openclaw-gateway = {
     description = "OpenClaw Gateway";
     after = [
