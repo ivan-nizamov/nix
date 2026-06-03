@@ -88,7 +88,7 @@ done
 [ -s "$display" ] || exit 0
 
 selected=$(fuzzel --dmenu \
-    --prompt="Window/App: " \
+    --prompt="> " \
     --no-run-if-empty \
     --index \
     < "$display")

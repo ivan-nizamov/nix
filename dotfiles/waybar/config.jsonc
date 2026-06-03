@@ -1,108 +1,236 @@
+//############################################################################################################
+//##   ______  __      __  _______   ________  _______    ______   __    __   ______   __    __  ________   ##
+//##  /      \|  \    /  \|       \ |        \|       \  /      \ |  \  |  \ /      \ |  \  /  \|        \  ##
+//## |  $$$$$$\\$$\  /  $$| $$$$$$$\| $$$$$$$$| $$$$$$$\|  $$$$$$\| $$\ | $$|  $$$$$$\| $$ /  $$| $$$$$$$$  ##
+//## | $$   \$$ \$$\/  $$ | $$__/ $$| $$__    | $$__| $$| $$___\$$| $$$\| $$| $$__| $$| $$/  $$ | $$__      ##
+//## | $$        \$$  $$  | $$    $$| $$  \   | $$    $$ \$$    \ | $$$$\ $$| $$    $$| $$  $$  | $$  \     ##
+//## | $$   __    \$$$$   | $$$$$$$\| $$$$$   | $$$$$$$\ _\$$$$$$\| $$\$$ $$| $$$$$$$$| $$$$$\  | $$$$$     ##
+//## | $$__/  \   | $$    | $$__/ $$| $$_____ | $$  | $$|  \__| $$| $$ \$$$$| $$  | $$| $$ \$$\ | $$_____   ##
+//##  \$$    $$   | $$    | $$    $$| $$     \| $$  | $$ \$$    $$| $$  \$$$| $$  | $$| $$  \$$\| $$     \  ##
+//##   \$$$$$$     \$$     \$$$$$$$  \$$$$$$$$ \$$   \$$  \$$$$$$  \$$   \$$ \$$   \$$ \$$   \$$ \$$$$$$$$  ##
+//##                                                                                                        ##
+//## Waybar Config                                                                                          ##
+//## Created by Cybersnake                                                                                  ##
+//############################################################################################################
+
 {
   "layer": "top",
   "position": "top",
-  "mode": "dock",
-  "exclusive": true,
-  "height": 34,
-  "spacing": 8,
+  "height": 38,
   "margin-top": 0,
-  "margin-left": 0,
-  "margin-right": 0,
+  "margin-left": 5,
+  "margin-right": 5,
+  "spacing": 2,
+  "ipc": true,
+  "reload_style_on_change": true,
+  "gtk-layer-shell": true,
 
-  "modules-left": [
-    "network",
-    "bluetooth",
-    "tray"
-  ],
-  "modules-center": [
-    "clock"
-  ],
+  "modules-left": ["network", "memory", "mpris"],
+
+  "modules-center": ["hyprland/workspaces", "clock"],
+
   "modules-right": [
-    "idle_inhibitor",
-    "custom/screenshot",
-    "backlight",
+    "tray",
+    "custom/updates",
     "pulseaudio",
+    "pulseaudio#microphone",
+    "bluetooth",
+    "backlight",
     "battery",
-    "custom/lock"
+    "idle_inhibitor",
   ],
 
-  "custom/screenshot": {
-    "format": "SHOT",
-    "tooltip": "Select a region and copy it to clipboard",
-    "on-click": "screenshot-region"
+  // ─────────────────────────────
+  // WORKSPACES — dot indicators
+  // ─────────────────────────────
+  "hyprland/workspaces": {
+    "active-only": false,
+    "all-outputs": false,
+    "format": "{icon}",
+    "show-special": true,
+    "on-scroll-up": "hyprctl dispatch workspace r-1",
+    "on-scroll-down": "hyprctl dispatch workspace r+1",
+    "persistent-workspaces": {
+      "*": 0,
+    },
+    "format-icons": {
+      "active": "󰮯",
+      "default": "󰊠",
+      "urgent": "󰪥",
+      "empty": "󰊠",
+      "special": "󰊠",
+    },
   },
 
-  "custom/lock": {
-    "format": "LOCK",
-    "tooltip": false,
-    "on-click": "sh ~/.config/driftwm/scripts/lock.sh"
-  },
-
+  // ─────────────────────────────
+  // CLOCK
+  // ─────────────────────────────
   "clock": {
-    "format": "{:%a %d %b  %H:%M}",
-    "tooltip-format": "{:%A, %d %B %Y\n%H:%M:%S}",
-    "interval": 1
+    "interval": 60,
+    "format": " {:%a, %b %d  %H:%M}",
+    "tooltip": true,
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 3,
+      "format": {
+        "months": "<span color='#e6e1cf'><b>{}</b></span>",
+        "days": "<span color='#cad3f5'><b>{}</b></span>",
+        "weekdays": "<span color='#ff3333'><b>{}</b></span>",
+        "today": "<span color='#f5a97f'><b><u>{}</u></b></span>",
+      },
+    },
   },
 
+  // ─────────────────────────────
+  // NETWORK
+  // ─────────────────────────────
   "network": {
-    "format-wifi": "NET {essid} {signalStrength}%",
-    "format-ethernet": "NET wired",
-    "format-disconnected": "NET offline",
-    "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
-    "on-click": "nm-connection-editor"
+    "interval": 5,
+    "format-wifi": "󰤥 {essid}",
+    "format-ethernet": "󰈀 wired",
+    "format-disconnected": "󰤮",
+    "tooltip-format": "↑ {bandwidthUpBits}  ↓ {bandwidthDownBits}",
+    "on-click": "nm-connection-editor",
   },
 
+  // ─────────────────────────────
+  // MEMORY
+  // ─────────────────────────────
+  "memory": {
+    "interval": 5,
+    "format": "󰍛 {used:0.1f}G",
+    "tooltip-format": "{used:0.1f}G used / {total:0.1f}G total\n{percentage}% utilized",
+  },
+
+  // ─────────────────────────────
+  // BLUETOOTH
+  // ─────────────────────────────
   "bluetooth": {
-    "format": "BT {status}",
-    "format-disabled": "BT off",
-    "format-off": "BT off",
-    "format-connected": "BT {device_alias}",
-    "tooltip-format": "{controller_alias}\t{controller_address}",
-    "tooltip-format-connected": "{device_enumerate}",
-    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
-    "on-click": "blueman-manager"
+    "format": "󰂯",
+    "format-disabled": "",
+    "format-connected": "󰂱 {device_alias}",
+    "tooltip-format": "{device_alias}\n{controller_alias}",
+    "tooltip-format-enumerate-connected": "{device_alias}",
+    "on-click": "blueman-manager",
   },
 
+  // ─────────────────────────────
+  // AUDIO OUTPUT
+  // ─────────────────────────────
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰖁",
+    "tooltip": false,
+    "on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
+    "on-scroll-up": "wpctl set-volume @DEFAULT_SINK@ 5%+",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_SINK@ 5%-",
+    "format-icons": {
+      "headphone": "󰋋",
+      "hands-free": "󰋎",
+      "headset": "󰋎",
+      "phone": "󰏲",
+      "portable": "󰏲",
+      "car": "󰄋",
+      "default": ["󰕿", "󰖀", "󰕾"],
+    },
+  },
+
+  // ─────────────────────────────
+  // MICROPHONE
+  // ─────────────────────────────
+  "pulseaudio#microphone": {
+    "format": "{format_source}",
+    "format-source": "󰍬 {volume}%",
+    "format-source-muted": "󰍭",
+    "tooltip": false,
+    "on-click": "wpctl set-mute @DEFAULT_SOURCE@ toggle",
+    "on-scroll-up": "wpctl set-volume @DEFAULT_SOURCE@ 5%+",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_SOURCE@ 5%-",
+  },
+
+  // ─────────────────────────────
+  // BATTERY
+  // ─────────────────────────────
+  "battery": {
+    "interval": 60,
+    "states": {
+      "good": 80,
+      "warning": 30,
+      "critical": 20,
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-plugged": "󰚥 {capacity}%",
+    "format-full": "󰁹 {capacity}%",
+    "tooltip-format": "{timeTo}",
+    "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+  },
+
+  // ─────────────────────────────
+  // BACKLIGHT
+  // ─────────────────────────────
+  "backlight": {
+    "device": "intel_backlight",
+    "format": "{icon} {percent}%",
+    "format-icons": ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"],
+    "on-scroll-up": "brightnessctl set 5%+",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "tooltip-format": "Brightness: {percent}%",
+  },
+
+  // ─────────────────────────────
+  // MPRIS (Media Player)
+  // ─────────────────────────────
+  "mpris": {
+    "format": "{player_icon} {title}",
+    "format-paused": "{status_icon} {title}",
+    "player-icons": {
+      "default": "▶",
+      "spotify": "",
+      "firefox": "",
+      "chromium": "",
+      "vlc": "󰕼",
+      "mpv": "",
+    },
+    "status-icons": {
+      "paused": "⏸",
+    },
+    "max-length": 40,
+    "title-len": 30,
+    "tooltip": true,
+    "tooltip-format": "{player} • {status}\n{title}",
+  },
+
+  // ─────────────────────────────
+  // UPDATES
+  // ─────────────────────────────
+  "custom/updates": {
+    "format": "{}",
+    "tooltip": true,
+    "interval": 600,
+    "return-type": "json",
+    "exec": "$HOME/.config/waybar/bin/updatecheck",
+    "on-click": "kitty yay",
+  },
+
+  // ─────────────────────────────
+  // TRAY
+  // ─────────────────────────────
   "tray": {
     "icon-size": 16,
-    "spacing": 8
+    "spacing": 6,
+    "show-passive-items": true,
   },
 
+  // ─────────────────────────────
+  // IDLE INHIBITOR
+  // ─────────────────────────────
   "idle_inhibitor": {
     "format": "{icon}",
     "format-icons": {
-      "activated": "AWAKE",
-      "deactivated": "IDLE"
-    }
-  },
-
-  "backlight": {
-    "format": "BRI {percent}%",
-    "tooltip": false,
-    "on-scroll-up": "brightness-up",
-    "on-scroll-down": "brightness-down"
-  },
-
-  "pulseaudio": {
-    "format": "VOL {volume}%",
-    "format-muted": "VOL muted",
-    "format-bluetooth": "VOL {volume}% BT",
-    "format-bluetooth-muted": "VOL muted BT",
-    "scroll-step": 5,
-    "on-click": "volume-toggle",
-    "on-click-right": "pavucontrol",
-    "on-scroll-up": "volume-up",
-    "on-scroll-down": "volume-down"
-  },
-
-  "battery": {
-    "states": {
-      "warning": 30,
-      "critical": 15
+      "activated": "󰒳",
+      "deactivated": "󰒲",
     },
-    "format": "BAT {capacity}%",
-    "format-charging": "BAT {capacity}%+",
-    "format-plugged": "AC {capacity}%",
-    "tooltip-format": "{timeTo} remaining"
-  }
+  },
 }

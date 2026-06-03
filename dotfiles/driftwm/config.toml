@@ -89,7 +89,7 @@ path = "~/.config/driftwm/shaders/dot_grid.glsl"
 # ── Decorations ───────────────────────────────────────────────
 
 [decorations]
-font = "Adwaita Sans"
+font = "Inter Nerd Font"
 font_size = 11
 
 # ── Cursor ────────────────────────────────────────────────────

@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   flakeTarget = config.local.rebuild.flakeTarget;
 in
@@ -27,7 +32,10 @@ in
 
     programs.zoxide = {
       enable = true;
-      flags = [ "--cmd" "z" ];
+      flags = [
+        "--cmd"
+        "z"
+      ];
     };
 
     programs.zsh = {
@@ -42,67 +50,67 @@ in
         k = "kilocode";
         oc = "openclaw";
         oco = "opencode";
+        m = "ssh -i ~/.ssh/layer7 iva@193.24.210.153";
       };
       interactiveShellInit = ''
-        mkdir -p "$HOME/.gemini"
+                mkdir -p "$HOME/.gemini"
 
-        if [ -d /home/iva/nix ]; then
-          ${pkgs.zoxide}/bin/zoxide add /home/iva/nix >/dev/null 2>&1 || true
-        fi
+                if [ -d /home/iva/nix ]; then
+                  ${pkgs.zoxide}/bin/zoxide add /home/iva/nix >/dev/null 2>&1 || true
+                fi
 
-        eval "$(${pkgs.pay-respects}/bin/pay-respects zsh --alias f)"
+                eval "$(${pkgs.pay-respects}/bin/pay-respects zsh --alias f)"
+                zstyle ':completion:*' menu select
+                zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=* r:|=*'
+                zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
+                zstyle ':completion:*' group-name ""
+                zstyle ':completion:*:descriptions' format '[%d]'
+                zstyle ':completion:*:warnings' format '[no matches found]'
 
-        zstyle ':completion:*' menu select
-        zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=* r:|=*'
-        zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
-        zstyle ':completion:*' group-name ""
-        zstyle ':completion:*:descriptions' format '[%d]'
-        zstyle ':completion:*:warnings' format '[no matches found]'
+                tlpstat() {
+                  command tlp-stat -s
+                  command tlp-stat -p | rg 'scaling_governor|energy_performance_preference|min_perf_pct|max_perf_pct|Power source|Mode'
+                }
 
-        tlpstat() {
-          command tlp-stat -s
-          command tlp-stat -p | rg 'scaling_governor|energy_performance_preference|min_perf_pct|max_perf_pct|Power source|Mode'
-        }
+                tlpac() {
+                  command sudo tlp ac
+                  tlpstat
+                }
 
-        tlpac() {
-          command sudo tlp ac
-          tlpstat
-        }
+                tlpbat() {
+                  command sudo tlp bat
+                  tlpstat
+                }
 
-        tlpbat() {
-          command sudo tlp bat
-          tlpstat
-        }
+                _nixos_rebuild_cores() {
+                  local cpu_count target
+                  cpu_count=$(nproc --all)
+                  target=$(( cpu_count * 2 / 3 ))
 
-        _nixos_rebuild_cores() {
-          local cpu_count target
-          cpu_count=$(nproc --all)
-          target=$(( cpu_count * 2 / 3 ))
+                  if (( target < 1 )); then
+                    target=1
+                  fi
 
-          if (( target < 1 )); then
-            target=1
-          fi
+                  echo "$target"
+                }
 
-          echo "$target"
-        }
+                nrb() {
+                  local cores
+                  cores=$(_nixos_rebuild_cores)
+                  command nixos-rebuild build --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
+                }
 
-        nrb() {
-          local cores
-          cores=$(_nixos_rebuild_cores)
-          command nixos-rebuild build --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
-        }
+                nrt() {
+                  local cores
+                  cores=$(_nixos_rebuild_cores)
+                  command sudo nixos-rebuild test --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
+                }
 
-        nrt() {
-          local cores
-          cores=$(_nixos_rebuild_cores)
-          command sudo nixos-rebuild test --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
-        }
-
-        nrs() {
-          local cores
-          cores=$(_nixos_rebuild_cores)
-          command sudo nixos-rebuild switch --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
-        }
+                nrs() {
+                  local cores
+                  cores=$(_nixos_rebuild_cores)
+                  command sudo nixos-rebuild switch --flake /home/iva/nix#${flakeTarget} --max-jobs 1 --cores "$cores" "$@"
+                }
       '';
     };
 

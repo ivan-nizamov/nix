@@ -38,9 +38,34 @@ let
   smtpPassFile = "/var/lib/nextcloud-secrets/smtp-pass";
   whiteboardSecretFile = "/var/lib/nextcloud-secrets/whiteboard-server.env";
   officeTemplateMarker = "/var/lib/nextcloud/.richdocuments-ms-office-templates-v1";
+  dashboardLauncher = pkgs.writeShellScriptBin "nextcloud-dashboard" ''
+    profile_dir="$HOME/.config/net.imput.helium"
+    if ! ${pkgs.procps}/bin/pgrep -x helium >/dev/null 2>&1; then
+      rm -f "$profile_dir/SingletonLock" "$profile_dir/SingletonSocket" "$profile_dir/SingletonCookie"
+    fi
+
+    exec ${lib.getExe pkgs.helium} --app=${externalUrl}/apps/dashboard/
+  '';
+  dashboardDesktop = pkgs.makeDesktopItem {
+    name = "brave-dbmbkobcapncpkenicminpgdkmmdhjmi-Default";
+    desktopName = "Dashboard - Nextcloud";
+    exec = lib.getExe dashboardLauncher;
+    icon = "nextcloud";
+    categories = [ "Network" ];
+  };
 in
 {
   fonts.packages = officeFonts;
+
+  environment.systemPackages = [
+    dashboardDesktop
+    dashboardLauncher
+  ];
+
+  systemd.tmpfiles.rules = [
+    "d /home/iva/.local/share/applications 0755 iva users - -"
+    "L+ /home/iva/.local/share/applications/brave-dbmbkobcapncpkenicminpgdkmmdhjmi-Default.desktop - - - - ${dashboardDesktop}/share/applications/brave-dbmbkobcapncpkenicminpgdkmmdhjmi-Default.desktop"
+  ];
 
   system.activationScripts.nextcloudSecrets = ''
     install -d -m 0700 -o root -g root /var/lib/nextcloud-secrets
